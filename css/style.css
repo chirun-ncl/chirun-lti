@@ -1,0 +1,15 @@
+a {
+	text-decoration: none;
+}
+
+.content-part tr, .content-part td {
+	background-color: #f2f2f2;
+}
+
+.hide {
+	display: none;
+}
+
+.centering {
+	text-align: center;
+}
