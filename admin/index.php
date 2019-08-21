@@ -1,18 +1,5 @@
 <?php
-/**
- * rating - Rating: an example LTI tool provider
- *
- * @author  Stephen P Vickers <svickers@imsglobal.org>
- * @copyright  IMS Global Learning Consortium Inc
- * @date  2016
- * @version 2.0.0
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, Version 3.0
- */
-
 /*
- * This page manages the definition of tool consumer records.  A tool consumer record is required to
- * enable each VLE to securely connect to this application.
- *
  * *** IMPORTANT ***
  * Access to this page should be restricted to prevent unauthorised access to the configuration of tool
  * consumers (for example, using an entry in an Apache .htaccess file); access to all other pages is
@@ -23,7 +10,7 @@
 use IMSGlobal\LTI\ToolProvider;
 use IMSGlobal\LTI\ToolProvider\DataConnector;
 
-require_once('../lib.php');
+require_once('../lib/init.php');
 
 // Initialise session and database
 $db = NULL;

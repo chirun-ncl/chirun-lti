@@ -22,10 +22,17 @@ class Content {
 			$this->title = $content_item['title'];
 		}
 		if(isset($parent)){
+			$this->parent = $parent;
 			$this->parent_slug = $parent->slug_path;
 		}
 		$this->slug_path = $this->slugify();
 		$this->calculate_hidden();
+	}
+
+	public function get_hidden(){
+		$hidden = array();
+		if($this->hidden) $hidden[] = $this->slug_path;
+		return $hidden;
 	}
 
 	public function adaptive_release_tbl_row(){
@@ -43,7 +50,7 @@ class Content {
 				type="text" value="'.$this->end_datetime.'">':
 			'<input class="flatpickr" name="content['.$this->slug_path.'][end_datetime]"
 				type="text">').'</td>';
-		$html .= '<td class="centering"><input type="checkbox" name="content['.$this->slug_path.'][checked]"';
+		$html .= '<td class="text-center"><input type="checkbox" name="content['.$this->slug_path.'][checked]"';
 		$html .= ($this->hidden==1?' checked ':'').'></td>';
 		$html .= '</tr>';
 		return $html;
@@ -60,7 +67,11 @@ class Content {
 
 	public function calculate_hidden(){
 		if($this->hidden) return; //Content is already known to be hidden
-		
+		if(isset($this->parent) && $this->parent->hidden) {//Content is hidden because parent is hidden
+			$this->hidden = 3;
+			$this->hidden_reason='Hidden (via parent)';
+			return;
+		}
 		//Check if startdate hasn't passed yet
 		$now = strtotime(date("Y-m-d H:i:s"));
 		if(isset($this->start_datetime)){
@@ -116,10 +127,21 @@ class Part extends Content {
 
 		$this->calculate_hidden();
 	}
+	
+	public function get_hidden(){
+		$hidden = array();
+		if($this->hidden) $hidden[] = $this->slug_path;
+		foreach ($this->children as $child_content){
+			$hidden = array_merge($hidden,$child_content->get_hidden());
+		}
+		return $hidden;
+	}
 
 	public function adaptive_release_tbl_row(){
-		$html = '<tbody class="content-part"><tr>';
-		$html .= '<td class="expand-indicator"><a href="javascript:;">&#x25B6;</a></td>';
+		$html = "<tbody><tr class='table-primary'>";
+		$html .= "<td class='clickable collapsed' data-toggle='collapse' data-target='#table-part-{$this->slug_path}' aria-expanded='false' aria-controls='table-part-{$this->slug_path}'>";
+
+		$html .= '<i class="fa fa-3 fa-chevron-down"></i></td>';
 		$html .= '<td>'.$this->title.'</td>';
 		$html .= '<td>'.$this->hidden_reason.'</td>';
 		$html .= '<td>'.($this->start_datetime?
@@ -132,10 +154,10 @@ class Part extends Content {
 				type="text" value="'.$this->end_datetime.'">':
 			'<input class="flatpickr" name="content['.$this->slug_path.'][end_datetime]"
 				type="text">').'</td>';
-		$html .= '<td class="centering"><input type="checkbox" name="content['.$this->slug_path.'][checked]"';
+		$html .= '<td class="text-center"><input type="checkbox" name="content['.$this->slug_path.'][checked]"';
 		$html .= ($this->hidden==1?' checked ':'').'></td>';
 		$html .= '</tr></tbody>';
-		$html .= '<tbody class="hide">';
+		$html .= "<tbody id='table-part-{$this->slug_path}' class='collapse'>";
 		foreach ($this->children as $child_content){
 			$html .= $child_content->adaptive_release_tbl_row();
 		}
@@ -159,12 +181,28 @@ class Module {
 	public $yaml = array();
 	public $content = array();
 
-	public function __construct($yaml_path, $module_selected_id = NULL) {
+	public function __construct($yaml_path = "", $module_selected_id = NULL) {
+		if(empty($yaml_path)) return;
 		$this->selected_id = $module_selected_id;
 		$this->yaml_path = $yaml_path;
 		$this->parse_yaml();
 		$this->parse_content();
 		$this->default_theme_path = dirname($yaml_path).'/'.$this->yaml['themes'][0]['path'];
+	}
+	
+	public function get_hidden(){
+		$hidden = array();
+		foreach ($this->content as $content){
+			$hidden = array_merge($hidden,$content->get_hidden());
+		}
+		return $hidden;
+	}
+
+	public function url(){
+		if($this->default_theme_path){
+			return LTI_CONTENTDIR.$this->default_theme_path.'/';
+		}
+		return NULL;
 	}
 
 	public function parse_yaml() {

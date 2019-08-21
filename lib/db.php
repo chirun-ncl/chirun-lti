@@ -1,14 +1,4 @@
 <?php
-/**
- * rating - Rating: an example LTI tool provider
- *
- * @author  Stephen P Vickers <svickers@imsglobal.org>
- * @copyright  IMS Global Learning Consortium Inc
- * @date  2016
- * @version 2.0.0
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, Version 3.0
- */
-
 /*
  * This page provides functions for accessing the database.
  */
@@ -16,8 +6,8 @@
 use IMSGlobal\LTI\ToolProvider;
 use IMSGlobal\LTI\ToolProvider\DataConnector;
 
-require_once('config.php');
-require_once('vendor/autoload.php');
+require_once(LTI_DIR.'config.php');
+require_once(LIB_DIR.'vendor/autoload.php');
 
 
 ###

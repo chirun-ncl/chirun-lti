@@ -1,14 +1,4 @@
 <?php
-/**
- * rating - Rating: an example LTI tool provider
- *
- * @author  Stephen P Vickers <svickers@imsglobal.org>
- * @copyright  IMS Global Learning Consortium Inc
- * @date  2016
- * @version 2.0.0
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, Version 3.0
- */
-
 /*
  * This page provides general functions to support the application.
  */
@@ -22,8 +12,13 @@ error_reporting(0);
 ###  Uncomment the next line to enable error messages
 error_reporting(E_ALL);
 
-require_once('db.php');
-require_once('module.php');
+define('LTI_DIR', $_SERVER['DOCUMENT_ROOT'] . '/lti/');
+define('LIB_DIR', LTI_DIR . 'lib/');
+
+require_once(LIB_DIR . 'db.php');
+require_once(LIB_DIR . 'module.php');
+require_once(LIB_DIR . 'mime_type.php');
+require_once(LIB_DIR . 'page.php');
 
 ###
 ###  Initialise application session and database connection
@@ -73,44 +68,6 @@ function init(&$db, $checkSession = NULL) {
 
 }
 
-###
-### Write out module content to HTTP response, unless it's hidden!
-###
-
-function getModuleContent($module, $real_page_req){
-	$final_page_req = false;
-	
-	if (is_file($real_page_req)){
-		$final_page_req = $real_page_req;
-	}
-
-	if (is_dir($real_page_req)){
-		if(is_file($real_page_req.'/index.html')){
-			$final_page_req = $real_page_req.'/index.html';
-		} else if (is_file($real_page_req.'/index.php')){
-			$final_page_req = $real_page_req.'/index.php';
-		}
-	}
-
-	if ($final_page_req){
-		$matched_content = $module->get_content_for_path($final_page_req);
-		if($matched_content && $matched_content->hidden>0){
-			echo "HIDDEN";
-			exit;
-		}
-		$ext = pathinfo($final_page_req, PATHINFO_EXTENSION);
-		if ($ext === 'php'){
-			include $final_page_req;
-			return true;
-		} else {
-			header('Content-Type: ' . get_file_mime_type($final_page_req));
-			header('Content-Disposition: inline; filename="'.basename($final_page_req).'"');
-			readfile($final_page_req);
-			return true;
-		}
-	}
-	return false;
-}
 
 ###
 ###  Return the module for a specified resource link
@@ -213,9 +170,6 @@ EOD;
 ###
 function deleteModule($db, $resource_pk, $module_selected_id) {
 
-	// Delete any pages
-	//deleteRatings($db, $item_pk);
-
 	// Delete the item
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
@@ -237,17 +191,8 @@ EOD;
 ###  Get the web path to the application
 ###
 function getAppPath() {
-
-	$root = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']);
-	if (substr($root, -1) === '/') {  // remove any trailing / which should not be there
-		$root = substr($root, 0, -1);
-	}
-	$dir = str_replace('\\', '/', dirname(__FILE__));
-
-	$path = str_replace($root, '', $dir) . '/';
-
+	$path = '/lti/';
 	return $path;
-
 }
 
 ###

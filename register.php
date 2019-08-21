@@ -1,14 +1,4 @@
 <?php
-/**
- * rating - Rating: an example LTI tool provider
- *
- * @author  Stephen P Vickers <svickers@imsglobal.org>
- * @copyright  IMS Global Learning Consortium Inc
- * @date  2016
- * @version 2.0.0
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, Version 3.0
- */
-
 /*
  * This page displays a UI for registering the tool with a tool consumer.
  */
@@ -17,7 +7,7 @@
   use IMSGlobal\LTI\ToolProvider\DataConnector;
   use IMSGlobal\LTI\Profile;
 
-  require_once('rating_tp.php');
+  require_once('lib/toolprovider.php');
 
 
 // Initialise session and database
@@ -95,7 +85,7 @@ EOD;
 </head>
 
 <body>
-<h1>Rating Application Registration</h1>
+<h1>Coursebuilder Registration</h1>
 {$page}
 </body>
 </html>

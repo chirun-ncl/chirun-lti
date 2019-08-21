@@ -1,14 +1,4 @@
 <?php
-/**
- * rating - Rating: an example LTI tool provider
- *
- * @author  Stephen P Vickers <svickers@imsglobal.org>
- * @copyright  IMS Global Learning Consortium Inc
- * @date  2016
- * @version 2.0.0
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, Version 3.0
- */
-
 /*
  * This page processes a launch request from an LTI tool consumer.
  */
@@ -17,7 +7,7 @@
   use IMSGlobal\LTI\ToolProvider;
   use IMSGlobal\LTI\ToolProvider\Service;
 
-  require_once('lib.php');
+  require_once($_SERVER['DOCUMENT_ROOT'].'/lti/lib/init.php');
 
 
   class RatingToolProvider extends ToolProvider\ToolProvider {
@@ -28,16 +18,16 @@
 
       $this->baseUrl = getAppUrl();
 
-      $this->vendor = new Profile\Item('ims', 'IMSGlobal', 'IMS Global Learning Consortium Inc', 'https://www.imsglobal.org/');
-      $this->product = new Profile\Item('d751f24f-140e-470f-944c-2d92b114db40', 'Rating', 'Sample LTI tool provider to create lists of items to be rated.',
-                                    'http://www.spvsoftwareproducts.com/php/rating/', VERSION);
+      $this->vendor = new Profile\Item('ncl', 'NCL', 'Newcastle University', 'https://www.ncl.ac.uk/');
+      $this->product = new Profile\Item('coursebuilder', 'Coursebuilder', 'Coursebuilder',
+                                    'https://www.mas-coursebuild.ncl.ac.uk/', VERSION);
 
       $requiredMessages = array(new Profile\Message('basic-lti-launch-request', 'connect.php', array('User.id', 'Membership.role')));
       $optionalMessages = array(new Profile\Message('ContentItemSelectionRequest', 'connect.php', array('User.id', 'Membership.role')),
                                 new Profile\Message('DashboardRequest', 'connect.php', array('User.id'), array('a' => 'User.id'), array('b' => 'User.id')));
 
       $this->resourceHandlers[] = new Profile\ResourceHandler(
-        new Profile\Item('rating', 'Rating app', 'An example tool provider which generates lists of items for rating.'), 'images/icon50.png',
+        new Profile\Item('coursebuilder', 'Coursebuilder', 'Produce flexible and accessible notes, in a variety of formats, using LaTeX or Markdown source'), 'lti/images/coursebuilder_icon_512.png',
         $requiredMessages, $optionalMessages);
 
       $this->requiredServices[] = new Profile\ServiceDefinition(array('application/vnd.ims.lti.v2.toolproxy+json'), array('POST'));
@@ -56,7 +46,11 @@
         $_SESSION['user_consumer_pk'] = $this->user->getResourceLink()->getConsumer()->getRecordId();
         $_SESSION['user_resource_pk'] = $this->user->getResourceLink()->getRecordId();
         $_SESSION['user_pk'] = $this->user->getRecordId();
+        $_SESSION['user_id'] = $this->user->ltiUserId;
+        $_SESSION['user_fullname'] = $this->user->fullname;
         $_SESSION['isStudent'] = $this->user->isLearner();
+        $_SESSION['isAdmin'] = $this->user->isAdmin();
+        $_SESSION['isStaff'] = $this->user->isStaff();
         $_SESSION['isContentItem'] = FALSE;
 
 // Redirect the user to display the list of items for the resource link
@@ -109,8 +103,8 @@
       global $db;
 
       $title = APP_NAME;
-      $app_url = 'http://www.spvsoftwareproducts.com/php/rating/';
-      $icon_url = getAppUrl() . 'images/icon50.png';
+      $app_url = 'https://mas-coursebuild.ncl.ac.uk/lti/';
+      $icon_url = getAppUrl() . 'images/coursebuilder_icon_512.png';
       $context_id = postValue('context_id', '');
 
     }
@@ -137,16 +131,9 @@
       $title = APP_NAME;
 
       $this->errorOutput = <<< EOD
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
-<meta http-equiv="content-language" content="EN" />
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <title>{$title}</title>
-<link href="css/rateit.css" media="screen" rel="stylesheet" type="text/css" />
-<script src="js/jquery.min.js" type="text/javascript"></script>
-<script src="js/jquery.rateit.min.js" type="text/javascript"></script>
-<link href="css/rating.css" media="screen" rel="stylesheet" type="text/css" />
 </head>
 <body>
 <h1>Error</h1>
