@@ -221,6 +221,8 @@ EOD;
 			$main .= <<< EOD
 				<h2>Instructor Options</h2>
 				<h3>Select Coursebuilder notes</h3>
+				<form action="index.php" method="POST">
+				<input type="hidden" name="do" value="add">
 				<table class="table">
 				<thead class="thead-light">
 				<tr>
@@ -228,6 +230,7 @@ EOD;
 				<th>Module Title</th>
 				<th>Author</th>
 				<th>Year</th>
+				<th>Theme</th>
 				<th>Select</th>
 				</tr>
 				</thead>
@@ -238,8 +241,17 @@ EOD;
 				$main .= "<td>".$module->title."</td>";
 				$main .= "<td>".$module->author."</td>";
 				$main .= "<td>".$module->year."</td>";
+				$main .= "<td><select name='theme_id'>";
+				foreach ($module->themes as $idx=>$theme){
+					$main .= <<< EOD
+						<option value="{$idx}">{$theme->title}</option>
+EOD;
+				}
+				$main .="</select></td>";
 				$main .= <<< EOD
-					<td><a class="btn btn-primary" href="./index.php?do=add&module_path={$module->yaml_path}">Use</a></td>
+					<td>
+					<button class="btn btn-primary" name="module_path" value="{$module->yaml_path}">Use</button>
+					</td>
 EOD;
 				$main .= "</tr>";
 			}
@@ -252,7 +264,11 @@ EOD;
 			<div class="row">
 				<div class="col">
 					<h2>Instructor Dashboard</h2>
-					<h4>Adaptive Release:</h4>
+					<h4 class="mt-4">Selected Module</h4>
+					<p><strong>Module:</strong> {$this->module->title}</p>
+					<p><strong>Theme:</strong> {$this->module->selected_theme->title}</p>
+					<h4 class="mt-4">Adaptive Release</h4>
+					<p>Use the below controls to manage when content will be visible to students on a part or chapter basis.</p>
 					<form action="index.php" method="POST">
 					<table class="table">
 					<thead class="thead-light">
@@ -274,6 +290,9 @@ EOD;
 					<button class="btn btn-primary" name="do" value="content_saveall">Save All Changes</button>
 					<button class="btn btn-secondary" name="do" value="content_clearall">Restore Defaults</button>
 					</form>
+					<h4 class="mt-4">Manage Content</h4>
+					<p>The controls below are used to manage the module content as a whole.</p>
+					<a class="btn btn-danger" href="./index.php?do=delete&req_id={$this->module->selected_id}">Deselect Module</a>
 				</div>
 			</div>
 			<script>flatpickr(".flatpickr",{enableTime: true,dateFormat: "Y-m-d H:i",time_24hr: true});</script>
@@ -288,7 +307,9 @@ trait ModulePage {
 	protected $requestedContent = NULL;
 	public function setModule($module){
 		$this->module = $module;
-		$this->title = $module->title;
+		if (!empty($this->module->title)){
+			$this->title = $module->title;
+		}
 	}
 	public function isModuleEmpty(){
 		if (!isset($this->module)) return true;

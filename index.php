@@ -13,13 +13,13 @@ if ($ok) {
 	$action = '';
 	// Check for item id and action parameters
 	if (isset($_REQUEST['req_id'])) {
-		$req_id = intval($_REQUEST['id']);
+		$req_id = intval($_REQUEST['req_id']);
 	}
 	if (isset($_REQUEST['do'])) {
 		$action = $_REQUEST['do'];
 	}
 
-	if ($action == 'add' && isset($_REQUEST['module_path'])) {
+	if ($action == 'add' && isset($_REQUEST['module_path']) && isset($_REQUEST['theme_id'])) {
 		$ok = TRUE;
 		$data_connector = DataConnector\DataConnector::getDataConnector(DB_TABLENAME_PREFIX, $db);
 		$consumer = ToolProvider\ToolConsumer::fromRecordId($_SESSION['consumer_pk'], $data_connector);
@@ -31,7 +31,7 @@ if ($ok) {
 		}
 		if ($ok) {
 			$_SESSION['resource_pk'] = $resource_link->getRecordId();
-			$ok = selectModule($db, $_SESSION['resource_pk'], $_REQUEST['module_path']);
+			$ok = selectModule($db, $_SESSION['resource_pk'], $_REQUEST['module_path'], $_REQUEST['theme_id']);
 		}
 		if ($ok) {
 			$_SESSION['message'] = 'The module has been selected.';
@@ -40,9 +40,9 @@ if ($ok) {
 		}
 		header('Location: ./');
 		exit;
-	} else if ($action == 'delete' && isset($req_id)) {
+	} else if ($action == 'delete' && !empty($req_id)) {
 		if (deleteModule($db, $_SESSION['resource_pk'], $req_id)) {
-			$_SESSION['message'] = 'The item has been deleted.';
+			$_SESSION['message'] = 'The module has been successfully deselected.';
 		} else {
 			$_SESSION['error_message'] = 'Unable to remove module; please try again.';
 		}
@@ -101,14 +101,16 @@ if ($ok) {
 	}
 
 }
-//print_r($_SESSION);
+#print_r($_SERVER);
+#print_r($_SESSION);
 if ($ok && $_SESSION['isStudent']) {
 	if (isset($selected_module)) {
 		$page = new StudentPage();
 	} else {
 		$page = new ModuleNotSelectedPage();
 	}
-} else if($ok && !in_array($_SESSION['user_id'],AUTH_USER_IDS)){
+} else if($ok && !in_array($_SESSION['user_id'],AUTH_USER_IDS)
+			&& !in_array($_SESSION['user_email'],AUTH_USER_EMAILS)){
 	$page = new LandingPage();
 } else if ($ok && $_SESSION['isStaff']) {
 	$page = new DashboardPage();

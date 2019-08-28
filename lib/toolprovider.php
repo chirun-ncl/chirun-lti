@@ -46,7 +46,8 @@
         $_SESSION['user_consumer_pk'] = $this->user->getResourceLink()->getConsumer()->getRecordId();
         $_SESSION['user_resource_pk'] = $this->user->getResourceLink()->getRecordId();
         $_SESSION['user_pk'] = $this->user->getRecordId();
-        $_SESSION['user_id'] = $this->user->ltiUserId;
+        $_SESSION['user_id'] = $this->user->getId();
+        $_SESSION['user_email'] = $this->user->email;
         $_SESSION['user_fullname'] = $this->user->fullname;
         $_SESSION['isStudent'] = $this->user->isLearner();
         $_SESSION['isAdmin'] = $this->user->isAdmin();

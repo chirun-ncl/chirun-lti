@@ -76,7 +76,7 @@ function getSelectedModule($db, $resource_pk) {
 
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-SELECT module_selected_id, module_yaml_path
+SELECT module_selected_id, module_yaml_path, module_theme_id
 FROM {$prefix}module_selected
 WHERE (resource_link_pk = :resource_pk)
 EOD;
@@ -88,6 +88,7 @@ EOD;
 	$row = $query->fetch(PDO::FETCH_ASSOC);
 	if (isset($row['module_yaml_path'])){
 		$module = new Module($row['module_yaml_path'], $row['module_selected_id']);
+		$module->select_theme($row['module_theme_id']);
 		return $module;
 	} else {
 		return NULL;
@@ -153,14 +154,15 @@ EOD;
 ###
 ###  Select a module to display for a specified resource link
 ###
-function selectModule($db, $resource_pk, $module_path) {
+function selectModule($db, $resource_pk, $module_path, $theme_id) {
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-INSERT INTO {$prefix}module_selected (resource_link_pk, module_yaml_path)
-VALUES (:resource_pk, :module_path)
+INSERT INTO {$prefix}module_selected (resource_link_pk, module_yaml_path, module_theme_id)
+VALUES (:resource_pk, :module_path, :theme_id)
 EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('module_path', $module_path, PDO::PARAM_STR);
+	$query->bindValue('theme_id', $theme_id, PDO::PARAM_INT);
 	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_INT);
 	return $query->execute();
 }

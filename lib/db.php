@@ -247,6 +247,7 @@ function init_db($db) {
 		$sql = "CREATE TABLE {$prefix}module_selected (" .
 			"module_selected_id int(11) NOT NULL AUTO_INCREMENT," .
 			'resource_link_pk int(11) NOT NULL, ' .
+			'module_theme_id int(4) NOT NULL, ' .
 			'module_yaml_path varchar(2048) NOT NULL, ' .
 			'PRIMARY KEY (module_selected_id)' .
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8';

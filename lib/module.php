@@ -61,7 +61,7 @@ class Content {
 		if(isset($this->parent_slug)){
 			$slug .= $this->parent_slug;
 		}
-		$slug .= '/'.strtolower(preg_replace("/[^A-Za-z0-9]/", '_', $this->title));
+		$slug .= '/'.strtolower(preg_replace("/[^A-z0-9_\/]/", '', preg_replace("/\s+/", '_', $this->title)));
 		return $slug;
 	}
 
@@ -73,15 +73,17 @@ class Content {
 			return;
 		}
 		//Check if startdate hasn't passed yet
-		$now = strtotime(date("Y-m-d H:i:s"));
+		$now = new DateTime();
 		if(isset($this->start_datetime)){
-			if($now < strtotime($this->start_datetime)){
+			$start = new DateTime($this->start_datetime);
+			if($now < $start){
 				$this->hidden = 2;
 				$this->hidden_reason='Hidden (Too early)';
 			}
 		}
 		if(isset($this->end_datetime)){
-			if($now > strtotime($this->end_datetime)){
+			$end = new DateTime($this->end_datetime);
+			if($now > $end){
 				$this->hidden = 2;
 				$this->hidden_reason='Hidden (Too late)';
 			}
@@ -166,6 +168,21 @@ class Part extends Content {
 	}
 }
 
+###
+### Class representing a chosen module theme
+###
+
+class ModuleTheme {
+	public $path = 'default';
+	public $title = 'Default';
+	public $module = NULL;
+	public function __construct($module, $theme_info=NULL) {
+		$this->module = $module;
+		if(empty($theme_info)) return;
+		$this->path = $theme_info['path'];
+		$this->title = $theme_info['title'];
+	}
+}
 
 ###
 ###  Class representing a set of coursebuilder notes for a module
@@ -176,10 +193,11 @@ class Module {
 	public $author = NULL;
 	public $code = NULL;
 	public $yaml_path = NULL;
-	public $default_theme_path = NULL;
 	public $selected_id = NULL;
+	public $selected_theme = NULL;
 	public $yaml = array();
 	public $content = array();
+	public $themes = array();
 
 	public function __construct($yaml_path = "", $module_selected_id = NULL) {
 		if(empty($yaml_path)) return;
@@ -187,7 +205,7 @@ class Module {
 		$this->yaml_path = $yaml_path;
 		$this->parse_yaml();
 		$this->parse_content();
-		$this->default_theme_path = dirname($yaml_path).'/'.$this->yaml['themes'][0]['path'];
+		$this->parse_themes();
 	}
 	
 	public function get_hidden(){
@@ -199,10 +217,14 @@ class Module {
 	}
 
 	public function url(){
-		if($this->default_theme_path){
-			return LTI_CONTENTDIR.$this->default_theme_path.'/';
+		if($this->selected_theme){
+			return LTI_CONTENTDIR.dirname($this->yaml_path).'/'.$this->selected_theme->path.'/';	
 		}
-		return NULL;
+		return LTI_CONTENTDIR.dirname($this->yaml_path).'/';
+	}
+	
+	public function select_theme($theme_id){
+		$this->selected_theme = $this->themes[$theme_id];
 	}
 
 	public function parse_yaml() {
@@ -223,6 +245,13 @@ class Module {
 			} else {
 				$this->content[] = new Content($content_item);
 			}
+		}
+	}
+
+	public function parse_themes() {
+		if(!$this->yaml) return NULL;
+		foreach ($this->yaml['themes'] as $theme_info){
+			$this->themes[] = new ModuleTheme($this,$theme_info);
 		}
 	}
 	
