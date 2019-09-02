@@ -370,6 +370,12 @@ trait ModulePage {
 			foreach ($cleanup as $node){
 				$node->parentNode->removeChild($node);
 			}
+			if($hidden_slug=='/introduction'){
+				$intro_node = $xpath->query("//main/section/div[contains(concat(' ', @class, ' '), ' container ') and ./p[contains(concat(' ', @class, ' '), ' text-muted ')]]");
+				foreach ($intro_node as $node){
+					$node->parentNode->removeChild($node);
+				}
+			}
 
 		}
 		return $dom->saveHTML();
