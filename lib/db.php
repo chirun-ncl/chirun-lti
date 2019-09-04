@@ -6,8 +6,8 @@
 use IMSGlobal\LTI\ToolProvider;
 use IMSGlobal\LTI\ToolProvider\DataConnector;
 
-require_once(LTI_DIR.'config.php');
-require_once(LIB_DIR.'vendor/autoload.php');
+require_once(__DIR__.'/../config.php');
+require_once(__DIR__.'/vendor/autoload.php');
 
 
 ###

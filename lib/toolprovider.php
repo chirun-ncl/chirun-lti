@@ -7,7 +7,7 @@
   use IMSGlobal\LTI\ToolProvider;
   use IMSGlobal\LTI\ToolProvider\Service;
 
-  require_once($_SERVER['DOCUMENT_ROOT'].'/lti/lib/init.php');
+  require_once(__DIR__.'/init.php');
 
 
   class RatingToolProvider extends ToolProvider\ToolProvider {

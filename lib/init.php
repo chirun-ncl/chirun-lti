@@ -12,13 +12,11 @@ error_reporting(0);
 ###  Uncomment the next line to enable error messages
 error_reporting(E_ALL);
 
-define('LTI_DIR', $_SERVER['DOCUMENT_ROOT'] . '/lti/');
-define('LIB_DIR', LTI_DIR . 'lib/');
-
-require_once(LIB_DIR . 'db.php');
-require_once(LIB_DIR . 'module.php');
-require_once(LIB_DIR . 'mime_type.php');
-require_once(LIB_DIR . 'page.php');
+require_once(__DIR__.'/../config.php');
+require_once(__DIR__.'/db.php');
+require_once(__DIR__.'/module.php');
+require_once(__DIR__.'/mime_type.php');
+require_once(__DIR__.'/page.php');
 
 ###
 ###  Initialise application session and database connection
@@ -188,23 +186,21 @@ EOD;
 
 }
 
-
 ###
 ###  Get the web path to the application
 ###
 function getAppPath() {
-	$path = '/lti/';
-	return $path;
+       return WEBDIR.'/';
 }
 
 ###
 ###  Find all modules on the filesystem 
 ###
 function getModules() {
-	$configpaths = recursiveSearchScan(MODULEDIR,'.yml');
+	$configpaths = recursiveSearchScan(CONTENTDIR,'.yml');
 	$modules = array();
 	foreach($configpaths as $config){
-		$yaml_path = str_replace(MODULEDIR,'',$config);
+		$yaml_path = str_replace(CONTENTDIR,'',$config);
 		$module = new Module($yaml_path);
 		if (isset($module->code)){
 			$modules[] = $module;

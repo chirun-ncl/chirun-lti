@@ -5,9 +5,14 @@
 define('APP_NAME', 'Coursebuilder LTI Tool');
 define('SESSION_NAME', 'php-coursebuilder');
 define('VERSION', '0.1.00');
+
+
+###
+### Setup paths
+###
 define('WEBDIR', '/lti');
-define('LTI_CONTENTDIR', WEBDIR.'/content');
-define('MODULEDIR', '#######/lti/content');
+define('WEBCONTENTDIR', '/lti/content');
+define('CONTENTDIR', '#########/content');
 
 ###
 ###  Database connection settings

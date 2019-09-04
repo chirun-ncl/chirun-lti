@@ -218,17 +218,17 @@ class Module {
 
 	public function url(){
 		if($this->selected_theme){
-			return LTI_CONTENTDIR.dirname($this->yaml_path).'/'.$this->selected_theme->path.'/';	
+			return WEBCONTENTDIR.dirname($this->yaml_path).'/'.$this->selected_theme->path.'/';
 		}
-		return LTI_CONTENTDIR.dirname($this->yaml_path).'/';
+		return WEBCONTENTDIR.dirname($this->yaml_path).'/';
 	}
-	
+
 	public function select_theme($theme_id){
 		$this->selected_theme = $this->themes[$theme_id];
 	}
 
 	public function parse_yaml() {
-		$this->yaml = @yaml_parse_file(MODULEDIR.$this->yaml_path);
+		$this->yaml = @yaml_parse_file(CONTENTDIR.$this->yaml_path);
 		if(!$this->yaml) return NULL;
 		$this->title = $this->yaml['title'];
 		$this->year = $this->yaml['year'];

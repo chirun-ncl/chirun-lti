@@ -319,7 +319,7 @@ trait ModulePage {
 	public function requestContent($contentPath){
 		if (!isset($this->module)) return "Module has not yet been configured";
 		$authModule = $this->module->code . '/' . $this->module->year;
-		$fullContentPath = MODULEDIR .'/'. $contentPath;
+		$fullContentPath = CONTENTDIR .'/'. $contentPath;
 		$this->requestedContent = -1;
 		
 		if(substr($contentPath, 0, strlen($authModule)) === $authModule){
