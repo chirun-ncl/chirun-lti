@@ -347,36 +347,30 @@ trait ModulePage {
 	}
 
 	protected function filter_content($html){
-		//TODO: Make it so that this hack is no longer required.
-		//		It searches the DOM for content that is supposed to be hidden and removes it.
-		//		The XPath queries strongly depend on the module's theme, this is far from ideal.
+		//
+		// This function searches the DOM for content that is supposed to be hidden and removes it.
+		//
 		$dom = new DomDocument;
 		@$dom->loadHTML($html);
-		foreach($this->module->get_hidden() as $hidden_slug){
+		foreach($this->module->get_hidden() as $hidden_item){
 			$xpath = new DomXPath($dom);
-			$content_nodes = $xpath->query("//main/div[contains(concat(' ', @class, ' '), ' album ')]/div/div/div[contains(concat(' ', @class, ' '), ' col-md-4 ')]//ul/li[./a[contains(@href, '".$hidden_slug."')]]");
-			foreach ($content_nodes as $node){
-				$node->parentNode->removeChild($node);
-			}
-			$part_nodes = $xpath->query("//main/div[contains(concat(' ', @class, ' '), ' album ')]/div/div/div[contains(concat(' ', @class, ' '), ' col-md-4 ') and .//div[contains(concat(' ', @class, ' '), ' card-header ')]//a[contains(@href, '".$hidden_slug."')]]");
-			foreach ($part_nodes as $node){
-				$node->parentNode->removeChild($node);
-			}
-			$heading_nodes = $xpath->query("//li[contains(concat(' ', @class, ' '), ' nav-item ') and ./a[contains(@href, '".$hidden_slug."')]]");
-			foreach ($heading_nodes as $node){
-				$node->parentNode->removeChild($node);
-			}
-			$cleanup = $xpath->query("//main/div[contains(concat(' ', @class, ' '), ' album ')]/div/div/div[contains(concat(' ', @class, ' '), ' col-md-4 ') and not(.//ul/li)]");
-			foreach ($cleanup as $node){
-				$node->parentNode->removeChild($node);
-			}
-			if($hidden_slug=='/introduction'){
-				$intro_node = $xpath->query("//main/section/div[contains(concat(' ', @class, ' '), ' container ') and ./p[contains(concat(' ', @class, ' '), ' text-muted ')]]");
-				foreach ($intro_node as $node){
-					$node->parentNode->removeChild($node);
-				}
+
+			if($hidden_item->type == 'introduction') {
+				$nodes = $xpath->query("//*[contains(@class, 'lti-hint-introduction')]");
+			} else if($hidden_item->type == 'part') {
+				$nodes = $xpath->query("//*[contains(@class,'lti-hint-part') and .//a[contains(@href, '".$hidden_item->slug_path."')]]");
+			} else {
+				$nodes = $xpath->query("//*[contains(@class,'lti-hint-item') and .//a[contains(@href, '".$hidden_item->slug_path."')]]");
 			}
 
+			foreach ($nodes as $node){
+				$node->parentNode->removeChild($node);
+			}
+		}
+		$xpath = new DomXPath($dom);
+		$cleanup = $xpath->query("//*[contains(@class,'lti-hint-part') and not(.//ul/li)]");
+		foreach ($cleanup as $node){
+			$node->parentNode->removeChild($node);
 		}
 		return $dom->saveHTML();
 	}

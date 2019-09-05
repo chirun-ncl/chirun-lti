@@ -31,7 +31,7 @@ class Content {
 
 	public function get_hidden(){
 		$hidden = array();
-		if($this->hidden) $hidden[] = $this->slug_path;
+		if($this->hidden) $hidden[] = $this;
 		return $hidden;
 	}
 
@@ -132,7 +132,7 @@ class Part extends Content {
 	
 	public function get_hidden(){
 		$hidden = array();
-		if($this->hidden) $hidden[] = $this->slug_path;
+		if($this->hidden) $hidden[] = $this;
 		foreach ($this->children as $child_content){
 			$hidden = array_merge($hidden,$child_content->get_hidden());
 		}
