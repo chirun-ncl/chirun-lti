@@ -43,7 +43,7 @@ function init(&$db, $checkSession = NULL) {
 	}
 
 	if (!$ok) {
-		$_SESSION['error_message'] = 'Unable to open session.';
+		$_SESSION['error_message'] = 'Unable to open session. Ensure that you are loading this page through your VLE (e.g. via a module in Blackboard).';
 	} else {
 		// Open database connection
 		$db = open_db(!$checkSession);

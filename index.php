@@ -98,6 +98,8 @@ if ($ok) {
 		if(isset($selected_module)){
 			$selected_module->apply_content_overrides($db);
 		}
+	} else {
+		$ok = false;
 	}
 
 }
@@ -128,9 +130,11 @@ if (isset($_SESSION['message'])) {
 	unset($_SESSION['message']);
 }
 
-$page->setModule($selected_module);
+if(isset($selected_module)){
+	$page->setModule($selected_module);
+}
 
-if(isset($_REQUEST['req_content'])){
+if($ok && isset($_REQUEST['req_content'])){
 	$requestReply = $page->requestContent($_REQUEST['req_content']);
 	if($requestReply !== 0) $page->addAlert($requestReply, 'danger');
 }
