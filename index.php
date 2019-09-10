@@ -31,7 +31,7 @@ if ($ok) {
 		}
 		if ($ok) {
 			$_SESSION['resource_pk'] = $resource_link->getRecordId();
-			$ok = selectModule($db, $_SESSION['resource_pk'], $_REQUEST['module_path'], $_REQUEST['theme_id']);
+			$ok = selectModule($db, $_SESSION['resource_pk'], $_REQUEST['module_path'], $_REQUEST['theme_id'][$_REQUEST['module_path']]);
 		}
 		if ($ok) {
 			$_SESSION['message'] = 'The module has been selected.';

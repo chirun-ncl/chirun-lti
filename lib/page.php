@@ -236,12 +236,15 @@ EOD;
 				</thead>
 				<tbody>
 EOD;
+			//$modules = getModules();
+			//print_r($modules[0]);
+			//array_column($modules, 'year');
 			foreach(getModules() as $module){
 				$main .= "<tr><td>".$module->code."</td>";
 				$main .= "<td>".$module->title."</td>";
 				$main .= "<td>".$module->author."</td>";
 				$main .= "<td>".$module->year."</td>";
-				$main .= "<td><select name='theme_id'>";
+				$main .= "<td><select name='theme_id[".$module->yaml_path."]'>";
 				foreach ($module->themes as $idx=>$theme){
 					$main .= <<< EOD
 						<option value="{$idx}">{$theme->title}</option>
