@@ -203,7 +203,7 @@ EOD;
 			$header .= <<< EOD
 					<ul class="navbar-nav">
       					<li class="nav-item">
-        					<a class="nav-link" href="{$this->module->url()}"><i class="fa fa-book" aria-hidden="true"></i> View Content</a>
+					<a class="nav-link" target="_blank" href="{$this->module->url()}"><i class="fa fa-book" aria-hidden="true"></i> View Content</a>
       					</li>
     				</ul>
 EOD;
