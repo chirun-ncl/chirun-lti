@@ -372,7 +372,7 @@ trait ModulePage {
 		foreach ($cleanup as $node){
 			$node->parentNode->removeChild($node);
 		}
-		return $dom->saveHTML();
+		return html_entity_decode($dom->saveHTML());
 	}
 
 	protected function renderRequestedContent(){
