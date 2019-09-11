@@ -226,6 +226,7 @@ EOD;
 				<table class="table">
 				<thead class="thead-light">
 				<tr>
+				<th></th>
 				<th>Module Code</th>
 				<th>Module Title</th>
 				<th>Author</th>
@@ -234,29 +235,66 @@ EOD;
 				<th>Select</th>
 				</tr>
 				</thead>
-				<tbody>
 EOD;
-			//$modules = getModules();
-			//print_r($modules[0]);
-			//array_column($modules, 'year');
-			foreach(getModules() as $module){
-				$main .= "<tr><td>".$module->code."</td>";
-				$main .= "<td>".$module->title."</td>";
-				$main .= "<td>".$module->author."</td>";
-				$main .= "<td>".$module->year."</td>";
-				$main .= "<td><select name='theme_id[".$module->yaml_path."]'>";
-				foreach ($module->themes as $idx=>$theme){
-					$main .= <<< EOD
-						<option value="{$idx}">{$theme->title}</option>
-EOD;
-				}
-				$main .="</select></td>";
+			$modules = getModules();
+			$module_years = array_unique(array_column($modules, 'year'));
+			sort($module_years);
+			foreach($module_years as $module_year){
+				$module_keys = array_keys(array_column($modules,'year'), $module_year);
 				$main .= <<< EOD
-					<td>
-					<button class="btn btn-primary" name="module_path" value="{$module->yaml_path}">Use</button>
-					</td>
+					<tbody>
+						<tr class="table-primary">
 EOD;
-				$main .= "</tr>";
+				if (end($module_years) == $module_year){
+					$main .= <<< EOD
+							<td class="clickable" data-toggle="collapse" data-target="#table-part-{$module_year}" aria-expanded="true" aria-controls="table-part-{$module_year}">
+							<i class="fa fa-3 fa-chevron-down"></i>
+							</td>
+EOD;
+                                } else {
+				$main .= <<< EOD
+						<td class="clickable collapsed" data-toggle="collapse" data-target="#table-part-{$module_year}" aria-expanded="false" aria-controls="table-part-{$module_year}">
+						<i class="fa fa-3 fa-chevron-down"></i>
+						</td>
+EOD;
+                                }
+				$main .= <<< EOD
+						<td>{$module_year}</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						</tr>
+						</tbody>
+EOD;
+				if (end($module_years) == $module_year){
+					$main .= '<tbody id="table-part-'.$module_year.'" class="collapse show">';
+				} else {
+					$main .= '<tbody id="table-part-'.$module_year.'" class="collapse">';
+				}
+				foreach($module_keys as $module_key){
+					$module = $modules[$module_key];
+					$main .= "<tr><td></td>";
+					$main .= "<td>".$module->code."</td>";
+					$main .= "<td>".$module->title."</td>";
+					$main .= "<td>".$module->author."</td>";
+					$main .= "<td>".$module->year."</td>";
+					$main .= "<td><select name='theme_id[".$module->yaml_path."]'>";
+					foreach ($module->themes as $idx=>$theme){
+						$main .= <<< EOD
+							<option value="{$idx}">{$theme->title}</option>
+EOD;
+					}
+					$main .="</select></td>";
+					$main .= <<< EOD
+						<td>
+						<button class="btn btn-primary" name="module_path" value="{$module->yaml_path}">Use</button>
+						</td>
+EOD;
+					$main .= "</tr>";
+				}
+				$main .= '</tbody>';
 			}
 			$main .= <<< EOD
 				</tbody>
