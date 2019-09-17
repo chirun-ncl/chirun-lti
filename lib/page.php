@@ -310,10 +310,10 @@ EOD;
 					<p><strong>Theme:</strong> {$this->module->selected_theme->title}</p>
 					<h4 class="mt-4">Adaptive Release</h4>
 					<p>Use the below controls to manage when content will be visible to students on a part or chapter basis.</p>
+					<form action="index.php" method="POST">
 					<button class="btn btn-primary" name="do" value="content_saveall">Save All Changes</button>
 					<button class="btn btn-secondary" name="do" value="content_clearall">Restore Defaults</button>
-					<form action="index.php" class="mt-2" method="POST">
-					<table class="table">
+					<table class="table mt-2">
 					<thead class="thead-light">
 					<tr>
 					<th></th>
