@@ -112,7 +112,7 @@ if ($ok && $_SESSION['isStudent']) {
 		$page = new ModuleNotSelectedPage();
 	}
 } else if($ok && !in_array($_SESSION['user_id'],AUTH_USER_IDS)
-			&& !in_array($_SESSION['user_email'],AUTH_USER_EMAILS)){
+			&& !in_array(strtolower($_SESSION['user_email']),AUTH_USER_EMAILS)){
 	$page = new LandingPage();
 } else if ($ok && $_SESSION['isStaff']) {
 	$page = new DashboardPage();
