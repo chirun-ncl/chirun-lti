@@ -197,15 +197,18 @@ class DashboardPage extends LTIPage {
       					<li class="nav-item active">
         					<a class="nav-link" href="#"><i class="fa fa-dashboard" aria-hidden="true"></i> Dashboard</a>
       					</li>
-    				</ul>
 EOD;
 		if($this->module){
 			$header .= <<< EOD
-					<ul class="navbar-nav">
-      					<li class="nav-item">
-					<a class="nav-link" target="_blank" href="{$this->module->url()}"><i class="fa fa-book" aria-hidden="true"></i> View Content</a>
-      					</li>
-    				</ul>
+					<li class="nav-item">
+					<a class="nav-link" target="_blank" href="{$this->module->url()}?auth_level=1"><i class="fa fa-book" aria-hidden="true"></i> View All Content</a>
+					</li>
+				</ul>
+				<ul class="navbar-nav">
+					<li class="nav-item">
+					<a class="nav-link" target="_blank" href="{$this->module->url()}?auth_level=0"><i class="fa fa-user-circle" aria-hidden="true"></i> Student View</a>
+					</li>
+				</ul>
 EOD;
 		}
 		$header .= <<< EOD
@@ -345,6 +348,7 @@ EOD;
 
 trait ModulePage {
 	protected $module = NULL;
+	protected $authLevel = 0;
 	protected $requestedContent = NULL;
 	public function setModule($module){
 		$this->module = $module;
@@ -357,11 +361,12 @@ trait ModulePage {
 		if (empty($this->module->title)) return true;
 		return false;
 	}
-	public function requestContent($contentPath){
+	public function requestContent($contentPath, $authLevel = 0){
 		if (!isset($this->module)) return "Module has not yet been configured";
 		$authModule = $this->module->code . '/' . $this->module->year;
 		$fullContentPath = CONTENTDIR .'/'. $contentPath;
 		$this->requestedContent = -1;
+		$this->authLevel = $authLevel;
 		
 		if(substr($contentPath, 0, strlen($authModule)) === $authModule){
 			if (is_file($fullContentPath)){
@@ -376,7 +381,7 @@ trait ModulePage {
 			}
 			if(!isset($requestedContent)) return "The requested content item was not found.";
 			$matched_content = $this->module->get_content_for_path($fullContentPath);
-			if($matched_content && $matched_content->hidden>0){
+			if($matched_content && $matched_content->hidden>0 && $this->authLevel == 0){
 				return "The requested content is not available.";
 			}
 
@@ -427,7 +432,9 @@ trait ModulePage {
 			header('Content-Type: ' . get_file_mime_type($this->requestedContent));
 			header('Content-Disposition: inline; filename="'.basename($this->requestedContent).'"');
 			$file_content = file_get_contents($this->requestedContent);
-			$file_content = $this->filter_content($file_content);
+			if ($this->authLevel == 0){
+				$file_content = $this->filter_content($file_content);
+			}
 			echo $file_content;
 			return true;
 		} else {

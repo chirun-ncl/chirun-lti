@@ -256,15 +256,14 @@ class Module {
 	}
 	
 	public function get_content_for_path($path){
-		$path_noext = substr($path, 0, strrpos($path, ".")); 
 		foreach ($this->content as $content_item){
-			if (substr($path_noext, -strlen($content_item->slug_path)) === $content_item->slug_path){
-				return $content_item;
-			}
 			foreach ($content_item->children as $content_child){
-				if (substr($path_noext, -strlen($content_child->slug_path)) === $content_child->slug_path){
+				if (strpos($path, $content_child->slug_path) !== false){
 					return $content_child;
 				}
+			}
+			if (strpos($path, $content_item->slug_path) !== false){
+				return $content_item;
 			}
 		}
 		return false;

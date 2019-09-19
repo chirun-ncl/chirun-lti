@@ -135,7 +135,15 @@ if(isset($selected_module)){
 }
 
 if($ok && isset($_REQUEST['req_content'])){
-	$requestReply = $page->requestContent($_REQUEST['req_content']);
+	$authLevel = 0;
+	if($_SESSION['isStaff'] && isset($_COOKIE["auth_level"])){
+		$authLevel = $_COOKIE["auth_level"];
+	}
+	if($_SESSION['isStaff'] && isset($_REQUEST['auth_level'])){
+		setcookie("auth_level", $_REQUEST['auth_level'], time()+3600);
+		$authLevel = $_REQUEST['auth_level'];
+	}
+	$requestReply = $page->requestContent($_REQUEST['req_content'], $authLevel);
 	if($requestReply !== 0) $page->addAlert($requestReply, 'danger');
 }
 
