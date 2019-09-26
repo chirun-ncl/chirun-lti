@@ -105,6 +105,8 @@ if ($ok) {
 }
 #print_r($_SERVER);
 #print_r($_SESSION);
+#print_r($_COOKIE);
+
 if ($ok && $_SESSION['isStudent']) {
 	if (isset($selected_module)) {
 		$page = new StudentPage();
@@ -143,8 +145,8 @@ if($ok && isset($_REQUEST['req_content'])){
 		setcookie("auth_level", $_REQUEST['auth_level'], time()+3600);
 		$authLevel = $_REQUEST['auth_level'];
 	}
-	$requestReply = $page->requestContent($_REQUEST['req_content'], $authLevel);
-	if($requestReply !== 0) $page->addAlert($requestReply, 'danger');
+	$requestReplyError = $page->requestContent($db, $_REQUEST['req_content'], $authLevel);
+	if(!empty($requestReplyError)) $page->addAlert($requestReplyError, 'danger');
 }
 
 $page->render();

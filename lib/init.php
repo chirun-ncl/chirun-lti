@@ -94,6 +94,46 @@ EOD;
 }
 
 ###
+###  Return the user session for a specified token and username
+###
+function getUserSession($db, $user_id, $token) {
+
+	$prefix = DB_TABLENAME_PREFIX;
+	$sql = <<< EOD
+SELECT *
+FROM {$prefix}user_session
+WHERE user_id = :user_id
+AND user_session_token = :token
+AND expiry > NOW()
+EOD;
+
+	$query = $db->prepare($sql);
+	$query->bindValue('user_id', $user_id, PDO::PARAM_STR);
+	$query->bindValue('token', $token, PDO::PARAM_STR);
+	$query->execute();
+
+	$row = $query->fetch(PDO::FETCH_ASSOC);
+	if (isset($row['resource_link_pk'])){
+		return $row;
+	} else {
+		return NULL;
+	}
+}
+
+###
+###  Set current $_SESSION variables to match given user session
+###
+
+function setUserSession($session) {
+        $_SESSION['user_id'] = $session['user_id'];
+        $_SESSION['user_email'] = $session['user_email'];
+        $_SESSION['user_fullname'] = $session['user_fullname'];
+        $_SESSION['isStudent'] = $session['isStudent'];
+        $_SESSION['isStaff'] = $session['isStaff'];
+	$_SESSION['isAdmin'] = false;
+}
+
+###
 ###  Return any content overrides for a specified module selection
 ###
 function getContentOverrides($db, $module_selected_id) {
@@ -184,6 +224,28 @@ EOD;
 
 	return $ok;
 
+}
+
+###
+###  Add a user session to the databse
+###
+function addUserSession($db, $resource_pk, $token, $session) {
+	$prefix = DB_TABLENAME_PREFIX;
+	$sql = <<< EOD
+INSERT INTO {$prefix}user_session (user_session_token, resource_link_pk, 
+	user_id, user_email, user_fullname, isStudent, isStaff, expiry)
+VALUES (:user_session_token, :resource_link_pk, :user_id, :user_email, 
+	:user_fullname, :isStudent, :isStaff, NOW() + INTERVAL 1 DAY)
+EOD;
+	$query = $db->prepare($sql);
+	$query->bindValue('user_session_token', $token, PDO::PARAM_STR);
+	$query->bindValue('resource_link_pk', $resource_pk, PDO::PARAM_INT);
+	$query->bindValue('user_id', $session['user_id'], PDO::PARAM_STR);
+	$query->bindValue('user_email', $session['user_email'], PDO::PARAM_STR);
+	$query->bindValue('user_fullname', $session['user_fullname'], PDO::PARAM_STR);
+	$query->bindValue('isStudent', $session['isStudent'], PDO::PARAM_INT);
+	$query->bindValue('isStaff', $session['isStaff'], PDO::PARAM_INT);
+	return $query->execute();
 }
 
 ###

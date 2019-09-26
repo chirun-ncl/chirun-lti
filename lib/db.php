@@ -281,6 +281,28 @@ function init_db($db) {
 		}
 	}
 
+	if ($ok && !table_exists($db, "{$prefix}user_session")) {
+		$sql = "CREATE TABLE {$prefix}user_session (" .
+			'user_session_token varchar(64) NOT NULL, ' .
+			'resource_link_pk int(11) NOT NULL, ' .
+			'user_id varchar(512) NOT NULL, ' .
+			'user_email varchar(512) NOT NULL, ' .
+			'user_fullname varchar(512) NOT NULL, ' .
+			'isStudent tinyint(1) NOT NULL, ' .
+			'isStaff tinyint(1) NOT NULL, ' .
+			'expiry datetime DEFAULT NULL, ' .
+			'PRIMARY KEY (user_session_token)' .
+			') ENGINE=InnoDB DEFAULT CHARSET=utf8';
+		$ok = $db->exec($sql) !== FALSE;
+		if ($ok) {
+			$sql = "ALTER TABLE {$prefix}user_session " .
+				"ADD CONSTRAINT {$prefix}user_session_resource_link_pk_FK1 FOREIGN KEY (resource_link_pk) " .
+				"REFERENCES {$prefix}" .  DataConnector\DataConnector::RESOURCE_LINK_TABLE_NAME . " (resource_link_pk)" .
+				"ON DELETE CASCADE";
+			$ok = $db->exec($sql) !== FALSE;
+		}
+	}
+
 	return $ok;
 
 }

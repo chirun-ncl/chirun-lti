@@ -54,6 +54,12 @@
         $_SESSION['isStaff'] = $this->user->isStaff();
         $_SESSION['isContentItem'] = FALSE;
 
+// Set a cookie in the user's browser for persistence
+	$new_token = bin2hex(openssl_random_pseudo_bytes(32));
+	addUserSession($db, $_SESSION['resource_pk'], $new_token, $_SESSION);
+	setcookie("coursebuilder_session[{$_SESSION['user_resource_pk']}]",
+		$new_token, time() + 24*3600, "/");
+
 // Redirect the user to display the list of items for the resource link
         $this->redirectUrl = getAppUrl();
 
