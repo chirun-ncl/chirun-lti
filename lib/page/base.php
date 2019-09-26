@@ -48,7 +48,7 @@ trait ModulePage {
 				$session = getUserSession($db, $_SESSION['user_id'], $ck_token);
 				if(empty($session)) continue;
 
-				$ck_module = getSelectedModule($db, $ck_resource_pk);
+				$ck_module = getSelectedModule($db, $session['resource_link_pk']);
 				if(isset($ck_module)){
 					$ck_module->apply_content_overrides($db);
 					$this->setModule($ck_module);
