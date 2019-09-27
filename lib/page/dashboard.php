@@ -197,20 +197,6 @@ EOD;
 	}
 
 	protected function mainDashboardOpt(){
-		if (isset($_POST['do'])){
-			if ($_POST['do'] == "options_save"){
-				$options = getResourceOptions($this->db, $this->resource_pk);
-				$new_opt = array();
-				foreach ($options as $key => $value){
-					if(isset($_POST["opt"][$key])){
-						$new_opt[$key] = $_POST["opt"][$key];
-					} else {
-						$new_opt[$key] = false;
-					}
-				}
-				updateResourceOptions($this->db, $this->resource_pk, $new_opt);
-			}
-		}
 		$options = getResourceOptions($this->db, $this->resource_pk);
 		$hide_by_default = $options['hide_by_default']?'checked':'';
 		$main = <<< EOD
@@ -232,14 +218,14 @@ EOD;
 
 	protected function main(){
 		$main = parent::main();
-		if($this->isModuleEmpty()){
-			$main .= $this->mainModuleEmpty();
-		} else {
-			switch($this->pageID){
-			case "opt":
-				$main .= $this->mainDashboardOpt();
-				break;
-			default:
+		switch($this->pageID){
+		case "opt":
+			$main .= $this->mainDashboardOpt();
+			break;
+		default:
+			if($this->isModuleEmpty()){
+				$main .= $this->mainModuleEmpty();
+			} else {
 				$main .= $this->mainDashboard();
 			}
 		}

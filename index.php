@@ -19,7 +19,7 @@ if ($ok) {
 		$action = $_REQUEST['do'];
 	}
 
-	if ($action == 'add' && isset($_REQUEST['module_path']) && isset($_REQUEST['theme_id'])) {
+	if ($action == 'add' && isset($_REQUEST['module_path']) && isset($_REQUEST['theme_id']) && $_SESSION['isStaff']) {
 		$ok = TRUE;
 		$data_connector = DataConnector\DataConnector::getDataConnector(DB_TABLENAME_PREFIX, $db);
 		$consumer = ToolProvider\ToolConsumer::fromRecordId($_SESSION['consumer_pk'], $data_connector);
@@ -40,7 +40,7 @@ if ($ok) {
 		}
 		header('Location: ./');
 		exit;
-	} else if ($action == 'delete' && !empty($req_id)) {
+	} else if ($action == 'delete' && !empty($req_id) && $_SESSION['isStaff']) {
 		if (deleteModule($db, $_SESSION['resource_pk'], $req_id)) {
 			$_SESSION['message'] = 'The module has been successfully deselected.';
 		} else {
@@ -48,7 +48,7 @@ if ($ok) {
 		}
 		header('Location: ./');
 		exit;
-	} else if ($action == 'content_saveall') {
+	} else if ($action == 'content_saveall' && $_SESSION['isStaff']) {
 		if (isset($_REQUEST['content']) and isset($_SESSION['resource_pk'])) {
 			$ok = TRUE;
 			$selected_module = getSelectedModule($db, $_SESSION['resource_pk']);
@@ -75,7 +75,7 @@ if ($ok) {
 			header('Location: ./');
 			exit;
 		}
-	} else if ($action == 'content_clearall') {
+	} else if ($action == 'content_clearall' && $_SESSION['isStaff']) {
 		if (isset($_SESSION['resource_pk'])) {
 			$ok = TRUE;
 			$selected_module = getSelectedModule($db, $_SESSION['resource_pk']);
@@ -89,6 +89,26 @@ if ($ok) {
 				$_SESSION['error_message'] = 'Unable to update content; please try again';
 			}
 			header('Location: ./');
+			exit;
+		}
+	} else if ($action == 'options_save' && $_SESSION['isStaff']){
+		if (isset($_SESSION['resource_pk']) && $_SESSION['isStaff']) {
+			$options = getResourceOptions($db, $_SESSION['resource_pk']);
+			$new_opt = array();
+			foreach ($options as $key => $value){
+				if(isset($_POST["opt"][$key])){
+					$new_opt[$key] = $_POST["opt"][$key];
+				} else {
+					$new_opt[$key] = false;
+				}
+			}
+			$ok = updateResourceOptions($db, $_SESSION['resource_pk'], $new_opt);
+			if ($ok) {
+				$_SESSION['message'] = 'Options updated!';
+			} else {
+				$_SESSION['error_message'] = 'Unable to update options; please try again';
+			}
+			header('Location: ./?dashpage=opt');
 			exit;
 		}
 	}
