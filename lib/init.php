@@ -134,6 +134,47 @@ function setUserSession($session) {
 }
 
 ###
+###  Return any set options for a specified resource
+###
+function getResourceOptions($db, $resource_pk) {
+
+	$prefix = DB_TABLENAME_PREFIX;
+	$sql = <<< EOD
+SELECT hide_by_default
+FROM {$prefix}resource_options
+WHERE (resource_link_pk = :resource_pk)
+LIMIT 1
+EOD;
+
+	$query = $db->prepare($sql);
+	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_INT);
+	$query->execute();
+
+	$row = $query->fetch(PDO::FETCH_ASSOC);
+	if (isset($row['hide_by_default'])){
+		return $row;
+	} else {
+		return NULL;
+	}
+}
+
+###
+###  Set options for a specified resource
+###
+
+function updateResourceOptions($db, $resource_pk, $opt){
+	$prefix = DB_TABLENAME_PREFIX;
+	$sql = <<< EOD
+REPLACE INTO {$prefix}resource_options (resource_link_pk, hide_by_default)
+VALUES (:resource_pk, :hide_by_default)
+EOD;
+	$query = $db->prepare($sql);
+	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_INT);
+	$query->bindValue('hide_by_default', !empty($opt['hide_by_default']), PDO::PARAM_INT);
+	return $query->execute();
+}
+
+###
 ###  Return any content overrides for a specified module selection
 ###
 function getContentOverrides($db, $module_selected_id) {

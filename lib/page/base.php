@@ -1,6 +1,12 @@
 <?php
 class BasePage {
 	public $page = "";
+	protected $db = NULL;
+
+	public function setDB($db){
+		$this->db = $db;
+	}
+
 	public function render() {
 		$this->page .= $this->header();
 		$this->page .= $this->main();
@@ -27,13 +33,17 @@ trait ModulePage {
 		if (!empty($this->module->title)){
 			$this->title = $module->title;
 		}
+		if(isset($this->resource_pk)){
+			$options = getResourceOptions($this->db, $this->resource_pk);
+			$this->module->resource_options = $options;
+		}
 	}
 	public function isModuleEmpty(){
 		if (!isset($this->module)) return true;
 		if (empty($this->module->title)) return true;
 		return false;
 	}
-	public function requestContent($db, $contentPath, $authLevel = 0){
+	public function requestContent($contentPath, $authLevel = 0){
 		$error = NULL;
 		
 		if (isset($this->module)){
@@ -45,12 +55,12 @@ trait ModulePage {
 		if (!empty($error) && isset($_COOKIE['coursebuilder_session'])){
 			//Check the user's cookies for other sessions
 			foreach ($_COOKIE['coursebuilder_session'] as $ck_resource_pk => $ck_token) {
-				$session = getUserSession($db, $_SESSION['user_id'], $ck_token);
+				$session = getUserSession($this->db, $_SESSION['user_id'], $ck_token);
 				if(empty($session)) continue;
 
-				$ck_module = getSelectedModule($db, $session['resource_link_pk']);
+				$ck_module = getSelectedModule($this->db, $session['resource_link_pk']);
 				if(isset($ck_module)){
-					$ck_module->apply_content_overrides($db);
+					$ck_module->apply_content_overrides($this->db, $session['resource_link_pk']);
 					$this->setModule($ck_module);
 					setUserSession($session);
 					$error = $this->requestContentForModule($contentPath, $authLevel);

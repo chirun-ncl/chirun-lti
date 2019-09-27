@@ -1,9 +1,21 @@
 <?php
 class DashboardPage extends LTIPage {
+
+	protected $resource_pk = NULL;
+
+	public function setResource($resource_pk){
+		$this->resource_pk = $resource_pk;
+	}
+
 	public function render(){
 		if(isset($this->requestedContent)){
 			$ok = $this->renderRequestedContent();
 			if($ok) return;
+		}
+		if (isset($_REQUEST['dashpage'])){
+			$this->pageID = $_REQUEST['dashpage'];
+		} else {
+			$this->pageID = "dash";
 		}
 		parent::render();
 	}
@@ -20,6 +32,8 @@ class DashboardPage extends LTIPage {
 	}
 	protected function header(){
 		$header = parent::header();
+		$dashActive = $this->pageID=="dash"?'active':'';
+		$optActive = $this->pageID=="opt"?'active':'';
 		$header .= <<< EOD
 			<nav class="navbar navbar-expand-lg navbar-light bg-light">
 				<a class="navbar-brand" href="index.php"><img src="{$this->webdir}/images/coursebuilder_icon_128.png" alt="Coursebuilder Logo" style="width:40px;"> {$this->title}</a>
@@ -28,10 +42,10 @@ class DashboardPage extends LTIPage {
 				</button>
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul class="navbar-nav mr-auto">
-						<li class="nav-item active">
+						<li class="nav-item {$dashActive}">
 							<a class="nav-link" href="index.php"><i class="fa fa-dashboard" aria-hidden="true"></i> Dashboard</a>
 						</li>
-						<li class="nav-item">
+						<li class="nav-item {$optActive}">
 							<a class="nav-link" href="index.php?dashpage=opt"><i class="fa fa-cog" aria-hidden="true"></i> Options</a>
 						</li>
 EOD;
@@ -183,14 +197,32 @@ EOD;
 	}
 
 	protected function mainDashboardOpt(){
+		if (isset($_POST['do'])){
+			if ($_POST['do'] == "options_save"){
+				$options = getResourceOptions($this->db, $this->resource_pk);
+				$new_opt = array();
+				foreach ($options as $key => $value){
+					if(isset($_POST["opt"][$key])){
+						$new_opt[$key] = $_POST["opt"][$key];
+					} else {
+						$new_opt[$key] = false;
+					}
+				}
+				updateResourceOptions($this->db, $this->resource_pk, $new_opt);
+			}
+		}
+		$options = getResourceOptions($this->db, $this->resource_pk);
+		$hide_by_default = $options['hide_by_default']?'checked':'';
 		$main = <<< EOD
 			<div class="row">
 				<div class="col">
 					<h2>Instructor Dashboard</h2>
 					<h4 class="mt-4">Options</h4>
 					<p>Use the below controls to change the behaviour of the Coursebuilder LTI tool.</p>
-					<form action="index.php?dashpage=opt" method="POST">
-					<button class="btn btn-primary" name="do" value="content_saveall">Save All Changes</button>
+					<form action="index.php" method="POST">
+					<input type="hidden" name="dashpage" value="opt">
+					<input type="checkbox" name="opt[hide_by_default]" value="checked" {$hide_by_default}> Hide previously unseen items by default<br><br>
+					<button class="btn btn-primary" name="do" value="options_save">Save Changes</button>
 					</form>
 				</div>
 			</div>
@@ -203,15 +235,11 @@ EOD;
 		if($this->isModuleEmpty()){
 			$main .= $this->mainModuleEmpty();
 		} else {
-			if (isset($_GET['dashpage'])){
-				switch($_GET['dashpage']){
-				case "opt":
-					$main .= $this->mainDashboardOpt();
-					break;
-				default:
-					$main .= $this->mainDashboard();
-				}
-			} else {
+			switch($this->pageID){
+			case "opt":
+				$main .= $this->mainDashboardOpt();
+				break;
+			default:
 				$main .= $this->mainDashboard();
 			}
 		}

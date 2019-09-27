@@ -4,6 +4,7 @@ class LTIPage extends BasePage {
 	public $title = "Coursebuilder LTI Tool";
 	protected $webdir = WEBDIR;
 	protected $alerts = array();
+
 	public function addAlert($alertText, $alertLevel="primary"){
 		$alert = new Alert($alertText);
 		$alert->setLevel($alertLevel);

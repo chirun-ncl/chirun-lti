@@ -96,7 +96,7 @@ if ($ok) {
 	if (isset($_SESSION['resource_pk'])) {
 		$selected_module = getSelectedModule($db, $_SESSION['resource_pk']);
 		if(isset($selected_module)){
-			$selected_module->apply_content_overrides($db);
+			$selected_module->apply_content_overrides($db, $_SESSION['resource_pk']);
 		}
 	} else {
 		$ok = false;
@@ -118,6 +118,7 @@ if ($ok && $_SESSION['isStudent']) {
 	$page = new LandingPage();
 } else if ($ok && $_SESSION['isStaff']) {
 	$page = new DashboardPage();
+	$page->setResource($_SESSION['resource_pk']);
 } else {
 	$page = new ErrorPage();
 }
@@ -132,9 +133,12 @@ if (isset($_SESSION['message'])) {
 	unset($_SESSION['message']);
 }
 
+
+$page->setDB($db);
 if(isset($selected_module)){
 	$page->setModule($selected_module);
 }
+
 
 if($ok && isset($_REQUEST['req_content'])){
 	$authLevel = 0;
@@ -145,7 +149,7 @@ if($ok && isset($_REQUEST['req_content'])){
 		setcookie("auth_level", $_REQUEST['auth_level'], time()+3600);
 		$authLevel = $_REQUEST['auth_level'];
 	}
-	$requestReplyError = $page->requestContent($db, $_REQUEST['req_content'], $authLevel);
+	$requestReplyError = $page->requestContent($_REQUEST['req_content'], $authLevel);
 	if(!empty($requestReplyError)) $page->addAlert($requestReplyError, 'danger');
 }
 

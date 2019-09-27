@@ -303,6 +303,22 @@ function init_db($db) {
 		}
 	}
 
+	if ($ok && !table_exists($db, "{$prefix}resource_options")) {
+		$sql = "CREATE TABLE {$prefix}resource_options (" .
+			'resource_link_pk int(11) NOT NULL, ' .
+			'hide_by_default tinyint(1) NOT NULL DEFAULT 0, ' .
+			'PRIMARY KEY (resource_link_pk)' .
+			') ENGINE=InnoDB DEFAULT CHARSET=utf8';
+		$ok = $db->exec($sql) !== FALSE;
+		if ($ok) {
+			$sql = "ALTER TABLE {$prefix}resource_options " .
+				"ADD CONSTRAINT {$prefix}resource_options_resource_link_pk_FK1 FOREIGN KEY (resource_link_pk) " .
+				"REFERENCES {$prefix}" .  DataConnector\DataConnector::RESOURCE_LINK_TABLE_NAME . " (resource_link_pk)" .
+				"ON DELETE CASCADE";
+			$ok = $db->exec($sql) !== FALSE;
+		}
+	}
+
 	return $ok;
 
 }

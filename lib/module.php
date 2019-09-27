@@ -7,15 +7,17 @@ class Content {
 	public $slug_path = '';
 	public $start_datetime = NULL;
 	public $end_datetime = NULL;
-	public $hidden = 0;
+	public $hidden = NULL;
 	public $hidden_reason = 'Visible';
 	public $type = NULL;
 	public $title = '';
 	public $parent_slug = NULL;
 	public $children = array();
+	public $owner_module = NULL;
 	
-	public function __construct($content_item, $parent = NULL) {
+	public function __construct($content_item, $owner_module, $parent = NULL) {
 		$this->type = $content_item['type'];
+		$this->owner_module = $owner_module;
 		if(strcmp($this->type,'introduction')==0){
 			$this->title = "Introduction";
 		} else {
@@ -66,7 +68,8 @@ class Content {
 	}
 
 	public function calculate_hidden(){
-		if($this->hidden) return; //Content is already known to be hidden
+		if (isset($this->hidden)) return $this->hidden; //Content is already known
+
 		if(isset($this->parent) && $this->parent->hidden) {//Content is hidden because parent is hidden
 			$this->hidden = 3;
 			$this->hidden_reason='Hidden (via parent)';
@@ -88,6 +91,12 @@ class Content {
 				$this->hidden_reason='Hidden (Too late)';
 			}
 		}
+		if(isset($this->owner_module->resource_options)){
+			if($this->owner_module->resource_options['hide_by_default']){
+				$this->hidden = 1;
+				$this->hidden_reason='Hidden (Unseen item)';
+			}
+		}
 		if($this->hidden) return;
 
 		foreach ($this->children as $child_content){
@@ -103,8 +112,10 @@ class Content {
 				$this->start_datetime = $override['start_datetime'];
 				$this->end_datetime = $override['end_datetime'];
 				if($override['hidden']==1){
-					$this->hidden = TRUE; 
+					$this->hidden = 1;
 					$this->hidden_reason='Hidden (Always)';
+				} else {
+					$this->hidden = 0;
 				}
 			}
 		}
@@ -119,12 +130,13 @@ class Content {
 class Part extends Content {
 	public $type = 'part';
 
-	public function __construct($content_item) {
+	public function __construct($content_item, $owner_module) {
 		$this->title = $content_item['title'];
 		$this->slug_path = $this->slugify();
+		$this->owner_module = $owner_module;
 
 		foreach ($content_item['content'] as $child_content){
-			$this->children[] = new Content($child_content, $this);
+			$this->children[] = new Content($child_content, $this->owner_module, $this);
 		}
 
 		$this->calculate_hidden();
@@ -195,6 +207,7 @@ class Module {
 	public $yaml_path = NULL;
 	public $selected_id = NULL;
 	public $selected_theme = NULL;
+	public $resource_options = NULL;
 	public $yaml = array();
 	public $content = array();
 	public $themes = array();
@@ -241,9 +254,9 @@ class Module {
 		$content_overrides = NULL;
 		foreach ($this->yaml['structure'] as $content_item){
 			if (strcmp($content_item['type'],"part")==0){
-				$this->content[] = new Part($content_item);
+				$this->content[] = new Part($content_item, $this);
 			} else {
-				$this->content[] = new Content($content_item);
+				$this->content[] = new Content($content_item, $this);
 			}
 		}
 	}
@@ -269,7 +282,8 @@ class Module {
 		return false;
 	}
 	
-	public function apply_content_overrides($db){
+	public function apply_content_overrides($db, $resource_pk){
+		$this->resource_options = getResourceOptions($db, $resource_pk);
 		if($this->selected_id){
 			$content_overrides = getContentOverrides($db, $this->selected_id);
 			foreach ($this->content as $content_item){
