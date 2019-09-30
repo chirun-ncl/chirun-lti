@@ -28,14 +28,13 @@ trait ModulePage {
 	protected $module = NULL;
 	protected $authLevel = 0;
 	protected $requestedContent = NULL;
-	public function setModule($module){
+	public function setModule($module, $resource_pk = NULL){
 		$this->module = $module;
 		if (!empty($this->module->title)){
 			$this->title = $module->title;
 		}
-		if(isset($this->resource_pk)){
-			$options = getResourceOptions($this->db, $this->resource_pk);
-			$this->module->resource_options = $options;
+		if(isset($resource_pk)){
+			$this->module->resource_options = getResourceOptions($this->db, $resource_pk);
 		}
 	}
 	public function isModuleEmpty(){
@@ -55,13 +54,13 @@ trait ModulePage {
 		if (!empty($error) && isset($_COOKIE['coursebuilder_session'])){
 			//Check the user's cookies for other sessions
 			foreach ($_COOKIE['coursebuilder_session'] as $ck_resource_pk => $ck_token) {
-				$session = getUserSession($this->db, $_SESSION['user_id'], $ck_token);
+				$session = getUserSession($this->db, $ck_token);
 				if(empty($session)) continue;
 
 				$ck_module = getSelectedModule($this->db, $session['resource_link_pk']);
 				if(isset($ck_module)){
 					$ck_module->apply_content_overrides($this->db, $session['resource_link_pk']);
-					$this->setModule($ck_module);
+					$this->setModule($ck_module, $session['resource_link_pk']);
 					setUserSession($session);
 					$error = $this->requestContentForModule($contentPath, $authLevel);
 					if(empty($error)) break;

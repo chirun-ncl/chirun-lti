@@ -8,10 +8,6 @@ class DashboardPage extends LTIPage {
 	}
 
 	public function render(){
-		if(isset($this->requestedContent)){
-			$ok = $this->renderRequestedContent();
-			if($ok) return;
-		}
 		if (isset($_REQUEST['dashpage'])){
 			$this->pageID = $_REQUEST['dashpage'];
 		} else {

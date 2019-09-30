@@ -25,6 +25,9 @@ function init(&$db, $checkSession = NULL) {
 
 	$ok = TRUE;
 
+	// Open database connection
+	$db = open_db(!$checkSession);
+
 	// Set timezone
 	if (!ini_get('date.timezone')) {
 		date_default_timezone_set('UTC');
@@ -45,8 +48,6 @@ function init(&$db, $checkSession = NULL) {
 	if (!$ok) {
 		$_SESSION['error_message'] = 'Unable to open session. Ensure that you are loading this page through your VLE (e.g. via a module in Blackboard).';
 	} else {
-		// Open database connection
-		$db = open_db(!$checkSession);
 		$ok = $db !== FALSE;
 		if (!$ok) {
 			if (!is_null($checkSession) && $checkSession) {
@@ -94,21 +95,19 @@ EOD;
 }
 
 ###
-###  Return the user session for a specified token and username
+###  Return the user session for a specified token
 ###
-function getUserSession($db, $user_id, $token) {
+function getUserSession($db, $token) {
 
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
 SELECT *
 FROM {$prefix}user_session
-WHERE user_id = :user_id
-AND user_session_token = :token
+WHERE user_session_token = :token
 AND expiry > NOW()
 EOD;
 
 	$query = $db->prepare($sql);
-	$query->bindValue('user_id', $user_id, PDO::PARAM_STR);
 	$query->bindValue('token', $token, PDO::PARAM_STR);
 	$query->execute();
 

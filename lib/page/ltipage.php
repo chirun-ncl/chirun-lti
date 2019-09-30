@@ -5,6 +5,14 @@ class LTIPage extends BasePage {
 	protected $webdir = WEBDIR;
 	protected $alerts = array();
 
+	public function render(){
+		if(isset($this->requestedContent)){
+			$ok = $this->renderRequestedContent();
+			if($ok) return;
+		}
+		parent::render();
+	}
+
 	public function addAlert($alertText, $alertLevel="primary"){
 		$alert = new Alert($alertText);
 		$alert->setLevel($alertLevel);

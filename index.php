@@ -138,7 +138,6 @@ if ($ok && $_SESSION['isStudent']) {
 	$page = new LandingPage();
 } else if ($ok && $_SESSION['isStaff']) {
 	$page = new DashboardPage();
-	$page->setResource($_SESSION['resource_pk']);
 } else {
 	$page = new ErrorPage();
 }
@@ -156,16 +155,16 @@ if (isset($_SESSION['message'])) {
 
 $page->setDB($db);
 if(isset($selected_module)){
-	$page->setModule($selected_module);
+	$page->setModule($selected_module, $_SESSION['resource_pk']);
 }
 
 
-if($ok && isset($_REQUEST['req_content'])){
+if(isset($_REQUEST['req_content'])){
 	$authLevel = 0;
-	if($_SESSION['isStaff'] && isset($_COOKIE["auth_level"])){
+	if($ok && $_SESSION['isStaff'] && isset($_COOKIE["auth_level"])){
 		$authLevel = $_COOKIE["auth_level"];
 	}
-	if($_SESSION['isStaff'] && isset($_REQUEST['auth_level'])){
+	if($ok && $_SESSION['isStaff'] && isset($_REQUEST['auth_level'])){
 		setcookie("auth_level", $_REQUEST['auth_level'], time()+3600);
 		$authLevel = $_REQUEST['auth_level'];
 	}
