@@ -68,8 +68,7 @@ class Content {
 	}
 
 	public function calculate_hidden(){
-		if (isset($this->hidden)) return $this->hidden; //Content is already known
-
+		if(isset($this->hidden) && $this->hidden) return;
 		if(isset($this->parent) && $this->parent->hidden) {//Content is hidden because parent is hidden
 			$this->hidden = 3;
 			$this->hidden_reason='Hidden (via parent)';
@@ -91,7 +90,7 @@ class Content {
 				$this->hidden_reason='Hidden (Too late)';
 			}
 		}
-		if(isset($this->owner_module->resource_options)){
+		if(!isset($this->hidden) && isset($this->owner_module->resource_options)){
 			if($this->owner_module->resource_options['hide_by_default']){
 				$this->hidden = 1;
 				$this->hidden_reason='Hidden (Unseen item)';
