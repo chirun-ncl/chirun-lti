@@ -181,6 +181,8 @@ EOD;
 		}
 		$main .= <<< EOD
 					</table>
+					<button class="btn btn-primary" name="do" value="content_saveall">Save All Changes</button>
+					<button class="btn btn-secondary" name="do" value="content_clearall">Restore Defaults</button>
 					</form>
 					<h4 class="mt-4">Manage Content</h4>
 					<p>The controls below are used to manage the module content as a whole.</p>
