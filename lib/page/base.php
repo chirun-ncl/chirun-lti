@@ -51,10 +51,13 @@ trait ModulePage {
 			$error = "Module has not yet been configured";
 		}
 
-		if (!empty($error) && isset($_COOKIE['coursebuilder_session'])){
+		if (!empty($error) && isset($_COOKIE['coursebuilder_session'])
+			&& isset($_COOKIE['coursebuilder_user_id'])){
+
 			//Check the user's cookies for other sessions
+			$ck_user_id = $_COOKIE['coursebuilder_user_id'];
 			foreach ($_COOKIE['coursebuilder_session'] as $ck_resource_pk => $ck_token) {
-				$session = getUserSession($this->db, $ck_token);
+				$session = getUserSession($this->db, $ck_user_id, $ck_token);
 				if(empty($session)) continue;
 
 				$ck_module = getSelectedModule($this->db, $session['resource_link_pk']);

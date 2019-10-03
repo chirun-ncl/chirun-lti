@@ -59,6 +59,7 @@
 	addUserSession($db, $_SESSION['resource_pk'], $new_token, $_SESSION);
 	setcookie("coursebuilder_session[{$_SESSION['user_resource_pk']}]",
 		$new_token, time() + 24*3600, "/");
+	setcookie("coursebuilder_user_id", $_SESSION['user_id'], time() + 24*3600, "/");
 
 // Redirect the user to display the list of items for the resource link
         $this->redirectUrl = getAppUrl();

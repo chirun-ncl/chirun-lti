@@ -95,19 +95,21 @@ EOD;
 }
 
 ###
-###  Return the user session for a specified token
+###  Return the user session for a specified token and username
 ###
-function getUserSession($db, $token) {
+function getUserSession($db, $user_id, $token) {
 
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
 SELECT *
 FROM {$prefix}user_session
-WHERE user_session_token = :token
+WHERE user_id = :user_id
+AND user_session_token = :token
 AND expiry > NOW()
 EOD;
 
 	$query = $db->prepare($sql);
+	$query->bindValue('user_id', $user_id, PDO::PARAM_STR);
 	$query->bindValue('token', $token, PDO::PARAM_STR);
 	$query->execute();
 
