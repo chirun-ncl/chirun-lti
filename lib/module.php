@@ -17,6 +17,7 @@ class Content {
 	
 	public function __construct($content_item, $owner_module, $parent = NULL) {
 		$this->type = $content_item['type'];
+		$this->source = $content_item['source'];
 		$this->owner_module = $owner_module;
 		if(strcmp($this->type,'introduction')==0){
 			$this->title = "Introduction";
