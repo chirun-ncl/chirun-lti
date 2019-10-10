@@ -118,7 +118,7 @@ trait ModulePage {
 			} else if($hidden_item->type == 'part') {
 				$nodes = $xpath->query("//*[contains(@class,'lti-hint-part') and .//a[contains(@href, '".$hidden_item->slug_path."')]]");
 			} else if($hidden_item->type == 'url') {
-				$nodes = $xpath->query("//*[contains(@class,'lti-hint-part') and .//a[contains(@href, '".$hidden_item->source."')]]");
+				$nodes = $xpath->query("//*[contains(@class,'lti-hint-item') and .//a[contains(@href, '".$hidden_item->source."')]]");
 			} else {
 				$nodes = $xpath->query("//*[contains(@class,'lti-hint-item') and .//a[contains(@href, '".$hidden_item->slug_path."')]]");
 			}
