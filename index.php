@@ -135,7 +135,11 @@ if ($ok && $_SESSION['isStudent']) {
 	}
 } else if($ok && !in_array($_SESSION['user_id'],AUTH_USER_IDS)
 			&& !in_array(strtolower($_SESSION['user_email']),AUTH_USER_EMAILS)){
-	$page = new LandingPage();
+	if (isset($selected_module)) {
+		$page = new StudentPage();
+	} else {
+		$page = new LandingPage();
+	}
 } else if ($ok && $_SESSION['isStaff']) {
 	$page = new DashboardPage();
 } else {
