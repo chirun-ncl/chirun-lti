@@ -275,9 +275,9 @@ function addUserSession($db, $resource_pk, $token, $session) {
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
 INSERT INTO {$prefix}user_session (user_session_token, resource_link_pk, 
-	user_id, user_email, user_fullname, isStudent, isStaff, expiry)
+	user_id, user_email, user_fullname, isStudent, isStaff, timestamp, expiry)
 VALUES (:user_session_token, :resource_link_pk, :user_id, :user_email, 
-	:user_fullname, :isStudent, :isStaff, NOW() + INTERVAL 1 DAY)
+	:user_fullname, :isStudent, :isStaff, NOW(), NOW() + INTERVAL 1 DAY)
 EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('user_session_token', $token, PDO::PARAM_STR);

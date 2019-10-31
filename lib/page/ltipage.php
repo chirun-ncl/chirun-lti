@@ -5,6 +5,10 @@ class LTIPage extends BasePage {
 	protected $webdir = WEBDIR;
 	protected $alerts = array();
 
+	public function getTitle(){
+		return $this->title;
+	}
+
 	public function render(){
 		if(isset($this->requestedContent)){
 			$ok = $this->renderRequestedContent();
@@ -50,7 +54,7 @@ EOD;
 			<!doctype html>
 			<html lang="en">
 			<head>
-			<title>{$this->title}</title>
+			<title>{$this->getTitle()}</title>
 			<meta charset="utf-8">
 			<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 			{$this->css()}

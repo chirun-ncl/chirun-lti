@@ -290,6 +290,7 @@ function init_db($db) {
 			'user_fullname varchar(512) NOT NULL, ' .
 			'isStudent tinyint(1) NOT NULL, ' .
 			'isStaff tinyint(1) NOT NULL, ' .
+			'timestamp datetime DEFAULT NULL, ' .
 			'expiry datetime DEFAULT NULL, ' .
 			'PRIMARY KEY (user_session_token)' .
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8';

@@ -142,6 +142,7 @@ if ($ok && $_SESSION['isStudent']) {
 	}
 } else if ($ok && $_SESSION['isStaff']) {
 	$page = new DashboardPage();
+	$page->setResource($_SESSION['resource_pk']);
 } else {
 	$page = new ErrorPage();
 }
