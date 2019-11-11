@@ -72,7 +72,7 @@ if ($ok) {
 			} else {
 				$_SESSION['error_message'] = 'Unable to update content; please try again';
 			}
-			header('Location: ./');
+			header('Location: ./?dashpage=adapt');
 			exit;
 		}
 	} else if ($action == 'content_clearall' && $_SESSION['isStaff']) {
@@ -88,7 +88,7 @@ if ($ok) {
 			} else {
 				$_SESSION['error_message'] = 'Unable to update content; please try again';
 			}
-			header('Location: ./');
+			header('Location: ./?dashpage=adapt');
 			exit;
 		}
 	} else if ($action == 'options_save' && $_SESSION['isStaff']){

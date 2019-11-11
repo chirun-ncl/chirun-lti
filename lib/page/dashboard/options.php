@@ -15,8 +15,7 @@ class DashboardOptionsPage {
 		$main = <<< EOD
 			<div class="row">
 				<div class="col">
-					<h2>Instructor Dashboard</h2>
-					<h4 class="mt-4">Options</h4>
+					<h2>Options</h2>
 					<p>Use the below controls to change the behaviour of the Coursebuilder LTI tool.</p>
 					<form action="index.php" method="POST">
 					<input type="hidden" name="dashpage" value="opt">

@@ -135,6 +135,30 @@ function setUserSession($session) {
 }
 
 ###
+###  Return every historial user session for a specified resource
+###
+function getAllUserSessions($db, $resource_pk) {
+
+	$prefix = DB_TABLENAME_PREFIX;
+	$sql = <<< EOD
+SELECT user_id, user_fullname, isStudent, isStaff, timestamp, expiry
+FROM {$prefix}user_session
+WHERE (resource_link_pk = :resource_pk)
+EOD;
+
+	$query = $db->prepare($sql);
+	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_INT);
+	$query->execute();
+
+	$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+	$user_sessions=array();
+	foreach($rows as $row){
+		 $user_sessions[] = $row;
+	}
+	return $user_sessions;
+}
+
+###
 ###  Return any set options for a specified resource
 ###
 function getResourceOptions($db, $resource_pk) {
