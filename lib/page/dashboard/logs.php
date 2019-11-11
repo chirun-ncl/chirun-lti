@@ -20,9 +20,9 @@ class DashboardLogsPage {
                                           <thead>
                                             <tr>
                                               <th scope="col">Date/Time</th>
-                                              <th scope="col">Username</th>
-                                              <th scope="col">Name</th>
                                               <th scope="col">Role</th>
+                                              <th scope="col">Email</th>
+                                              <th scope="col">Name</th>
                                             </tr>
                                           </thead>
                                           <tbody>
@@ -38,8 +38,8 @@ EOD;
 			$main .= <<< EOD
                                             <tr>
                                               <th scope="row">{$timestamp_string}</th>
-                                              <td>{$userSession['user_id']}</td>
                                               <td>{$userSession['user_fullname']}</td>
+                                              <td>{$userSession['user_email']}</td>
                                               <td>{$role}</td>
                                             </tr>
 EOD;
