@@ -1058,9 +1058,14 @@ EOD;
 
 // Set the user instance
             $userId = '';
-            if (isset($_POST['user_id'])) {
+            if (isset($_POST['ext_user_username'])) {
+                $userId = trim($_POST['ext_user_username']);
+            } else if (isset($_POST['lis_person_sourcedid']) && !empty(trim($_POST['lis_person_sourcedid']))) {
+                $userId = trim($_POST['lis_person_sourcedid']);
+            } else if (isset($_POST['user_id'])) {
                 $userId = trim($_POST['user_id']);
             }
+	    $userId = strtolower($userId);
 
             $this->user = User::fromResourceLink($this->resourceLink, $userId);
 

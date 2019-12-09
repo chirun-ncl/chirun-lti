@@ -21,7 +21,7 @@ class DashboardLogsPage {
                                             <tr>
                                               <th scope="col">Date/Time</th>
                                               <th scope="col">Name</th>
-                                              <th scope="col">Email</th>
+                                              <th scope="col">Username</th>
                                               <th scope="col">Role</th>
                                             </tr>
                                           </thead>
@@ -39,7 +39,7 @@ EOD;
                                             <tr>
                                               <th scope="row">{$timestamp_string}</th>
                                               <td>{$userSession['user_fullname']}</td>
-                                              <td>{$userSession['user_email']}</td>
+                                              <td>{$userSession['user_id']}</td>
                                               <td>{$role}</td>
                                             </tr>
 EOD;
@@ -51,7 +51,9 @@ EOD;
 			</div>
 			<script>
 				$(document).ready( function () {
-					$('#access-log-table').DataTable();
+					$('#access-log-table').DataTable( {
+						"order": [[ 0, "desc" ]]
+					} );
 				} );
 			</script>
 

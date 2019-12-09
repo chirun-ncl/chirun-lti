@@ -141,7 +141,7 @@ function getAllUserSessions($db, $resource_pk) {
 
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-SELECT user_email, user_fullname, isStudent, isStaff, timestamp, expiry
+SELECT user_email, user_id, user_fullname, isStudent, isStaff, timestamp, expiry
 FROM {$prefix}user_session
 WHERE (resource_link_pk = :resource_pk)
 EOD;
