@@ -1,7 +1,7 @@
 <?php
 class DashboardModuleSelectPage {
 	use ModulePage;
-	public $title = "Module Selection";
+	public $title = "Content Selection";
         protected $resource_pk = NULL;
         protected $db = NULL;
         public function setup($module, $db, $res){
@@ -10,18 +10,8 @@ class DashboardModuleSelectPage {
                 $this->db = $db;
         }
 	public function main(){
-		$main = "<h2>Module Selection</h2>";
-		if(!$this->isModuleEmpty()){
-			$main .= <<< EOD
-				<h3 class="mt-4">Selected Module</h3>
-				<p><strong>Module:</strong> {$this->module->title}</p>
-				<p><strong>Theme:</strong> {$this->module->selected_theme->title}</p>
-
-				<h3 class="mt-4">Deselect Module</h3>
-				<p>To select a different module, first <i>deselect</i> the current module using the button below.</p>
-				<a class="btn btn-danger" href="./index.php?do=delete&req_id={$this->module->selected_id}">Deselect Module</a>
-EOD;
-		} else {
+		$main = "<h2>Content Selection</h2>";
+		if(empty($this->module)){
 			$main .= <<< EOD
 				<h3>Select Coursebuilder notes</h3>
 				<form action="index.php" method="POST">
@@ -43,6 +33,7 @@ EOD;
 			$module_years = array_unique(array_column($modules, 'year'));
 			sort($module_years);
 			foreach($module_years as $module_year){
+				if(empty($module_year)) continue;
 				$module_keys = array_keys(array_column($modules,'year'), $module_year);
 				$main .= <<< EOD
 					<tbody>
@@ -102,6 +93,32 @@ EOD;
 			$main .= <<< EOD
 				</tbody>
 				</table>
+EOD;
+		} else if($this->isModuleEmpty()){
+			$main .= <<< EOD
+			<p><strong>A module has been uploaded but has not yet been successfully built</strong><br/>
+			Visit the "Upload Document" page to continue building this module.</p>
+			<h3 class="mt-4">Delete content</h3>
+			<p>To select different content, first <i>remove</i> the content asssociated with this item using the button below.</p>
+			<a class="btn btn-danger" href="./index.php?do=delete&req_id={$this->module->selected_id}">Delete Courebuilder Content</a>
+EOD;
+		} else if($this->isModuleStandalone()){
+			$main .= <<< EOD
+			<p><strong>Document source:</strong> {$this->module->content[0]->source}<br/>
+			<strong>Theme:</strong> {$this->module->selected_theme->title}</p>
+			<h3 class="mt-4">Delete content</h3>
+			<p>To select different content, first <i>remove</i> the content asssociated with this item using the button below.</p>
+			<a class="btn btn-danger" href="./index.php?do=delete&req_id={$this->module->selected_id}">Delete Courebuilder Content</a>
+EOD;
+		} else {
+			$main .= <<< EOD
+				<h3 class="mt-4">Selected Module</h3>
+				<p><strong>Module:</strong> {$this->module->title}</p>
+				<p><strong>Theme:</strong> {$this->module->selected_theme->title}</p>
+
+				<h3 class="mt-4">Deselect Module</h3>
+				<p>To select a different module, first <i>remove</i> the current module using the button below.</p>
+				<a class="btn btn-danger" href="./index.php?do=delete&req_id={$this->module->selected_id}">Deselect Module</a>
 EOD;
 		}
 		return $main;

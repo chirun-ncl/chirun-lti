@@ -39,7 +39,12 @@ trait ModulePage {
 	}
 	public function isModuleEmpty(){
 		if (!isset($this->module)) return true;
-		if (empty($this->module->title)) return true;
+		if (empty($this->module->code)) return true;
+		return false;
+	}
+	public function isModuleStandalone(){
+		if (!isset($this->module)) return true;
+		if ($this->module->selected_theme->title == "Standalone") return true;
 		return false;
 	}
 	public function requestContent($contentPath, $authLevel = 0){
@@ -75,7 +80,7 @@ trait ModulePage {
 	}
 
 	protected function requestContentForModule($contentPath, $authLevel = 0){
-		$authModule = $this->module->code . '/' . $this->module->year;
+		$authModule = $this->module->code;
 		$fullContentPath = CONTENTDIR .'/'. $contentPath;
 		$this->requestedContent = -1;
 		$this->authLevel = $authLevel;

@@ -1,7 +1,8 @@
 <?php
 require_once(__DIR__.'/dashboard/options.php');
 require_once(__DIR__.'/dashboard/adaptive.php');
-require_once(__DIR__.'/dashboard/modselect.php');
+require_once(__DIR__.'/dashboard/module.php');
+require_once(__DIR__.'/dashboard/upload.php');
 require_once(__DIR__.'/dashboard/logs.php');
 
 class DashboardPage extends LTIPage {
@@ -9,19 +10,23 @@ class DashboardPage extends LTIPage {
 	protected $activePage = NULL;
 	public $pageClass = array(
 		'mod' => 'DashboardModuleSelectPage',
+		'upload' => 'DashboardUploadPage',
 		'adapt' => 'DashboardAdaptiveReleasePage',
 		'log' => 'DashboardLogsPage',
 		'opt' => 'DashboardOptionsPage');
 	public $pageDesc = array(
-		'mod' => 'Module',
+		'mod' => 'Content',
+		'upload' => 'Upload Document',
 		'adapt' => 'Adaptive Release',
 		'log' => 'Logs',
 		'opt' => 'Options');
 	public $pageNavIcon = array(
 		'mod' => 'fa-book',
+		'upload' => 'fa-upload',
 		'adapt' => 'fa-clock-o',
 		'log' => 'fa-bar-chart',
 		'opt' => 'fa-wrench');
+
 	public function getTitle(){
 		$title = $this->title;
 		if (isset($this->activePage)){
@@ -78,7 +83,7 @@ EOD;
 EOD;
 		}
 
-		if($this->module){
+		if(!$this->isModuleEmpty()){
 			$header .= <<< EOD
 				</ul>
 				<ul class="navbar-nav">

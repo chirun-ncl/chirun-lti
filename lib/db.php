@@ -308,6 +308,7 @@ function init_db($db) {
 		$sql = "CREATE TABLE {$prefix}resource_options (" .
 			'resource_link_pk int(11) NOT NULL, ' .
 			'hide_by_default tinyint(1) NOT NULL DEFAULT 0, ' .
+			'user_uploaded tinyint(1) NOT NULL DEFAULT 0, ' .
 			'PRIMARY KEY (resource_link_pk)' .
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8';
 		$ok = $db->exec($sql) !== FALSE;

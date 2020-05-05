@@ -19,6 +19,7 @@ class DashboardOptionsPage {
 					<p>Use the below controls to change the behaviour of the Coursebuilder LTI tool.</p>
 					<form action="index.php" method="POST">
 					<input type="hidden" name="dashpage" value="opt">
+					<input type='hidden' value='0' name="opt[hide_by_default]">
 					<input type="checkbox" name="opt[hide_by_default]" value="checked" {$hide_by_default}> Hide previously unseen items by default<br><br>
 					<button class="btn btn-primary" name="do" value="options_save">Save Changes</button>
 					</form>
