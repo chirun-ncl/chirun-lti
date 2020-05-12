@@ -11,8 +11,8 @@ class LTIPage extends BasePage {
 
 	public function render(){
 		if(isset($this->requestedContent)){
-			$ok = $this->renderRequestedContent();
-			if($ok) return;
+			$error = $this->renderRequestedContent();
+			if($error) return;
 		}
 		parent::render();
 	}

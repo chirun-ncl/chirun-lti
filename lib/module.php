@@ -205,6 +205,7 @@ class Module {
 	public $author = NULL;
 	public $code = NULL;
 	public $yaml_path = NULL;
+	public $root_url =  NULL;
 	public $selected_id = NULL;
 	public $selected_theme = NULL;
 	public $resource_options = NULL;
@@ -251,6 +252,7 @@ class Module {
 		$this->year = empty($this->yaml['year'])?NULL:$this->yaml['year'];
 		$this->author = empty($this->yaml['author'])?NULL:$this->yaml['author'];
 		$this->code = $this->yaml['code'];
+		$this->root_url = empty($this->yaml['root_url'])?'/{base}/{code}/{year}/{theme}/':$this->yaml['root_url'];
 	}
 
 	public function parse_content() {
