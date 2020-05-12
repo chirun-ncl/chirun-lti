@@ -11,8 +11,12 @@ define('VERSION', '0.1.00');
 ### Setup paths
 ###
 define('WEBDIR', '/lti');
-define('WEBCONTENTDIR', '/lti/content');
-define('CONTENTDIR', '#########/content');
+define('WEBCONTENTDIR', WEBDIR.'/content');
+define('INSTALLDIR', '/var/www/webroot/lti');
+define('CONTENTDIR', INSTALLDIR.'/content');
+define('UPLOADDIR', INSTALLDIR.'/upload');
+define('PROCESSDIR', INSTALLDIR.'/process');
+define('PROCESSUSER', "programs");
 
 ###
 ###  Database connection settings

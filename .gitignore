@@ -1,2 +1,4 @@
 content
 config.php
+upload/*
+process/logs/*

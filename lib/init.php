@@ -14,6 +14,7 @@ error_reporting(E_ALL);
 
 require_once(__DIR__.'/../config.php');
 require_once(__DIR__.'/db.php');
+require_once(__DIR__.'/action.php');
 require_once(__DIR__.'/module.php');
 require_once(__DIR__.'/mime_type.php');
 require_once(__DIR__.'/page.php');
@@ -169,7 +170,7 @@ function getResourceOptions($db, $resource_pk) {
 
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-SELECT hide_by_default
+SELECT *
 FROM {$prefix}resource_options
 WHERE (resource_link_pk = :resource_pk)
 LIMIT 1
@@ -178,13 +179,8 @@ EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_INT);
 	$query->execute();
-
 	$row = $query->fetch(PDO::FETCH_ASSOC);
-	if (isset($row['hide_by_default'])){
-		return $row;
-	} else {
-		return NULL;
-	}
+	return $row;
 }
 
 ###
@@ -194,12 +190,13 @@ EOD;
 function updateResourceOptions($db, $resource_pk, $opt){
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-REPLACE INTO {$prefix}resource_options (resource_link_pk, hide_by_default)
-VALUES (:resource_pk, :hide_by_default)
+REPLACE INTO {$prefix}resource_options (resource_link_pk, hide_by_default, user_uploaded)
+VALUES (:resource_pk, :hide_by_default, :user_uploaded)
 EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_INT);
 	$query->bindValue('hide_by_default', !empty($opt['hide_by_default']), PDO::PARAM_INT);
+	$query->bindValue('user_uploaded', !empty($opt['user_uploaded']), PDO::PARAM_INT);
 	return $query->execute();
 }
 
@@ -262,10 +259,10 @@ EOD;
 ###
 ###  Select a module to display for a specified resource link
 ###
-function selectModule($db, $resource_pk, $module_path, $theme_id) {
+function selectModule($db, $resource_pk, $module_path, $theme_id = 0) {
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-INSERT INTO {$prefix}module_selected (resource_link_pk, module_yaml_path, module_theme_id)
+REPLACE INTO {$prefix}module_selected (resource_link_pk, module_yaml_path, module_theme_id)
 VALUES (:resource_pk, :module_path, :theme_id)
 EOD;
 	$query = $db->prepare($sql);
@@ -280,18 +277,33 @@ EOD;
 ###
 function deleteModule($db, $resource_pk, $module_selected_id) {
 
-	// Delete the item
-	$prefix = DB_TABLENAME_PREFIX;
-	$sql = <<< EOD
+	$selected_module = getSelectedModule($db, $resource_pk);
+	$options = getResourceOptions($db, $resource_pk);
+	$module_realdir = $selected_module->real_path();
+	$ok = true;
+	// Delete module content overrides
+	deleteContentOverrides($db, $module_selected_id);
+	// Delete the item from the disk if user uploaded
+	if($options['user_uploaded']){
+		updateResourceOptions($db, $resource_pk, array('user_uploaded'=>0));
+		$ok = false;
+		if(!empty($module_realdir) && is_dir($module_realdir)){
+			$ok = delTree($module_realdir);
+		}
+	}
+	if($ok){
+		// Delete the item from the DB
+		$prefix = DB_TABLENAME_PREFIX;
+		$sql = <<< EOD
 DELETE FROM {$prefix}module_selected
 WHERE (module_selected_id = :module_selected_id) AND (resource_link_pk = :resource_pk)
 EOD;
-
-	$query = $db->prepare($sql);
-	$query->bindValue('module_selected_id', $module_selected_id, PDO::PARAM_INT);
-	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_STR);
-	$ok = $query->execute();
-
+	
+		$query = $db->prepare($sql);
+		$query->bindValue('module_selected_id', $module_selected_id, PDO::PARAM_INT);
+		$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_STR);
+		$ok = $query->execute();
+	}
 	return $ok;
 
 }
@@ -316,6 +328,23 @@ EOD;
 	$query->bindValue('isStudent', $session['isStudent'], PDO::PARAM_INT);
 	$query->bindValue('isStaff', $session['isStaff'], PDO::PARAM_INT);
 	return $query->execute();
+}
+
+function processWithSourceFile($db, $resource_pk, $source_main){
+	$selected_module = getSelectedModule($db, $resource_pk);
+	if(!isset($selected_module)) return false;
+	$guid = basename(dirname($selected_module->yaml_path));
+	if(!file_exists(UPLOADDIR.'/'.$guid.'/'.$source_main)) return false;
+	$webbase = WEBCONTENTDIR;
+	$logloc = PROCESSDIR.'/logs/'.$guid.'.log';
+	$escaped_guid = escapeshellarg($guid);
+	$escaped_source = escapeshellarg($source_main);
+	$escaped_webbase = escapeshellarg($webbase);
+	$escaped_logloc = escapeshellarg($logloc);
+	$script_dir = PROCESSDIR;
+	$script_owner = PROCESSUSER;
+	exec("cd {$script_dir} && sudo -u {$script_owner} ./process.sh -g {$escaped_guid} -d {$escaped_source} -b {$escaped_webbase}  > {$escaped_logloc} 2>&1 &");
+	return true;
 }
 
 ###
@@ -416,6 +445,32 @@ function postValue($name, $defaultValue = NULL) {
 
 }
 
+###
+### Delete a directory recursively from disk
+###
+function delTree($dir) { 
+	$files = array_diff(scandir($dir), array('.','..')); 
+	foreach ($files as $file) { 
+		(is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file"); 
+	} 
+	return rmdir($dir); 
+} 
+
+
+###
+### Unzip a file in current directory
+###
+
+function unzip($file){
+	if(!($zipRealPath = realpath($file))) return false;
+	$zip = new ZipArchive;
+	if ($zip->open($zipRealPath) === TRUE) {
+		$zip->extractTo(dirname($zipRealPath));
+		$zip->close();
+		return true;
+	}
+	return false;
+}
 
 /**
  * Returns a string representation of a version 4 GUID, which uses random

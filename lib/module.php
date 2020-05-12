@@ -22,7 +22,7 @@ class Content {
 		if(strcmp($this->type,'introduction')==0){
 			$this->title = "Introduction";
 		} else {
-			$this->title = $content_item['title'];
+			$this->title = empty($content_item['title'])?$content_item['source']:$content_item['title'];
 		}
 		if(isset($parent)){
 			$this->parent = $parent;
@@ -229,6 +229,10 @@ class Module {
 		return $hidden;
 	}
 
+	public function real_path(){
+		return CONTENTDIR.dirname($this->yaml_path);
+	}
+
 	public function url(){
 		if($this->selected_theme){
 			return WEBCONTENTDIR.dirname($this->yaml_path).'/'.$this->selected_theme->path.'/';
@@ -237,15 +241,15 @@ class Module {
 	}
 
 	public function select_theme($theme_id){
-		$this->selected_theme = $this->themes[$theme_id];
+		if(count($this->themes) > 0) $this->selected_theme = $this->themes[$theme_id];
 	}
 
 	public function parse_yaml() {
 		$this->yaml = @yaml_parse_file(CONTENTDIR.$this->yaml_path);
 		if(!$this->yaml) return NULL;
-		$this->title = $this->yaml['title'];
-		$this->year = $this->yaml['year'];
-		$this->author = $this->yaml['author'];
+		$this->title = empty($this->yaml['title'])?NULL:$this->yaml['title'];
+		$this->year = empty($this->yaml['year'])?NULL:$this->yaml['year'];
+		$this->author = empty($this->yaml['author'])?NULL:$this->yaml['author'];
 		$this->code = $this->yaml['code'];
 	}
 
