@@ -22,6 +22,10 @@ Relevant Groups
  * docker - docker:x:105:programs
  * www-data - www-data:x:33:webedit,programs
 
+Docker
+------
+Prepare the docker daemon by pulling the coursebuilder image. Using the programs user run: "docker pull coursebuilder/coursebuilder-docker:latest"
+
 Process
 -------
 The processing of files is as follows.
