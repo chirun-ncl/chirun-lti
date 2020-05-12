@@ -41,7 +41,7 @@ function init(&$db, $checkSession = NULL) {
 	session_name(SESSION_NAME);
 
 	// Set session samesite to None
-	session_set_cookie_params(['samesite' => 'None', 'secure' => true]);
+	session_set_cookie_params(0, '/;SameSite=None; Secure; HttpOnly');
 
 	session_start();
 
