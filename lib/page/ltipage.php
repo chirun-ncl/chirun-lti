@@ -60,7 +60,7 @@ EOD;
 			{$this->css()}
 			{$this->js()}
 			</head>
-			<body>
+			<body id="CBBody">
 
 EOD;
 		return $header;

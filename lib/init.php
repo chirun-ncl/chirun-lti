@@ -38,6 +38,10 @@ function init(&$db, $checkSession = NULL) {
 
 	// Open session
 	session_name(SESSION_NAME);
+
+	// Set session samesite to None
+	session_set_cookie_params(['samesite' => 'None', 'secure' => true]);
+
 	session_start();
 
 	if (!is_null($checkSession) && $checkSession) {
@@ -46,7 +50,7 @@ function init(&$db, $checkSession = NULL) {
 	}
 
 	if (!$ok) {
-		$_SESSION['error_message'] = 'Unable to open session. Ensure that you are loading this page through your VLE (e.g. via a module in Blackboard).';
+		$_SESSION['error_message'] = 'Unable to open session. Ensure that you are loading this page through your VLE (e.g. via a module in Blackboard or Canvas).';
 	} else {
 		$ok = $db !== FALSE;
 		if (!$ok) {

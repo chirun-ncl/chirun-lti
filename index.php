@@ -3,7 +3,6 @@ use IMSGlobal\LTI\ToolProvider;
 use IMSGlobal\LTI\ToolProvider\DataConnector;
 
 require_once('lib/init.php');
-
 // Initialise session and database
 $db = NULL;
 $ok = init($db, TRUE);
