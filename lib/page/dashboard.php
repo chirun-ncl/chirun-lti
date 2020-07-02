@@ -91,7 +91,7 @@ EOD;
 					<a class="nav-link" target="_blank" href="{$this->module->url()}?auth_level=1"><i class="fa fa-book" aria-hidden="true"></i> View All Content</a>
 					</li>
 					<li class="nav-item">
-					<a class="nav-link" target="_blank" href="{$this->module->url()}?auth_level=0"><i class="fa fa-user-circle" aria-hidden="true"></i> Student View</a>
+					<a class="nav-link" href="{$this->module->url()}?auth_level=0"><i class="fa fa-user-circle" aria-hidden="true"></i> Student View</a>
 					</li>
 				</ul>
 EOD;
