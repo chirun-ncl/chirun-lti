@@ -105,9 +105,17 @@ EOD;
 	}
 
 	protected function main(){
-		$main = parent::main();
+		$main = '<main role="main" class="mt-2 ml-3 mr-3">';
+		$main .= '<div class="row">';
+		$main .= '<div class="col">';
+		foreach($this->alerts as $alert){
+			$main .= $alert->html();
+		}
+		$main .= '</div>';
+		$main .= '</div>';
 		$this->activePage->setup($this->module,$this->db,$this->resource_pk);
 		$main .= $this->activePage->main();
+		$main .= '</main>';
 		return $main;
 	}
 }
