@@ -18,6 +18,7 @@ class LandingPage extends LTIPage {
 			</div>
 			</div>
 			</div>
+			</main>
 EOD;
 		return $main;
 	}

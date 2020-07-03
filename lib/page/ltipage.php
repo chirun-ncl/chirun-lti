@@ -23,6 +23,17 @@ class LTIPage extends BasePage {
 		$this->alerts[] = $alert;
 	}
 
+	protected function coursebuilderIconHeader(){
+		$iconHeader = <<< EOD
+			<div class="justify-content-center row mt-5">
+				<div class="col-2">
+				<img alt="Coursebuilder logo" width="100%" src="{$this->webdir}/images/coursebuilder_icon_512.png">
+				</div>
+			</div>
+EOD;
+		return $iconHeader;
+	}
+
 	protected function main(){
 		$main = '<main role="main" class="container mt-2">';
 		$main .= '<div class="row">';
@@ -32,6 +43,7 @@ class LTIPage extends BasePage {
 		}
 		$main .= '</div>';
 		$main .= '</div>';
+		$main .= '</main>';
 		return $main;
 	}
 	protected function css() {
@@ -69,7 +81,6 @@ EOD;
 	}
 	protected function footer(){
 		$footer = <<< EOD
-			</main>
 			<hr>
 			<footer class="text-muted">
 				<div class="container">
