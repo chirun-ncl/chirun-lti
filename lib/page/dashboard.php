@@ -1,31 +1,89 @@
 <?php
+
 require_once(__DIR__.'/dashboard/options.php');
 require_once(__DIR__.'/dashboard/adaptive.php');
 require_once(__DIR__.'/dashboard/module.php');
+require_once(__DIR__.'/dashboard/prebuilt.php');
 require_once(__DIR__.'/dashboard/upload.php');
 require_once(__DIR__.'/dashboard/logs.php');
+require_once(__DIR__.'/dashboard/buildlog.php');
+require_once(__DIR__.'/dashboard/view.php');
 
 class DashboardPage extends LTIPage {
 	protected $resource_pk = NULL;
 	protected $activePage = NULL;
-	public $pageClass = array(
-		'mod' => 'DashboardModuleSelectPage',
-		'upload' => 'DashboardUploadPage',
-		'adapt' => 'DashboardAdaptiveReleasePage',
-		'log' => 'DashboardLogsPage',
-		'opt' => 'DashboardOptionsPage');
-	public $pageDesc = array(
-		'mod' => 'Content',
-		'upload' => 'Upload Document',
-		'adapt' => 'Adaptive Release',
-		'log' => 'Logs',
-		'opt' => 'Options');
-	public $pageNavIcon = array(
-		'mod' => 'fa-book',
-		'upload' => 'fa-upload',
-		'adapt' => 'fa-clock-o',
-		'log' => 'fa-bar-chart',
-		'opt' => 'fa-wrench');
+	protected $pageStructure = array(
+		'content' => array(
+			'navTitle' => 'Content',
+			'navIcon'  => 'fa-file-text-o',
+			'items'    => array(
+				'selected' => array(
+					'navTitle'  => 'Selected Content',
+					'navIcon'   => 'fa-file-text-o'
+				),
+				'upload'   => array(
+					'navTitle'  => 'Upload Content',
+					'navIcon'   => 'fa-cloud-upload'
+				),
+				'prebuilt' => array(
+					'navTitle'  => 'Prebuilt Modules',
+					'navIcon'   => 'fa-list'
+				)
+			)
+		),
+		'access' => array(
+			'navTitle' => 'Access Control',
+			'navIcon'  => 'fa-unlock-alt',
+			'items'    => array(
+				'adaptive' => array(
+					'navTitle'  => 'Adaptive Release',
+					'navIcon'   => 'fa-clock-o'
+				),
+				'direct'   => array(
+					'navTitle'  => 'Direct Link',
+					'navIcon'   => 'fa-link',
+				)
+			)
+		),
+		'logs' => array(
+			'navTitle' => 'Logs',
+			'navIcon'  => 'fa-list-alt',
+			'items'    => array(
+				'accesslog' => array(
+					'navTitle'  => 'Access Log',
+					'navIcon'   => 'fa-bar-chart'
+				),
+				'buildlog'  => array(
+					'navTitle'  => 'Build Log',
+					'navIcon'   => 'fa-code'
+				)
+			)
+		),
+		'view' => array(
+			'navTitle' => 'View Content',
+			'navIcon'  => 'fa-eye',
+			'items'    => array(
+				'viewall' => array(
+					'navTitle' => 'View All Content',
+					'navIcon'  => 'fa-file-text-o'
+				),
+				'view'    => array(
+					'navTitle'  => 'View as Student',
+					'navIcon'   => 'fa-user'
+				)
+			)
+		)
+	);
+	private $pageClass = array(
+		'selected'  => 'DashboardSelectedContentPage',
+		'prebuilt'  => 'DashboardPrebuiltModuleSelectPage',
+		'upload'    => 'DashboardUploadPage',
+		'adaptive'  => 'DashboardAdaptiveReleasePage',
+		'accesslog' => 'DashboardLogsPage',
+		'buildlog'  => 'DashboardBuildLogPage',
+		'viewall'   => 'DashboardViewAllPage',
+		'view'      => 'DashboardViewAsStudentPage'
+	);
 
 	public function getTitle(){
 		$title = $this->title;
@@ -40,13 +98,11 @@ class DashboardPage extends LTIPage {
 	}
 
 	public function render(){
-		$req = isset($_REQUEST['dashpage'])?$_REQUEST['dashpage']:'mod';
+		$req = isset($_REQUEST['dashpage'])?$_REQUEST['dashpage']:'selected';
 		if (array_key_exists($req,$this->pageClass)){
 			$this->activePage = new $this->pageClass[$req];
-		//} else if($this->isModuleEmpty()){
-		//	$this->activePage = new DashboardNoModulePage();
 		} else {
-			$this->activePage = new DashboardModuleSelectPage();
+			$this->activePage = new DashboardSelectedContentPage();
 		}
 		parent::render();
 	}
@@ -74,32 +130,29 @@ class DashboardPage extends LTIPage {
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul class="navbar-nav mr-auto">
 EOD;
-		foreach($this->pageClass as $pageKey => $pageClass){
-			$isActive = ($pageClass == get_class($this->activePage))?'active':'';
+		foreach($this->pageStructure as $navHeading){
 			$header .= <<< EOD
-				<li class="nav-item {$isActive}">
-					<a class="nav-link" href="index.php?dashpage={$pageKey}"><i class="fa {$this->pageNavIcon[$pageKey]}" aria-hidden="true"></i> {$this->pageDesc[$pageKey]}</a>
-				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="fa {$navHeading['navIcon']}" aria-hidden="true"></i> {$navHeading['navTitle']}
+					</a>
+					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 EOD;
-		}
+			foreach($navHeading['items'] as $navItemKey => $navItem){
 
-		if(!$this->isModuleEmpty()){
+				$header .= <<< EOD
+					<a class="dropdown-item" href="index.php?dashpage={$navItemKey}">
+						<i class="fa {$navItem['navIcon']}" aria-hidden="true"></i> {$navItem['navTitle']}
+					</a>
+EOD;
+			}
 			$header .= <<< EOD
-				</ul>
-				<ul class="navbar-nav">
-					<li class="nav-item">
-					<a class="nav-link" target="_blank" href="{$this->module->url()}?auth_level=1"><i class="fa fa-book" aria-hidden="true"></i> View All Content</a>
-					</li>
-					<li class="nav-item">
-					<a class="nav-link" href="{$this->module->url()}?auth_level=0"><i class="fa fa-user-circle" aria-hidden="true"></i> Student View</a>
-					</li>
-				</ul>
+				</li>
 EOD;
 		}
 		$header .= <<< EOD
 				</div>
 			</nav>
-
 EOD;
 		return $header;
 	}

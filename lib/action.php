@@ -154,7 +154,7 @@ function do_action($db){
 		} else {
 			$_SESSION['error_message'] = 'Error setting up content resource!';
 		}
-		header('Location: ./?dashpage=upload');
+		header('Location: ./?dashpage=upload&upload=processed');
 		exit;
 	} else if ($action == 'processBuild' && $_SESSION['isStaff'] && isset($_SESSION['resource_pk'])){
 		$selected_module = getSelectedModule($db, $_SESSION['resource_pk']);
