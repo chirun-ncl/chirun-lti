@@ -100,7 +100,7 @@ EOD;
 			Visit the "Upload Document" page to continue building this module.</p>
 			<h3 class="mt-4">Delete content</h3>
 			<p>To select different content, first <i>remove</i> the content asssociated with this item using the button below.</p>
-			<a class="btn btn-danger" href="./index.php?do=delete&req_id={$this->module->selected_id}">Delete Courebuilder Content</a>
+			<a class="btn btn-danger" href="./index.php?do=delete&req_id={$this->module->selected_id}">Delete Coursebuilder Content</a>
 EOD;
 		} else if($this->isModuleStandalone()){
 			$main .= <<< EOD
