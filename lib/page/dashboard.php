@@ -7,7 +7,6 @@ require_once(__DIR__.'/dashboard/prebuilt.php');
 require_once(__DIR__.'/dashboard/upload.php');
 require_once(__DIR__.'/dashboard/logs.php');
 require_once(__DIR__.'/dashboard/buildlog.php');
-require_once(__DIR__.'/dashboard/view.php');
 
 class DashboardPage extends LTIPage {
 	protected $resource_pk = NULL;
@@ -81,8 +80,6 @@ class DashboardPage extends LTIPage {
 		'adaptive'  => 'DashboardAdaptiveReleasePage',
 		'accesslog' => 'DashboardLogsPage',
 		'buildlog'  => 'DashboardBuildLogPage',
-		'viewall'   => 'DashboardViewAllPage',
-		'view'      => 'DashboardViewAsStudentPage'
 	);
 
 	public function getTitle(){
@@ -139,9 +136,17 @@ EOD;
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 EOD;
 			foreach($navHeading['items'] as $navItemKey => $navItem){
-
+				$href = "index.php?dashpage={$navItemKey}";
+				$target = "";
+				if ($navItemKey == 'viewall'){
+					$href = "{$this->module->url()}?auth_level=1";
+					$target = 'target="_blank"';
+				} else if ($navItemKey == 'view'){
+					$href = "{$this->module->url()}?auth_level=0";
+					$target = 'target="_blank"';
+				}
 				$header .= <<< EOD
-					<a class="dropdown-item" href="index.php?dashpage={$navItemKey}">
+					<a class="dropdown-item" href="{$href}" {$target}>
 						<i class="fa {$navItem['navIcon']}" aria-hidden="true"></i> {$navItem['navTitle']}
 					</a>
 EOD;

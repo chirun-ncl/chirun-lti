@@ -11,9 +11,7 @@ class DashboardAdaptiveReleasePage {
 	}
 	public function main(){
 		if($this->isModuleEmpty()){
-			$main = "<h2>Adaptive Release</h2>";
-			$main .= "<p><b>No module selected!</b></p>";
-			$main .= "<p>To configure adaptive release a module must be selected first.</p>";
+			header('Location: index.php');
 		} else {
 			$main = <<< EOD
 					<h2>Adaptive Release</h2>
