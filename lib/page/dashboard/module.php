@@ -52,6 +52,17 @@ EOD;
 			</div>
 			<input type="hidden" name="do" value="change_theme">
 			</form>
+EOD;
+			$options = getResourceOptions($this->db, $this->resource_pk);
+			$hide_by_default = $options['hide_by_default']?'checked':'';
+			$main .= <<< EOD
+			<h3 class="mt-4">Further Options</h3>
+			<form action="index.php" method="POST">
+			<input type="hidden" name="dashpage" value="opt">
+			<input type='hidden' value='0' name="opt[hide_by_default]">
+			<input type="checkbox" name="opt[hide_by_default]" value="checked" {$hide_by_default}> Hide in adaptive release by default.<br><br>
+			<button class="btn btn-sm btn-primary" name="do" value="options_save">Save Changes</button>
+			</form>
 			<h3 class="mt-4">Deselect Module</h3>
 			<p>To select a different module, first <i>remove</i> the current module using the button below.</p>
 			<a class="btn btn-danger" href="./index.php?do=delete&req_id={$this->module->selected_id}">Deselect Module</a>

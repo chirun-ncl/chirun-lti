@@ -100,6 +100,19 @@ function do_action($db){
 		}
 		header('Location: ./');
 		exit;
+	} else  if($action == 'set_direct_link' && isset($_REQUEST["slug"])) {
+		$options = getResourceOptions($db, $_SESSION['resource_pk']);
+		$new_opt = $options;
+		$new_opt['direct_link_slug'] = $_REQUEST["slug"];
+		$ok = updateResourceOptions($db, $_SESSION['resource_pk'], $new_opt);
+		if ($ok) {
+			$_SESSION['message'] = 'Successfuly set content as directly linked!';
+		} else {
+			$_SESSION['error_message'] = 'Unable to link to content; please try again';
+		}
+		header('Location: ./?dashpage=directlink');
+		exit;
+
         } else if ($action == 'options_save' && $_SESSION['isStaff'] && isset($_SESSION['resource_pk'])){
 		$options = getResourceOptions($db, $_SESSION['resource_pk']);
 		$new_opt = $options;

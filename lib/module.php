@@ -38,6 +38,20 @@ class Content {
 		return $hidden;
 	}
 
+	public function direct_link_tbl_row(){
+		if(strcmp($this->type,'url')==0) return '';
+		$html = '<tr>';
+		$html .= '<td></td>';
+		$html .= '<td>'.$this->title.'</td>';
+		$html .=  <<< EOD
+			<td class="text-center">
+			<a href="index.php?do=set_direct_link&slug={$this->slug_path}" class="btn btn-sm btn-primary">Select</a>
+			</td>
+EOD;
+		$html .= '</tr>';
+		return $html;
+	}
+
 	public function adaptive_release_tbl_row(){
 		$html = '<tr>';
 		$html .= '<td></td>';
@@ -61,6 +75,9 @@ class Content {
 
 	public function slugify(){
 		$slug = '';
+		if(strcmp($this->type,'introduction')==0){
+			return '/';
+		}
 		if(isset($this->parent_slug)){
 			$slug .= $this->parent_slug;
 		}
@@ -94,7 +111,7 @@ class Content {
 		if(!isset($this->hidden) && isset($this->owner_module->resource_options)){
 			if($this->owner_module->resource_options['hide_by_default']){
 				$this->hidden = 1;
-				$this->hidden_reason='Hidden (Unseen item)';
+				$this->hidden_reason='Hidden (by default)';
 			}
 		}
 		if($this->hidden) return;
@@ -149,6 +166,26 @@ class Part extends Content {
 			$hidden = array_merge($hidden,$child_content->get_hidden());
 		}
 		return $hidden;
+	}
+
+	public function direct_link_tbl_row(){
+		$html = "<tbody><tr class='table-primary'>";
+		$html .= "<td class='clickable collapsed' data-toggle='collapse' data-target='#table-part-{$this->slug_path}' aria-expanded='false' aria-controls='table-part-{$this->slug_path}'>";
+
+		$html .= '<i class="fa fa-3 fa-chevron-down"></i></td>';
+		$html .= '<td>'.$this->title.'</td>';
+		$html .=  <<< EOD
+			<td class="text-center">
+			<a href="index.php?do=set_direct_link&slug={$this->slug_path}" class="btn btn-sm btn-primary">Select</a>
+			</td>
+EOD;
+		$html .= '</tr></tbody>';
+		$html .= "<tbody id='table-part-{$this->slug_path}' class='collapse'>";
+		foreach ($this->children as $child_content){
+			$html .= $child_content->direct_link_tbl_row();
+		}
+		$html .= '</tbody>';
+		return $html;
 	}
 
 	public function adaptive_release_tbl_row(){
@@ -230,15 +267,33 @@ class Module {
 		return $hidden;
 	}
 
+	public function get_direct_linked_item(){
+		foreach ($this->content as $content){
+			if ($content->slug_path == $this->resource_options['direct_link_slug']){
+				return $content;
+			}
+			foreach ($content->children as $item){
+				if ($item->slug_path == $this->resource_options['direct_link_slug']){
+					return $item;
+				}
+			}
+		}
+		return null;
+	}
+
 	public function real_path(){
 		return CONTENTDIR.dirname($this->yaml_path);
 	}
 
 	public function url(){
-		if($this->selected_theme){
-			return WEBCONTENTDIR.dirname($this->yaml_path).'/'.$this->selected_theme->path.'/';
+		$path = '/';
+		if($this->get_direct_linked_item()){
+			$path = $this->get_direct_linked_item()->slug_path;
 		}
-		return WEBCONTENTDIR.dirname($this->yaml_path).'/';
+		if($this->selected_theme){
+			return WEBCONTENTDIR.dirname($this->yaml_path).'/'.$this->selected_theme->path.$path;
+		}
+		return WEBCONTENTDIR.dirname($this->yaml_path).$path;
 	}
 
 	public function select_theme($theme_id){

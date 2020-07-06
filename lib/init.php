@@ -190,13 +190,14 @@ EOD;
 function updateResourceOptions($db, $resource_pk, $opt){
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-REPLACE INTO {$prefix}resource_options (resource_link_pk, hide_by_default, user_uploaded)
-VALUES (:resource_pk, :hide_by_default, :user_uploaded)
+REPLACE INTO {$prefix}resource_options (resource_link_pk, hide_by_default, user_uploaded, direct_link_slug)
+VALUES (:resource_pk, :hide_by_default, :user_uploaded, :direct_link_slug)
 EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_INT);
 	$query->bindValue('hide_by_default', !empty($opt['hide_by_default']), PDO::PARAM_INT);
 	$query->bindValue('user_uploaded', !empty($opt['user_uploaded']), PDO::PARAM_INT);
+	$query->bindValue('direct_link_slug', array_key_exists('direct_link_slug',$opt)?$opt['direct_link_slug']:'/', PDO::PARAM_STR);
 	return $query->execute();
 }
 

@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__.'/dashboard/options.php');
+require_once(__DIR__.'/dashboard/directlink.php');
 require_once(__DIR__.'/dashboard/adaptive.php');
 require_once(__DIR__.'/dashboard/module.php');
 require_once(__DIR__.'/dashboard/prebuilt.php');
@@ -38,7 +38,7 @@ class DashboardPage extends LTIPage {
 					'navTitle'  => 'Adaptive Release',
 					'navIcon'   => 'fa-clock-o'
 				),
-				'direct'   => array(
+				'directlink'   => array(
 					'navTitle'  => 'Direct Link',
 					'navIcon'   => 'fa-link',
 				)
@@ -74,12 +74,13 @@ class DashboardPage extends LTIPage {
 		)
 	);
 	private $pageClass = array(
-		'selected'  => 'DashboardSelectedContentPage',
-		'prebuilt'  => 'DashboardPrebuiltModuleSelectPage',
-		'upload'    => 'DashboardUploadPage',
-		'adaptive'  => 'DashboardAdaptiveReleasePage',
-		'accesslog' => 'DashboardLogsPage',
-		'buildlog'  => 'DashboardBuildLogPage',
+		'selected'   => 'DashboardSelectedContentPage',
+		'prebuilt'   => 'DashboardPrebuiltModuleSelectPage',
+		'upload'     => 'DashboardUploadPage',
+		'adaptive'   => 'DashboardAdaptiveReleasePage',
+		'accesslog'  => 'DashboardLogsPage',
+		'buildlog'   => 'DashboardBuildLogPage',
+		'directlink' => 'DashboardDirectLinkPage'
 	);
 
 	public function getTitle(){
