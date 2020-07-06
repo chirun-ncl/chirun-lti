@@ -138,10 +138,10 @@ EOD;
 			foreach($navHeading['items'] as $navItemKey => $navItem){
 				$href = "index.php?dashpage={$navItemKey}";
 				$target = "";
-				if ($navItemKey == 'viewall'){
+				if ($navItemKey == 'viewall' && !empty($this->module)){
 					$href = "{$this->module->url()}?auth_level=1";
 					$target = 'target="_blank"';
-				} else if ($navItemKey == 'view'){
+				} else if ($navItemKey == 'view' && !empty($this->module)){
 					$href = "{$this->module->url()}?auth_level=0";
 					$target = 'target="_blank"';
 				}
