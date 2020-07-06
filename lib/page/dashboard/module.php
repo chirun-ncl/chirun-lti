@@ -31,13 +31,30 @@ EOD;
 EOD;
 		} else {
 			$main .= <<< EOD
-				<h3 class="mt-4">Selected Module</h3>
-				<p><strong>Module:</strong> {$this->module->title}</p>
-				<p><strong>Theme:</strong> {$this->module->selected_theme->title}</p>
-
-				<h3 class="mt-4">Deselect Module</h3>
-				<p>To select a different module, first <i>remove</i> the current module using the button below.</p>
-				<a class="btn btn-danger" href="./index.php?do=delete&req_id={$this->module->selected_id}">Deselect Module</a>
+			<h3 class="mt-4">Selected Module</h3>
+			<p><strong>Module:</strong> {$this->module->title}</p>
+			<form class="form-inline" action="index.php" method="post">
+			<div class="input-group">
+			<label for="defThemeSelect" class="mr-2"><b>Theme:</b></label>
+			<select class="form-control custom-select custom-select-sm mr-2" name="theme_id" id="defThemeSelect">
+EOD;
+			foreach ($this->module->themes as $idx => $theme){
+				$selected = ($this->module->selected_theme->path == $theme->path)?'selected':'';
+				$main .= <<< EOD
+				<option {$selected} value="{$idx}">{$theme->title}</option>
+EOD;
+			}
+			$main .= <<< EOD
+			</select>
+			<div class="input-group-addon input-group-button">
+			<button type="submit" class="btn btn-sm btn-primary mb-2">Set Default Theme</button>
+			</div>
+			</div>
+			<input type="hidden" name="do" value="change_theme">
+			</form>
+			<h3 class="mt-4">Deselect Module</h3>
+			<p>To select a different module, first <i>remove</i> the current module using the button below.</p>
+			<a class="btn btn-danger" href="./index.php?do=delete&req_id={$this->module->selected_id}">Deselect Module</a>
 EOD;
 		}
 		return $main;

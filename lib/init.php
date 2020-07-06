@@ -259,6 +259,21 @@ EOD;
 ###
 ###  Select a module to display for a specified resource link
 ###
+function selectTheme($db, $resource_pk, $theme_id = 0) {
+	$prefix = DB_TABLENAME_PREFIX;
+	$sql = <<< EOD
+UPDATE {$prefix}module_selected SET module_theme_id = :theme_id
+WHERE resource_link_pk = :resource_pk
+EOD;
+	$query = $db->prepare($sql);
+	$query->bindValue('theme_id', $theme_id, PDO::PARAM_INT);
+	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_INT);
+	return $query->execute();
+}
+###
+###  Select a module to display for a specified resource link
+###
+
 function selectModule($db, $resource_pk, $module_path, $theme_id = 0) {
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD

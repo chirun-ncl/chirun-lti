@@ -86,6 +86,20 @@ function do_action($db){
                         header('Location: ./?dashpage=adapt');
                         exit;
                 }
+	} else if ($action == 'change_theme' && $_SESSION['isStaff'] && isset($_SESSION['resource_pk']) && isset($_POST["theme_id"]) ){
+		$selected_module = getSelectedModule($db, $_SESSION['resource_pk']);
+		$ok = TRUE;
+		if(!isset($selected_module)){
+			$ok = FALSE;
+		}
+		$ok = selectTheme($db, $_SESSION['resource_pk'], $_POST["theme_id"]);
+		if ($ok) {
+			$_SESSION['message'] = 'Default theme updated!';
+		} else {
+			$_SESSION['error_message'] = 'Unable to update default theme; please try again';
+		}
+		header('Location: ./');
+		exit;
         } else if ($action == 'options_save' && $_SESSION['isStaff'] && isset($_SESSION['resource_pk'])){
 		$options = getResourceOptions($db, $_SESSION['resource_pk']);
 		$new_opt = $options;
