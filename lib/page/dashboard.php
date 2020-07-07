@@ -136,7 +136,7 @@ EOD;
 				$href = "index.php?dashpage={$navItemKey}";
 				$target = "";
 				if ($navItemKey == 'viewall' && !empty($this->module)){
-					$href = "{$this->module->url()}?auth_level=1";
+					$href = "{$this->module->url(false)}?auth_level=1";
 					$target = 'target="_blank"';
 				} else if ($navItemKey == 'view' && !empty($this->module)){
 					$href = "{$this->module->url()}?auth_level=0";

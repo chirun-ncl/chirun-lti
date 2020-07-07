@@ -84,7 +84,7 @@ trait ModulePage {
 		$fullContentPath = CONTENTDIR .'/'. $contentPath;
 		$this->requestedContent = -1;
 		$this->authLevel = $authLevel;
-		
+
 		if(substr($contentPath, 0, strlen($authModule)) === $authModule){
 			if (is_file($fullContentPath)){
 				$requestedContent = $fullContentPath;

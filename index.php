@@ -54,7 +54,7 @@ if(isset($_REQUEST['req_content'])){
 		$authLevel = $_COOKIE["auth_level"];
 	}
 	if($ok && $_SESSION['isStaff'] && isset($_REQUEST['auth_level'])){
-		setcookie("auth_level", $_REQUEST['auth_level'], time()+3600);
+		setcookie("auth_level", $_REQUEST['auth_level'], time()+3600, "/", ".mas-coursebuild.ncl.ac.uk");
 		$authLevel = $_REQUEST['auth_level'];
 	}
 	$requestReplyError = $page->requestContent($_REQUEST['req_content'], $authLevel);

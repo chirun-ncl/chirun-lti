@@ -75,9 +75,6 @@ EOD;
 
 	public function slugify(){
 		$slug = '';
-		if(strcmp($this->type,'introduction')==0){
-			return '/';
-		}
 		if(isset($this->parent_slug)){
 			$slug .= $this->parent_slug;
 		}
@@ -285,10 +282,12 @@ class Module {
 		return CONTENTDIR.dirname($this->yaml_path);
 	}
 
-	public function url(){
+	public function url($allow_direct_link = true){
 		$path = '/';
-		if($this->get_direct_linked_item()){
-			$path = $this->get_direct_linked_item()->slug_path;
+		if($this->get_direct_linked_item() && $allow_direct_link){
+			if($this->get_direct_linked_item()->type != 'introduction'){
+				$path = $this->get_direct_linked_item()->slug_path;
+			}
 		}
 		if($this->selected_theme){
 			return WEBCONTENTDIR.dirname($this->yaml_path).'/'.$this->selected_theme->path.$path;
