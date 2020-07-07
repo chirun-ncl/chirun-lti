@@ -23,10 +23,6 @@ class DashboardPage extends LTIPage {
 				'upload'   => array(
 					'navTitle'  => 'Upload Content',
 					'navIcon'   => 'fa-cloud-upload'
-				),
-				'prebuilt' => array(
-					'navTitle'  => 'Prebuilt Modules',
-					'navIcon'   => 'fa-list'
 				)
 			)
 		),
@@ -164,6 +160,12 @@ EOD;
 	}
 
 	protected function main(){
+		if(in_array($_SESSION['user_id'],AUTH_USER_IDS) || in_array(strtolower($_SESSION['user_email']),AUTH_USER_EMAILS)){
+			$pageStructure['content']['items']['prebuilt'] = array(
+				'navTitle'  => 'Prebuilt Modules',
+				'navIcon'   => 'fa-list'
+			);
+		}
 		$main = '<main role="main" class="mt-2 ml-3 mr-3">';
 		$main .= '<div class="row">';
 		$main .= '<div class="col">';
