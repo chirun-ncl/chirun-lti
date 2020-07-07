@@ -67,7 +67,7 @@ function do_action($db){
                         } else {
                                 $_SESSION['error_message'] = 'Unable to update content; please try again';
                         }
-                        header('Location: ./?dashpage=adapt');
+                        header('Location: ./?dashpage=adaptive');
                         exit;
                 }
         } else if ($action == 'content_clearall' && $_SESSION['isStaff']) {
@@ -83,7 +83,7 @@ function do_action($db){
                         } else {
                                 $_SESSION['error_message'] = 'Unable to update content; please try again';
                         }
-                        header('Location: ./?dashpage=adapt');
+                        header('Location: ./?dashpage=adaptive');
                         exit;
                 }
 	} else if ($action == 'change_theme' && $_SESSION['isStaff'] && isset($_SESSION['resource_pk']) && isset($_POST["theme_id"]) ){
@@ -127,7 +127,7 @@ function do_action($db){
 		} else {
 			$_SESSION['error_message'] = 'Unable to update options; please try again';
 		}
-		header('Location: ./?dashpage=opt');
+		header('Location: ./');
 		exit;
 	} else if ($action == 'processUpload' && $_SESSION['isStaff']){
 		$guid = getGuid();
