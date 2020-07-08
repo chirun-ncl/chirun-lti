@@ -115,6 +115,12 @@ class DashboardPage extends LTIPage {
 	}
 	protected function header(){
 		$header = parent::header();
+		if(in_array($_SESSION['user_id'],AUTH_USER_IDS) || in_array(strtolower($_SESSION['user_email']),AUTH_USER_EMAILS)){
+			$this->pageStructure['content']['items']['prebuilt'] = array(
+				'navTitle'  => 'Prebuilt Modules',
+				'navIcon'   => 'fa-list'
+			);
+		}
 		$header .= <<< EOD
 			<nav class="navbar navbar-expand-lg navbar-light bg-light">
 				<a class="navbar-brand" href="index.php"><img src="{$this->webdir}/images/coursebuilder_icon_128.png" alt="Coursebuilder Logo" style="width:40px;"> Coursebuilder Dashboard</a>
@@ -160,12 +166,6 @@ EOD;
 	}
 
 	protected function main(){
-		if(in_array($_SESSION['user_id'],AUTH_USER_IDS) || in_array(strtolower($_SESSION['user_email']),AUTH_USER_EMAILS)){
-			$pageStructure['content']['items']['prebuilt'] = array(
-				'navTitle'  => 'Prebuilt Modules',
-				'navIcon'   => 'fa-list'
-			);
-		}
 		$main = '<main role="main" class="mt-2 ml-3 mr-3">';
 		$main .= '<div class="row">';
 		$main .= '<div class="col">';
