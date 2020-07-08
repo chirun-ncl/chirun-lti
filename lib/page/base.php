@@ -90,10 +90,14 @@ trait ModulePage {
 				$requestedContent = $fullContentPath;
 			}
 			if (is_dir($fullContentPath)){
-				if(is_file($fullContentPath.'/index.html')){
-					$requestedContent = $fullContentPath.'/index.html';
-				} else if (is_file($fullContentPath.'/index.php')){
-					$requestedContent = $fullContentPath.'/index.php';
+				if(is_file($fullContentPath.'index.html')){
+					$requestedContent = $fullContentPath.'index.html';
+				} else if (is_file($fullContentPath.'index.php')){
+					$requestedContent = $fullContentPath.'index.php';
+				}
+				if (substr($fullContentPath,-1)!=='/'){
+					//Retry with trailing slash
+					header("Location: ".WEBCONTENTDIR."/${contentPath}/");
 				}
 			}
 			if(!isset($requestedContent)) return "The requested content item was not found.";
