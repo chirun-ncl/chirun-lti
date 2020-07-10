@@ -57,7 +57,7 @@ EOD;
 	}
 	protected function main(){
 		$errBox = $this->errorBox();
-		$main .= $this->coursebuilderIconHeader();
+		$main = $this->coursebuilderIconHeader();
 		$main .= <<< EOD
 			<main id="mainCBErrorContainer" role="main" class="container mt-2">
 				{$errBox}

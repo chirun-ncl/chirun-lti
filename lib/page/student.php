@@ -1,5 +1,9 @@
 <?php
-class StudentPage extends LTIPage {
+class StudentPage extends ErrorPage {
+	protected $reqContentError = NULL;
+	protected function errorTitle(){
+		return "Failed to load page";
+	}
 	public function render(){
 		$ok = false;
 		if(isset($this->requestedContent)){
@@ -8,8 +12,9 @@ class StudentPage extends LTIPage {
 		if (!$ok){
 			$path = '/';
 			$direct_link = $this->module->get_direct_linked_item();
-			if(!empty($direct_link)){
+			if(!empty($direct_link) && $direct_link->type != 'introduction'){
 				$path = $direct_link->slug_path;
+				$path = ltrim($path,'/');
 			}
 			$indexContent = str_replace('{base}/','',$this->module->root_url);
 			$indexContent = str_replace('{code}',$this->module->code,$indexContent);
@@ -17,11 +22,15 @@ class StudentPage extends LTIPage {
 			$indexContent = str_replace('{theme}',$this->module->selected_theme->path,$indexContent);
 			$indexContent .= $path;
 			$indexContent = ltrim($indexContent,'/');
-			$this->requestContentForModule($indexContent);
-			$ok = $this->renderRequestedContent();
-		}
-		if (!$ok){
-			parent::render();
+			$this->reqContentError = $this->requestContentForModule($indexContent);
+			if(empty($this->reqContentError)){
+				$this->renderRequestedContent();
+			} else {
+				$this->addAlert($this->reqContentError, "danger");
+				$ok = false;
+				parent::render();
+				$this->main();
+			}
 		}
 	}
 }
