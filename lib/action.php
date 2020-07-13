@@ -170,7 +170,7 @@ function do_action($db){
 		if($ok){
 			$content_files = glob($upload_dir.'/'."*.{tex,md,yml}",GLOB_BRACE);
 			$config_files = glob($upload_dir.'/'."config.yml");
-			if(count($content_files) == 1 || count($config_files == 1)){
+			if(count($content_files) == 1 || count($config_files) == 1){
 				$ok = processWithSourceFile($db, $_SESSION['resource_pk'], basename($content_files[0]));
 				if($ok){
 					updateResourceOptions($db, $_SESSION['resource_pk'], array('user_uploaded'=>1));
