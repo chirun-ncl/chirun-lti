@@ -24,16 +24,17 @@ EOD;
 		} else if($this->isModuleStandalone()){
 			$main .= <<< EOD
 			<p><strong>Document source:</strong> {$this->module->content[0]->source}<br/>
-			<strong>Theme:</strong> {$this->module->selected_theme->title}</p>
+			<strong>Theme:</strong> {$this->module->selected_theme->title}</br>
+			<strong>GUID:</strong> {$this->module->code}</p>
 			<h3 class="mt-4">Delete content</h3>
 			<p>To select different content, first <i>remove</i> the content asssociated with this item using the button below.</p>
-			<a class="btn btn-danger" href="./index.php?do=delete&req_id={$this->module->selected_id}">Delete Courebuilder Content</a>
+			<a class="btn btn-danger" href="./index.php?do=delete&req_id={$this->module->selected_id}">Remove Content</a>
 EOD;
 		} else {
 			$main .= <<< EOD
 			<h3 class="mt-4">Selected Module</h3>
 			<p><strong>Module:</strong> {$this->module->title}</p>
-			<form class="form-inline" action="index.php" method="post">
+			<form class="form-inline mb-2" action="index.php" method="post">
 			<div class="input-group">
 			<label for="defThemeSelect" class="mr-2"><b>Theme:</b></label>
 			<select class="form-control custom-select custom-select-sm mr-2" name="theme_id" id="defThemeSelect">
@@ -52,6 +53,7 @@ EOD;
 			</div>
 			<input type="hidden" name="do" value="change_theme">
 			</form>
+			<p><strong>GUID:</strong> {$this->module->code}</p>
 EOD;
 			$options = getResourceOptions($this->db, $this->resource_pk);
 			$hide_by_default = $options['hide_by_default']?'checked':'';

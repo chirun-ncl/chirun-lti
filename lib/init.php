@@ -164,6 +164,40 @@ EOD;
 }
 
 ###
+###  Set upload username for a new upload
+###
+
+function setUploadUser($db, $guid, $username){
+	$prefix = DB_TABLENAME_PREFIX;
+	$sql = <<< EOD
+INSERT INTO {$prefix}uploaded_content (guid, username)
+VALUES (:guid, :username)
+EOD;
+	$query = $db->prepare($sql);
+	$query->bindValue('guid', $guid, PDO::PARAM_STR);
+	$query->bindValue('username', $username, PDO::PARAM_STR);
+	return $query->execute();
+}
+
+###
+###  Get upload username for an uploaded GUID
+function getUploadUser($db, $guid){
+	$prefix = DB_TABLENAME_PREFIX;
+	$sql = <<< EOD
+SELECT username
+FROM {$prefix}uploaded_content
+WHERE (guid = :guid)
+LIMIT 1
+EOD;
+	$query = $db->prepare($sql);
+	$query->bindValue('guid', $guid, PDO::PARAM_STR);
+	$query->execute();
+	$row = $query->fetch(PDO::FETCH_ASSOC);
+	return $row['username'];
+}
+
+
+###
 ###  Return any set options for a specified resource
 ###
 function getResourceOptions($db, $resource_pk) {
@@ -360,6 +394,7 @@ function processWithSourceFile($db, $resource_pk, $source_main){
 	$script_dir = PROCESSDIR;
 	$script_owner = PROCESSUSER;
 	exec("cd {$script_dir} && sudo -u {$script_owner} ./process.sh -g {$escaped_guid} -d {$escaped_source} -b {$escaped_webbase}  > {$escaped_logloc} 2>&1 &");
+	setUploadUser($db, $guid, $_SESSION['user_id']);
 	return true;
 }
 

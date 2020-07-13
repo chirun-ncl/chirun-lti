@@ -203,6 +203,51 @@ function do_action($db){
 		}
 		header('Location: ./?dashpage=upload');
 		exit;
+	} else if ($action == 'processGuidSelect' && $_SESSION['isStaff'] && isset($_POST['guidSelect'])){
+		$guid = $_POST['guidSelect'];
+		$content_dir = UPLOADDIR.'/'.$guid;
+		$ok = true;
+		$ok = preg_match('/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/i', $guid);
+		if($ok){
+			$ok = is_dir($content_dir);
+		} else {
+			$_SESSION['error_message'] = 'Invalid GUID provided';
+			header('Location: ./?dashpage=upload');
+			exit;
+		}
+
+		if($ok){
+			$ok = (getUploadUser($db, $guid) === $_SESSION['user_id']);
+		} else {
+			$_SESSION['error_message'] = 'Content for provided GUID not found.';
+			header('Location: ./?dashpage=upload');
+			exit;
+		}
+
+		if($ok){
+			$data_connector = DataConnector\DataConnector::getDataConnector(DB_TABLENAME_PREFIX, $db);
+			$consumer = ToolProvider\ToolConsumer::fromRecordId($_SESSION['consumer_pk'], $data_connector);
+			if (is_null($_SESSION['resource_pk'])) {
+				$resource_link = ToolProvider\ResourceLink::fromConsumer($consumer, $_SESSION['resource_id']);
+				$ok = $resource_link->save();
+			} else {
+				$resource_link = ToolProvider\ResourceLink::fromRecordId($_SESSION['resource_pk'], $data_connector);
+			}
+			$_SESSION['resource_pk'] = $resource_link->getRecordId();
+			$ok = selectModule($db, $_SESSION['resource_pk'], '/'.$guid.'/config.yml');
+		} else {
+			$_SESSION['error_message'] = 'You do not have permission to access this GUID.';
+			header('Location: ./?dashpage=upload');
+			exit;
+		}
+
+		if($ok){
+			$_SESSION['message'] = "Existing GUID successfuly selected for use.";
+		} else {
+			$_SESSION['error_message'] = 'Error setting up content resource!';
+		}
+		header('Location: ./');
+		exit;
 	}
 	return $ok;
 }

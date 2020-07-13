@@ -309,6 +309,7 @@ function init_db($db) {
 			'resource_link_pk int(11) NOT NULL, ' .
 			'hide_by_default tinyint(1) NOT NULL DEFAULT 0, ' .
 			'user_uploaded tinyint(1) NOT NULL DEFAULT 0, ' .
+			'direct_link_slug varchar(1024) NOT NULL DEFAULT \'/\', ' .
 			'PRIMARY KEY (resource_link_pk)' .
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8';
 		$ok = $db->exec($sql) !== FALSE;
@@ -319,6 +320,15 @@ function init_db($db) {
 				"ON DELETE CASCADE";
 			$ok = $db->exec($sql) !== FALSE;
 		}
+	}
+
+	if ($ok && !table_exists($db, "{$prefix}uploaded_content")) {
+		$sql = "CREATE TABLE {$prefix}uploaded_content (" .
+			'guid varchar(36) NOT NULL, ' .
+			'username varchar(512) NOT NULL, ' .
+			'PRIMARY KEY (guid)' .
+			') ENGINE=InnoDB DEFAULT CHARSET=utf8';
+		$ok = $db->exec($sql) !== FALSE;
 	}
 
 	return $ok;

@@ -31,6 +31,20 @@ class DashboardUploadPage {
 			</button>
 			</div>
 			</form>
+			<hr>
+			<h4 class="mt-4">Existing Document</h3>
+			<p>Enter an existing <i>GUID</i> to reuse existing content previously uploaded to Cousebuilder. The GUID can be found on the <b>Selected Content</b> dashboard page once content has been successfuly uploaded.</p>
+			<p><i>Existing content must have been uploaded by the same user currently logged in.</i></p>
+			<form action="index.php" method="POST" enctype="multipart/form-data">
+			<div class="form-row">
+			<div class="form-group col-sm-7 col-md-6 col-lg-4">
+			<label for="guidSelect" class="small"><b>GUID:</b></label>
+			<input id="guidSelect" name="guidSelect" class="form-control" type="text" placeholder="00000000-0000-0000-000000000000">
+			</div>
+			</div>
+			<input type="hidden" name="do" value="processGuidSelect">
+			<button type="submit" id="guidButton" class="btn btn-sm btn-primary">Submit</button>
+			</form>
 EOD;
 		} else if($this->isModuleEmpty() && $this->resource_options['user_uploaded']==0){
 			//Uploaded but unprocessed content
