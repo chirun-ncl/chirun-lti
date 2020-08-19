@@ -42,7 +42,7 @@ EOD;
 						var log = document.getElementById("console-log");
 						log.scrollIntoView(false);
 						setTimeout(function(){
-							if(!$('#console-log').text().includes('Finished!')){
+							if(!$('#console-log').text().includes('Finished!') && !$('#console-log').text().includes('Your document failed to build')){
 								location.reload(true);
 							}
 						}, 5000);       
