@@ -1,4 +1,5 @@
 content
 config.php
 upload/*
-process/logs/*
+process/*
+!process/process.sh
