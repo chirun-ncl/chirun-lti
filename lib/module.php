@@ -286,7 +286,7 @@ class Module {
 		$path = '/';
 		if($this->get_direct_linked_item() && $allow_direct_link){
 			if($this->get_direct_linked_item()->type != 'introduction'){
-				$path = $this->get_direct_linked_item()->slug_path;
+				$path = $this->get_direct_linked_item()->slug_path.'/';
 			}
 		}
 		if($this->selected_theme){

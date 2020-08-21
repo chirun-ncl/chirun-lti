@@ -13,7 +13,7 @@ class StudentPage extends ErrorPage {
 			$path = '';
 			$direct_link = $this->module->get_direct_linked_item();
 			if(!empty($direct_link) && $direct_link->type != 'introduction'){
-				$path = $direct_link->slug_path;
+				$path = $direct_link->slug_path.'/';
 				$path = ltrim($path,'/');
 			}
 			$indexContent = str_replace('{base}/','',$this->module->root_url);
