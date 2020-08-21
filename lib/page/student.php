@@ -10,7 +10,7 @@ class StudentPage extends ErrorPage {
 			$ok = $this->renderRequestedContent();
 		}
 		if (!$ok){
-			$path = '/';
+			$path = '';
 			$direct_link = $this->module->get_direct_linked_item();
 			if(!empty($direct_link) && $direct_link->type != 'introduction'){
 				$path = $direct_link->slug_path;
@@ -24,7 +24,7 @@ class StudentPage extends ErrorPage {
 			$indexContent = ltrim($indexContent,'/');
 			$this->reqContentError = $this->requestContentForModule($indexContent);
 			if(empty($this->reqContentError)){
-				$this->renderRequestedContent();
+				header("Location: ".WEBCONTENTDIR."/".$indexContent);
 			} else {
 				$this->addAlert($this->reqContentError, "danger");
 				$ok = false;
