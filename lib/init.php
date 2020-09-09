@@ -393,7 +393,8 @@ function processWithSourceFile($db, $resource_pk, $source_main){
 	$escaped_logloc = escapeshellarg($logloc);
 	$script_dir = PROCESSDIR;
 	$script_owner = PROCESSUSER;
-	exec("cd {$script_dir} && sudo -u {$script_owner} ./process.sh -g {$escaped_guid} -d {$escaped_source} -b {$escaped_webbase}  > {$escaped_logloc} 2>&1 &");
+	$template = "standalone";
+	exec("cd {$script_dir} && sudo -u {$script_owner} ./process.sh -g {$escaped_guid} -d {$escaped_source} -b {$escaped_webbase} -t {$template}  > {$escaped_logloc} 2>&1 &");
 	setUploadUser($db, $guid, $_SESSION['user_id']);
 	return true;
 }

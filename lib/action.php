@@ -162,7 +162,7 @@ function do_action($db){
 				$resource_link = ToolProvider\ResourceLink::fromRecordId($_SESSION['resource_pk'], $data_connector);
 			}
 			$_SESSION['resource_pk'] = $resource_link->getRecordId();
-			$ok = selectModule($db, $_SESSION['resource_pk'], '/'.$guid.'/config.yml');
+			$ok = selectModule($db, $_SESSION['resource_pk'], '/'.$guid.'/MANIFEST.yml');
 		} else {
 			$_SESSION['error_message'] = 'Unable to save uploaded files!';
 		}
@@ -234,7 +234,7 @@ function do_action($db){
 				$resource_link = ToolProvider\ResourceLink::fromRecordId($_SESSION['resource_pk'], $data_connector);
 			}
 			$_SESSION['resource_pk'] = $resource_link->getRecordId();
-			$ok = selectModule($db, $_SESSION['resource_pk'], '/'.$guid.'/config.yml');
+			$ok = selectModule($db, $_SESSION['resource_pk'], '/'.$guid.'/MANIFEST.yml');
 		} else {
 			$_SESSION['error_message'] = 'You do not have permission to access this GUID.';
 			header('Location: ./?dashpage=upload');
