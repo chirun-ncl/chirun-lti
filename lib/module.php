@@ -265,13 +265,15 @@ class Module {
 	}
 
 	public function get_direct_linked_item(){
-		foreach ($this->content as $content){
-			if ($content->slug_path == $this->resource_options['direct_link_slug']){
-				return $content;
-			}
-			foreach ($content->children as $item){
-				if ($item->slug_path == $this->resource_options['direct_link_slug']){
-					return $item;
+		if(array_key_exists('direct_link_slug',$this->resource_options)){
+			foreach ($this->content as $content){
+				if ($content->slug_path == $this->resource_options['direct_link_slug']){
+					return $content;
+				}
+				foreach ($content->children as $item){
+					if ($item->slug_path == $this->resource_options['direct_link_slug']){
+						return $item;
+					}
 				}
 			}
 		}
