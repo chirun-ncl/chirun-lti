@@ -3,3 +3,4 @@ config.php
 upload/*
 process/*
 !process/process.sh
+!process/templates

@@ -1,0 +1,14 @@
+base_dir: {BASE}
+code: {GUID}
+root_url: '{base}/{code}/{theme}/'
+structure: 
+  - type: standalone
+    sidebar: False
+    topbar: False
+    footer: True
+    source: {DOCUMENT}
+themes: 
+  - title: Standalone
+    source: default
+    path: default
+build_pdf: True
