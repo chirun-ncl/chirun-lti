@@ -1,6 +1,6 @@
 #!/bin/bash
 error() { echo "An error has occured launching the CourseBuilder LTI document processor. Please contact your local administration." 1>&2; exit 1; }
-failed() { echo "Your document failed to build with CourseBuilder. If the error shown above is TeX related, try simplifying your document by removing unsupported LaTeX packages and try again." 1>&2; rm -rf "${PROCESS_TARGET}"; exit 1; }
+failed() { echo "Your document failed to build with CourseBuilder. If the error shown above is TeX related, try simplifying your document by removing unsupported LaTeX packages and try again." 1>&2; exit 1; }
 
 while getopts ":g:d:b:" o
 do
