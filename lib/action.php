@@ -196,7 +196,7 @@ function do_action($db){
 			$_SESSION['error_message'] = 'Unable to select source file!';
 		}
 		if($ok){
-                        updateResourceOptions($db, $_SESSION['resource_pk'], array('user_uploaded'=>1));
+			updateResourceOptions($db, $_SESSION['resource_pk'], array('user_uploaded'=>1));
 			$_SESSION['message'] = "Selected main content file: {$source_main}";
 		} else {
 			$_SESSION['error_message'] = 'Upload process failed!';

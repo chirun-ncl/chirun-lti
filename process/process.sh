@@ -1,6 +1,19 @@
 #!/bin/bash
-error() { echo "An error has occured launching the CourseBuilder LTI document processor. Please contact your local administration." 1>&2; exit 1; }
-failed() { echo "Your document failed to build with CourseBuilder. If the error shown above is TeX related, try simplifying your document by removing unsupported LaTeX packages and try again." 1>&2; exit 1; }
+error() {
+  echo "An error has occured launching the CourseBuilder LTI document processor. Please contact your local administration." 1>&2;
+  exit 1;
+}
+cleanup(){
+  # Tidy up processing directory
+  docker run --rm -v "$(pwd):/opt/cb/" -w /opt/cb coursebuilder/coursebuilder-docker make clean >/dev/null 2>&1;
+  # Remove processing directory
+  rm -rf ${PROCESS_TARGET};
+}
+failed() {
+  echo "Your document failed to build with CourseBuilder. If the error shown above is TeX related, try simplifying your document by removing unsupported LaTeX packages and try again." 1>&2;
+  cleanup
+  exit 1;
+}
 
 while getopts ":g:d:b:t:" o
 do
@@ -51,9 +64,5 @@ cp config.yml ${CONTENT_TARGET}
 chown -R programs:www-data ${CONTENT_TARGET}
 chmod -R g+w ${CONTENT_TARGET}
 
-# Tidy up processing directory
-docker run --rm -v "$(pwd):/opt/cb/" -w /opt/cb coursebuilder/coursebuilder-docker make clean
-[[ $? -eq 0 ]] || failed
-rm -rf ${PROCESS_TARGET}
-
+cleanup
 echo "Finished!"

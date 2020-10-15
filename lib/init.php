@@ -341,21 +341,18 @@ function deleteModule($db, $resource_pk, $module_selected_id) {
 			$ok = delTree($module_realdir);
 		}
 	}
-	if($ok){
-		// Delete the item from the DB
-		$prefix = DB_TABLENAME_PREFIX;
-		$sql = <<< EOD
+	// Delete the item from the DB
+	$prefix = DB_TABLENAME_PREFIX;
+	$sql = <<< EOD
 DELETE FROM {$prefix}module_selected
 WHERE (module_selected_id = :module_selected_id) AND (resource_link_pk = :resource_pk)
 EOD;
 	
-		$query = $db->prepare($sql);
-		$query->bindValue('module_selected_id', $module_selected_id, PDO::PARAM_INT);
-		$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_STR);
-		$ok = $query->execute();
-	}
+	$query = $db->prepare($sql);
+	$query->bindValue('module_selected_id', $module_selected_id, PDO::PARAM_INT);
+	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_STR);
+	$ok = $query->execute();
 	return $ok;
-
 }
 
 ###
