@@ -170,8 +170,9 @@ function do_action($db){
 		if($ok){
 			$content_files = glob($upload_dir.'/'."*.{tex,md,yml}",GLOB_BRACE);
 			$config_files = glob($upload_dir.'/'."config.yml");
+			$template_name = isset($_POST['split_chapters'])?'split':'standalone';
 			if(count($content_files) == 1 || count($config_files) == 1){
-				$ok = processWithSourceFile($db, $_SESSION['resource_pk'], basename($content_files[0]));
+				$ok = processWithSourceFile($db, $_SESSION['resource_pk'], basename($content_files[0]),$template_name);
 				if($ok){
 					updateResourceOptions($db, $_SESSION['resource_pk'], array('user_uploaded'=>1));
 				} else {
@@ -189,8 +190,9 @@ function do_action($db){
 			$ok = false;
 		}
 		$source_main = $_POST['source_main'];
+		$template_name = isset($_POST['split_chapters'])?'split':'standalone';
 		if($ok && !empty($source_main)){
-			$ok = processWithSourceFile($db, $_SESSION['resource_pk'], $source_main);
+			$ok = processWithSourceFile($db, $_SESSION['resource_pk'], $source_main, $template_name);
 		} else {
 			$ok = false;
 			$_SESSION['error_message'] = 'Unable to select source file!';

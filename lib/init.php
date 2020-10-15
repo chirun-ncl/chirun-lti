@@ -377,7 +377,7 @@ EOD;
 	return $query->execute();
 }
 
-function processWithSourceFile($db, $resource_pk, $source_main){
+function processWithSourceFile($db, $resource_pk, $source_main, $template_name="standalone"){
 	$selected_module = getSelectedModule($db, $resource_pk);
 	if(!isset($selected_module)) return false;
 	$guid = basename(dirname($selected_module->yaml_path));
@@ -390,7 +390,7 @@ function processWithSourceFile($db, $resource_pk, $source_main){
 	$escaped_logloc = escapeshellarg($logloc);
 	$script_dir = PROCESSDIR;
 	$script_owner = PROCESSUSER;
-	$template = "standalone";
+	$template = $template_name;
 	exec("cd {$script_dir} && sudo -u {$script_owner} ./process.sh -g {$escaped_guid} -d {$escaped_source} -b {$escaped_webbase} -t {$template}  > {$escaped_logloc} 2>&1 &");
 	setUploadUser($db, $guid, $_SESSION['user_id']);
 	return true;

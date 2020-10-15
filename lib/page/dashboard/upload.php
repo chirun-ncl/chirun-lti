@@ -24,6 +24,9 @@ class DashboardUploadPage {
 			<div class="form-group">
 			<input id="docUpload" name="docUpload[]" type="file" class="file" multiple data-show-upload="true" data-show-caption="true">
 			</div>
+			<div class="form-group">
+			<input type="checkbox" id="split_chapters" name="split_chapters"> <label for="split_chapters">Split document into separate chapters</label> 
+			</div>
 			<input type="hidden" name="do" value="processUpload">
 			<div class="form-group">
 			<button type="submit" onclick="$('#uploadSpinner').show(); setTimeout(function(){ $('#uploadButton').prop('disabled', true);}, 0);" id="uploadButton" class="btn btn-primary">
@@ -67,6 +70,9 @@ EOD;
 			}
 			$main .= <<< EOD
 				<div class="form-group mt-2">
+				<div class="form-group">
+				<input type="checkbox" id="split_chapters" name="split_chapters"> <label for="split_chapters">Split document into separate chapters</label> 
+				</div>
 				<input type="hidden" name="do" value="processBuild">
 				<button type="submit" class="btn btn-primary">Build</button>
 				</div>

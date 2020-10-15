@@ -55,6 +55,7 @@ else
 fi
 
 cd "${PROCESS_TARGET}"
+touch empty.md
 docker run --rm -v "$(pwd):/opt/cb/" -w /opt/cb coursebuilder/coursebuilder-docker make
 [[ $? -eq 0 ]] || failed
 

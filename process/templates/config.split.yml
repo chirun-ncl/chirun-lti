@@ -3,10 +3,14 @@ code: {GUID}
 root_url: '{base}/{code}/{theme}/'
 structure: 
   - type: document 
-    sidebar: False
-    topbar: True
-    footer: True
+    title: {DOCUMENT}
+    sidebar: false
+    topbar: false
+    footer: true
     source: {DOCUMENT}
+  - type: introduction
+    topbar: false
+    source: empty.md
 themes: 
   - title: Standalone
     source: default

@@ -7,6 +7,7 @@ structure:
     topbar: False
     footer: True
     source: {DOCUMENT}
+    title: {DOCUMENT}
 themes: 
   - title: Standalone
     source: default

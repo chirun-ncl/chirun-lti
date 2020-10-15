@@ -23,7 +23,7 @@ class DashboardSelectedContentPage {
 EOD;
 		} else if($this->isModuleStandalone()){
 			$main .= <<< EOD
-			<p><strong>Document source:</strong> {$this->module->content[0]->source}<br/>
+			<p><strong>Document source:</strong> {$this->module->content[0]->title}<br/>
 			<strong>Theme:</strong> {$this->module->selected_theme->title}</br>
 			<strong>GUID:</strong> {$this->module->code}</p>
 			<h3 class="mt-4">Delete content</h3>
