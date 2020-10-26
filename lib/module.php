@@ -18,6 +18,7 @@ class Content {
 	public function __construct($content_item, $owner_module, $parent = NULL) {
 		$this->type = $content_item['type'];
 		$this->source = $content_item['source'];
+		$this->slug = array_key_exists('slug',$content_item)?$content_item['slug']:NULL;
 		$this->owner_module = $owner_module;
 		if(strcmp($this->type,'introduction')==0){
 			$this->title = "Introduction";
@@ -78,7 +79,11 @@ EOD;
 		if(isset($this->parent_slug)){
 			$slug .= $this->parent_slug;
 		}
-		$slug .= '/'.strtolower(preg_replace("/[^A-z0-9_\/]/", '', preg_replace("/\s+/", '_', $this->title)));
+		if(empty($this->slug)){
+			$slug .= '/'.strtolower(preg_replace("/[^A-z0-9_\/]/", '', preg_replace("/\s+/", '_', $this->title)));
+		} else {
+			$slug .= '/'.$this->slug;
+		}
 		return $slug;
 	}
 
@@ -146,6 +151,7 @@ class Part extends Content {
 
 	public function __construct($content_item, $owner_module) {
 		$this->title = $content_item['title'];
+		$this->slug = array_key_exists('slug',$content_item)?$content_item['slug']:NULL;
 		$this->slug_path = $this->slugify();
 		$this->owner_module = $owner_module;
 
