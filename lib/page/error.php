@@ -5,9 +5,9 @@ class ErrorPage extends LTIPage {
 	}
 	protected function errorContent(){
 		$errorContent = <<< EOD
-			<p>Sorry, Coursebuilder has encountered an error loading this page. 
+			<p id="errorMessage">Sorry, Coursebuilder has encountered an error loading this page. 
 				Try reloading the page or come back later.</p>
-			<div class="alert alert-warning alert-dismissible pr-1" role="alert">
+			<div class="alert alert-warning alert-dismissible pr-1" id="errorAlert" role="alert">
 				The following error detail was provided:
 EOD;
 		foreach($this->alerts as $alert){
@@ -18,7 +18,7 @@ EOD;
 				<span aria-hidden="true">&times;</span>
 			</div>
 			<h5>Using macOS or iOS?</h5>
-			<p>Safari 13.1 contains an update that causes issues with loading content. We are currently working on a solution for this issue. Until then, you can avoid errors by <a data-toggle="collapse" href="#safari">disabling cross-site tracking prevention</a> in Safari and reloading the page.</p>
+			<p>Safari 13.1 contains an update that causes issues with loading content. We are currently working on a solution for this issue. Until then, you can avoid this step by <a data-toggle="collapse" href="#safari">disabling cross-site tracking prevention</a> in Safari and reloading the page.</p>
 			<div class="collapse" id="safari">
 				<div class="card card-body">
 					<h6>macOS Catalina</h6>
@@ -35,6 +35,26 @@ EOD;
 					</ol>
 				</div>
 			</div>
+			<script>
+				var cookiePromise = document.hasStorageAccess();
+				cookiePromise.then(
+				function (hasAccess) {
+					console.log('document.hasStorageAccess: '+hasAccess);
+					if(!hasAccess){
+						document.getElementById("errorMessage").previousElementSibling.previousElementSibling.style.display = 'none';
+						document.getElementById("errorMessage").style.display = 'none';
+						document.getElementById("errorAlert").innerHTML =
+							'<p>Due to your browser\'s cookie settings this content must be opened in a new tab.</p>'+
+EOD;
+		$errorContent .= "\"<button onclick='window.open(window.location+\\\"&do_sessid=true\\\");' type='button' class='btn btn-primary'>Click here to open</button>\";";
+		$errorContent .= <<< EOD
+					}
+				},
+				function (reason) {
+					// Promise was rejected.
+					console.log('document.hasStorageAccess promise rejected: '+reason);
+				});
+			</script>
 EOD;
 		return $errorContent;
 	}

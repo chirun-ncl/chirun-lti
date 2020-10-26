@@ -655,7 +655,7 @@ EOD;
                     }
                 }
             } else if (!is_null($this->redirectUrl)) {
-                header("Location: {$this->redirectUrl}");
+                header("Location: {$this->redirectUrl}?".SESSION_NAME."_sessid=".session_id());
                 exit;
             } else if (!is_null($this->output)) {
                 echo $this->output;
