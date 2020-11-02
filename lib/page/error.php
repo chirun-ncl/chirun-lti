@@ -5,8 +5,10 @@ class ErrorPage extends LTIPage {
 	}
 	protected function errorContent(){
 		$errorContent = <<< EOD
-			<p id="errorMessage">Sorry, Coursebuilder has encountered an error loading this page. 
-				Try reloading the page or come back later.</p>
+			<div id="errorMessage">
+			<p>Sorry, Coursebuilder has encountered an error loading this page. Please try reloading the page or opening the page in a new tab.</p>
+			<p><button onclick='window.open(window.location+"&do_sessid=true");' type='button' class='btn btn-primary'>Click here to open in a new tab</button></p>
+			</div>
 			<div class="alert alert-warning alert-dismissible pr-1" id="errorAlert" role="alert">
 				The following error detail was provided:
 EOD;
@@ -36,7 +38,7 @@ EOD;
 				</div>
 			</div>
 			<script>
-				var cookiePromise = document.hasStorageAccess();
+				//var cookiePromise = document.hasStorageAccess();
 				cookiePromise.then(
 				function (hasAccess) {
 					console.log('document.hasStorageAccess: '+hasAccess);
@@ -46,7 +48,7 @@ EOD;
 						document.getElementById("errorAlert").innerHTML =
 							'<p>Due to your browser\'s cookie settings this content must be opened in a new tab.</p>'+
 EOD;
-		$errorContent .= "\"<button onclick='window.open(window.location+\\\"&do_sessid=true\\\");' type='button' class='btn btn-primary'>Click here to open</button>\";";
+		$errorContent .= "\"<button onclick='window.open(window.location+\\\"&do_sessid=true\\\");' type='button' class='btn btn-primary'>Click here to open in a new tab</button>\";";
 		$errorContent .= <<< EOD
 					}
 				},
