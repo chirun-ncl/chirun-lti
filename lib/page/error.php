@@ -38,7 +38,7 @@ EOD;
 				</div>
 			</div>
 			<script>
-				//var cookiePromise = document.hasStorageAccess();
+				var cookiePromise = document.hasStorageAccess();
 				cookiePromise.then(
 				function (hasAccess) {
 					console.log('document.hasStorageAccess: '+hasAccess);

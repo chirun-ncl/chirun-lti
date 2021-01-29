@@ -1,4 +1,14 @@
 <?php
+
+function tex_array_filter($fn){
+	$ret = false;
+	if (str_replace('.tex', '', $fn) != $fn) {
+		$ret = true;
+	}
+	return $ret;
+}
+
+$arr = array_filter($arr, 'url_array_filter');
 class DashboardUploadPage {
 	use ModulePage;
 	public $title = "Upload Document";
@@ -57,6 +67,7 @@ EOD;
 EOD;
 			$fullUploadPath = INSTALLDIR.'/upload'.dirname($this->module->yaml_path);
 			$uploadFiles = array_diff(scandir($fullUploadPath),array('..','.'));
+			$uploadFiles = array_filter($uploadFiles, 'tex_array_filter');
 			$main .= <<< EOD
 				<form action="index.php" method="POST">
 EOD;
