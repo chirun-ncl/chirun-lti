@@ -25,6 +25,9 @@ class Content {
 		} else {
 			$this->title = empty($content_item['title'])?$content_item['source']:$content_item['title'];
 		}
+		if(strcmp($this->type,'html')==0){
+			$this->slug = $this->source;
+		}
 		if(isset($parent)){
 			$this->parent = $parent;
 			$this->parent_slug = $parent->slug_path;
@@ -173,7 +176,7 @@ class Part extends Content {
 
 	public function direct_link_tbl_row(){
 		$html = "<tbody><tr class='table-primary'>";
-		$html .= "<td class='clickable collapsed' data-toggle='collapse' data-target='#table-part-{$this->slug_path}' aria-expanded='false' aria-controls='table-part-{$this->slug_path}'>";
+		$html .= "<td class='clickable' data-toggle='collapse' data-target='#table-part-{$this->slug_path}' aria-expanded='false' aria-controls='table-part-{$this->slug_path}'>";
 
 		$html .= '<i class="fa fa-3 fa-chevron-down"></i></td>';
 		$html .= '<td>'.$this->title.'</td>';
@@ -183,7 +186,7 @@ class Part extends Content {
 			</td>
 EOD;
 		$html .= '</tr></tbody>';
-		$html .= "<tbody id='table-part-{$this->slug_path}' class='collapse'>";
+		$html .= "<tbody id='table-part-{$this->slug_path}' class='collapse show'>";
 		foreach ($this->children as $child_content){
 			$html .= $child_content->direct_link_tbl_row();
 		}
@@ -294,7 +297,11 @@ class Module {
 		$path = '/';
 		if($this->get_direct_linked_item() && $allow_direct_link){
 			if($this->get_direct_linked_item()->type != 'introduction'){
-				$path = $this->get_direct_linked_item()->slug_path.'/';
+				if(strcmp($this->get_direct_linked_item()->type,'html')==0){
+					$path = $this->get_direct_linked_item()->slug_path;
+				} else {
+					$path = $this->get_direct_linked_item()->slug_path.'/';
+				}
 			}
 		}
 		if($this->selected_theme){
@@ -321,7 +328,7 @@ class Module {
 		if(!$this->yaml) return NULL;
 		$content_overrides = NULL;
 		foreach ($this->yaml['structure'] as $content_item){
-			if (strcmp($content_item['type'],"part")==0){
+			if (strcmp($content_item['type'],"part")==0 || strcmp($content_item['type'],"document")==0){
 				$this->content[] = new Part($content_item, $this);
 			} else {
 				$this->content[] = new Content($content_item, $this);
