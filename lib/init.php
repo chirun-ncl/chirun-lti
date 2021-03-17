@@ -223,19 +223,44 @@ EOD;
 }
 
 ###
+###  Return all modules marked for public access
+###
+function getPublicModules($db) {
+	$prefix = DB_TABLENAME_PREFIX;
+	$sql = <<< EOD
+SELECT module_selected_id, module_yaml_path, {$prefix}module_selected.resource_link_pk as resource_link_pk
+FROM {$prefix}module_selected
+JOIN {$prefix}resource_options
+ON {$prefix}module_selected.resource_link_pk = {$prefix}resource_options.resource_link_pk
+WHERE {$prefix}resource_options.public_access = 1
+EOD;
+
+	$query = $db->prepare($sql);
+	$query->execute();
+
+	$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+	$modules=array();
+	foreach($rows as $row){
+		 $modules[] = $row;
+	}
+	return $modules;
+}
+
+###
 ###  Set options for a specified resource
 ###
 
 function updateResourceOptions($db, $resource_pk, $opt){
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-REPLACE INTO {$prefix}resource_options (resource_link_pk, hide_by_default, user_uploaded, direct_link_slug)
-VALUES (:resource_pk, :hide_by_default, :user_uploaded, :direct_link_slug)
+REPLACE INTO {$prefix}resource_options (resource_link_pk, hide_by_default, user_uploaded, public_access, direct_link_slug)
+VALUES (:resource_pk, :hide_by_default, :user_uploaded, :public_access ,:direct_link_slug)
 EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_INT);
 	$query->bindValue('hide_by_default', !empty($opt['hide_by_default']), PDO::PARAM_INT);
 	$query->bindValue('user_uploaded', !empty($opt['user_uploaded']), PDO::PARAM_INT);
+	$query->bindValue('public_access', !empty($opt['public_access']), PDO::PARAM_INT);
 	$query->bindValue('direct_link_slug', array_key_exists('direct_link_slug',$opt)?$opt['direct_link_slug']:'/', PDO::PARAM_STR);
 	return $query->execute();
 }
@@ -379,6 +404,19 @@ EOD;
 	$query->bindValue('user_fullname', $session['user_fullname'], PDO::PARAM_STR);
 	$query->bindValue('isStudent', $session['isStudent'], PDO::PARAM_INT);
 	$query->bindValue('isStaff', $session['isStaff'], PDO::PARAM_INT);
+	return $query->execute();
+}
+
+function addAnonymousUserSession($db, $resource_pk, $token){
+	$prefix = DB_TABLENAME_PREFIX;
+	$sql = <<< EOD
+INSERT INTO {$prefix}user_session (user_session_token, resource_link_pk, 
+	user_id, user_email, user_fullname, isStudent, isStaff, timestamp, expiry)
+VALUES (:user_session_token, :resource_link_pk, '', '', 'Anonymous User', 0, 0, NOW(), NULL)
+EOD;
+	$query = $db->prepare($sql);
+	$query->bindValue('user_session_token', $token, PDO::PARAM_STR);
+	$query->bindValue('resource_link_pk', $resource_pk, PDO::PARAM_INT);
 	return $query->execute();
 }
 

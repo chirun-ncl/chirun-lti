@@ -7,6 +7,7 @@ require_once(__DIR__.'/dashboard/prebuilt.php');
 require_once(__DIR__.'/dashboard/upload.php');
 require_once(__DIR__.'/dashboard/logs.php');
 require_once(__DIR__.'/dashboard/buildlog.php');
+require_once(__DIR__.'/dashboard/publicaccess.php');
 
 class DashboardPage extends LTIPage {
 	protected $resource_pk = NULL;
@@ -37,6 +38,10 @@ class DashboardPage extends LTIPage {
 				'directlink'   => array(
 					'navTitle'  => 'Direct Link',
 					'navIcon'   => 'fa-link',
+				),
+				'publicaccess'   => array(
+					'navTitle'  => 'Public Access',
+					'navIcon'   => 'fa-globe',
 				)
 			)
 		),
@@ -70,13 +75,14 @@ class DashboardPage extends LTIPage {
 		)
 	);
 	private $pageClass = array(
-		'selected'   => 'DashboardSelectedContentPage',
-		'prebuilt'   => 'DashboardPrebuiltModuleSelectPage',
-		'upload'     => 'DashboardUploadPage',
-		'adaptive'   => 'DashboardAdaptiveReleasePage',
-		'accesslog'  => 'DashboardLogsPage',
-		'buildlog'   => 'DashboardBuildLogPage',
-		'directlink' => 'DashboardDirectLinkPage'
+		'selected'     => 'DashboardSelectedContentPage',
+		'prebuilt'     => 'DashboardPrebuiltModuleSelectPage',
+		'upload'       => 'DashboardUploadPage',
+		'adaptive'     => 'DashboardAdaptiveReleasePage',
+		'accesslog'    => 'DashboardLogsPage',
+		'buildlog'     => 'DashboardBuildLogPage',
+		'directlink'   => 'DashboardDirectLinkPage',
+		'publicaccess' => 'DashboardPublicAccessPage'
 	);
 
 	public function getTitle(){

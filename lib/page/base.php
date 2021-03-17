@@ -53,13 +53,13 @@ trait ModulePage {
 		if (isset($this->module)){
 			$error = $this->requestContentForModule($contentPath, $authLevel);
 		} else {
-			$error = "Module has not yet been configured";
+			$error = "Error displaying content.";
 		}
 
+		//Check the user's cookies for other sessions
 		if (!empty($error) && isset($_COOKIE['coursebuilder_session'])
 			&& isset($_COOKIE['coursebuilder_user_id'])){
 
-			//Check the user's cookies for other sessions
 			$ck_user_id = $_COOKIE['coursebuilder_user_id'];
 			foreach ($_COOKIE['coursebuilder_session'] as $ck_resource_pk => $ck_token) {
 				$session = getUserSession($this->db, $ck_user_id, $ck_token);
@@ -70,6 +70,21 @@ trait ModulePage {
 					$ck_module->apply_content_overrides($this->db, $session['resource_link_pk']);
 					$this->setModule($ck_module, $session['resource_link_pk']);
 					setUserSession($session);
+					$error = $this->requestContentForModule($contentPath, $authLevel);
+					if(empty($error)) break;
+				}
+			}
+		}
+
+		//Check for module content marked public
+		if (!empty($error)){
+			foreach (getPublicModules($this->db) as $module){
+				$pub_module = getSelectedModule($this->db, $module['resource_link_pk']);
+				$authModule = $pub_module->code;
+				if(substr($contentPath, 0, strlen($authModule)) === $authModule){
+					$pub_module->apply_content_overrides($this->db, $module['resource_link_pk']);
+					$this->setModule($pub_module, $module['resource_link_pk']);
+					#addAnonymousUserSession($this->db, $module['resource_link_pk'], getGuid());
 					$error = $this->requestContentForModule($contentPath, $authLevel);
 					if(empty($error)) break;
 				}

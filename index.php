@@ -4,19 +4,28 @@ require_once('lib/init.php');
 // Initialise session and database
 $db = NULL;
 $ok = init($db, TRUE);
+
+
 // Initialise parameters
 $req_id = 0;
+
+// Perform requested actions
 if ($ok) $ok = do_action($db);
+
+
+// Show debug output
+if(isset($_GET['debug'])){
+	#print_r($_SERVER);
+	#print_r($_SESSION);
+	#print_r($_COOKIE);
+}
+
 if ($ok && isset($_SESSION['resource_pk'])) {
 	$selected_module = getSelectedModule($db, $_SESSION['resource_pk']);
 	if(isset($selected_module)){
 		$selected_module->apply_content_overrides($db, $_SESSION['resource_pk']);
 	}
 }
-
-#print_r($_SERVER);
-#print_r($_SESSION);
-#print_r($_COOKIE);
 
 if ($ok && $_SESSION['isStudent']) {
 	if (isset($selected_module)) {
@@ -28,7 +37,7 @@ if ($ok && $_SESSION['isStudent']) {
 	$page = new DashboardPage();
 	$page->setResource($_SESSION['resource_pk']);
 } else {
-	$page = new ErrorPage();
+	$page = new NoLTIPage();
 }
 
 // Handle messages

@@ -88,4 +88,8 @@ EOD;
 		return $main;
 	}
 }
+
+class NoLTIPage extends ErrorPage {
+}
+
 ?>

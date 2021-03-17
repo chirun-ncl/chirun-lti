@@ -273,6 +273,13 @@ class Module {
 		return $hidden;
 	}
 
+	public function is_public_access(){
+		if(array_key_exists('public_access',$this->resource_options)){
+			return boolval($this->resource_options['public_access']);
+		}
+		return false;
+	}
+
 	public function get_direct_linked_item(){
 		if(array_key_exists('direct_link_slug',$this->resource_options)){
 			foreach ($this->content as $content){

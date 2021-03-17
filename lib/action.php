@@ -127,7 +127,8 @@ function do_action($db){
 		} else {
 			$_SESSION['error_message'] = 'Unable to update options; please try again';
 		}
-		header('Location: ./');
+		$redirect_location = isset($_POST["redirect_loc"])?$_POST["redirect_loc"]:'selected';
+		header("Location: ./?dashpage={$redirect_location}");
 		exit;
 	} else if ($action == 'processUpload' && $_SESSION['isStaff']){
 		$guid = getGuid();

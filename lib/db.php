@@ -309,6 +309,7 @@ function init_db($db) {
 			'resource_link_pk int(11) NOT NULL, ' .
 			'hide_by_default tinyint(1) NOT NULL DEFAULT 0, ' .
 			'user_uploaded tinyint(1) NOT NULL DEFAULT 0, ' .
+			'public_access tinyint(1) NOT NULL DEFAULT 0, ' .
 			'direct_link_slug varchar(1024) NOT NULL DEFAULT \'/\', ' .
 			'PRIMARY KEY (resource_link_pk)' .
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8';
