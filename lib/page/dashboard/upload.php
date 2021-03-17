@@ -8,7 +8,6 @@ function tex_array_filter($fn){
 	return $ret;
 }
 
-$arr = array_filter($arr, 'url_array_filter');
 class DashboardUploadPage {
 	use ModulePage;
 	public $title = "Upload Document";

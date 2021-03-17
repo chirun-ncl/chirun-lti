@@ -20,7 +20,7 @@ if (init($db)) {
 	$tool = new RatingToolProvider($data_connector);
 	$tool->setParameterConstraint('oauth_consumer_key', TRUE, 50, array('basic-lti-launch-request', 'ContentItemSelectionRequest', 'DashboardRequest'));
 	$tool->setParameterConstraint('resource_link_id', TRUE, 50, array('basic-lti-launch-request'));
-	$tool->setParameterConstraint('user_id', TRUE, 50, array('basic-lti-launch-request'));
+	$tool->setParameterConstraint('user_id', FALSE, 50, array('basic-lti-launch-request'));
 	$tool->setParameterConstraint('roles', TRUE, NULL, array('basic-lti-launch-request'));
 } else {
 	$tool = new RatingToolProvider(NULL);

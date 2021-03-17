@@ -37,7 +37,8 @@ function init(&$db, $checkSession = NULL) {
 	// Set session cookie path
 	ini_set('session.cookie_path', getAppPath());
 
-	if(!is_null($_GET['do_sessid']) & !is_null($_GET[SESSION_NAME.'_sessid'])){
+	if(array_key_exists('do_sessid', $_GET) && !is_null($_GET['do_sessid']) &&
+	       array_key_exists(SESSION_NAME.'_sessid', $_GET) && !is_null($_GET[SESSION_NAME.'_sessid'])){
 		session_id($_GET[SESSION_NAME.'_sessid']);
 	}
 

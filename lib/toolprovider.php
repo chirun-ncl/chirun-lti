@@ -38,39 +38,29 @@
 
       global $db;
 
-// Check the user has an appropriate role
-      if ($this->user->isLearner() || $this->user->isStaff()) {
 // Initialise the user session
-        $_SESSION['consumer_pk'] = $this->consumer->getRecordId();
-        $_SESSION['resource_pk'] = $this->resourceLink->getRecordId();
-        $_SESSION['user_consumer_pk'] = $this->user->getResourceLink()->getConsumer()->getRecordId();
-        $_SESSION['user_resource_pk'] = $this->user->getResourceLink()->getRecordId();
-        $_SESSION['user_pk'] = $this->user->getRecordId();
-        $_SESSION['user_id'] = $this->user->getId();
-        $_SESSION['user_email'] = $this->user->email;
-        $_SESSION['user_fullname'] = $this->user->fullname;
-        $_SESSION['isStudent'] = $this->user->isLearner();
-        $_SESSION['isAdmin'] = $this->user->isAdmin();
-        $_SESSION['isStaff'] = $this->user->isStaff();
-        $_SESSION['isContentItem'] = FALSE;
+      $_SESSION['consumer_pk'] = $this->consumer->getRecordId();
+      $_SESSION['resource_pk'] = $this->resourceLink->getRecordId();
+      $_SESSION['user_consumer_pk'] = $this->user->getResourceLink()->getConsumer()->getRecordId();
+      $_SESSION['user_resource_pk'] = $this->user->getResourceLink()->getRecordId();
+      $_SESSION['user_pk'] = $this->user->getRecordId();
+      $_SESSION['user_id'] = $this->user->getId();
+      $_SESSION['user_email'] = $this->user->email;
+      $_SESSION['user_fullname'] = $this->user->fullname;
+      $_SESSION['isStudent'] = !$this->user->isStaff();
+      $_SESSION['isAdmin'] = $this->user->isAdmin();
+      $_SESSION['isStaff'] = $this->user->isStaff();
+      $_SESSION['isContentItem'] = FALSE;
 
 // Set a cookie in the user's browser for persistence
-	$new_token = bin2hex(openssl_random_pseudo_bytes(32));
-	addUserSession($db, $_SESSION['resource_pk'], $new_token, $_SESSION);
-	setcookie("coursebuilder_session[{$_SESSION['user_resource_pk']}]",
-		$new_token, time() + 24*3600, "/");
-	setcookie("coursebuilder_user_id", $_SESSION['user_id'], time() + 24*3600, "/");
+      $new_token = bin2hex(openssl_random_pseudo_bytes(32));
+      addUserSession($db, $_SESSION['resource_pk'], $new_token, $_SESSION);
+      setcookie("coursebuilder_session[{$_SESSION['user_resource_pk']}]",
+        $new_token, time() + 24*3600, "/");
+      setcookie("coursebuilder_user_id", $_SESSION['user_id'], time() + 24*3600, "/");
 
 // Redirect the user to display the list of items for the resource link
-        $this->redirectUrl = getAppUrl();
-
-      } else {
-
-        $this->reason = 'Invalid role.';
-        $this->ok = FALSE;
-
-      }
-
+      $this->redirectUrl = getAppUrl();
     }
 
     function onContentItem() {
