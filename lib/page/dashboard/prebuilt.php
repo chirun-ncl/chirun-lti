@@ -33,7 +33,6 @@ EOD;
 			$module_years = array_unique(array_column($modules, 'year'));
 			sort($module_years);
 			foreach($module_years as $module_year){
-				if(empty($module_year)) continue;
 				$module_keys = array_keys(array_column($modules,'year'), $module_year);
 				$main .= <<< EOD
 					<tbody>
@@ -52,8 +51,12 @@ EOD;
 						</td>
 EOD;
 				}
+				if(empty($module_year)){
+					$main .= "<td>No year set</td>";
+				} else {
+					$main .= "<td>{$module_year}</td>";
+				}
 				$main .= <<< EOD
-						<td>{$module_year}</td>
 						<td></td>
 						<td></td>
 						<td></td>
