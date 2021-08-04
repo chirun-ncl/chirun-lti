@@ -455,7 +455,7 @@ function getModules() {
 	foreach($configpaths as $config){
 		$yaml_path = str_replace(CONTENTDIR,'',$config);
 		$module = new Module($yaml_path);
-		if (isset($module->code) && preg_match('/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/i', $module->code)===0 ){
+		if (isset($module->code) && preg_match('/[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4,5}-[a-z0-9]{12}/i', $module->code)===0 ){
 			$modules[] = $module;
 		}
 	}
