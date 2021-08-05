@@ -332,6 +332,17 @@ function init_db($db) {
 		$ok = $db->exec($sql) !== FALSE;
 	}
 
+	if ($ok && !table_exists($db, "{$prefix}key_value_store")) {
+		$sql = "CREATE TABLE {$prefix}key_value_store (" .
+			'username varchar(512) NOT NULL, ' .
+			'resource_link_pk int(11) NOT NULL, ' .
+			'data_key varchar(128) NOT NULL, ' .
+			'data_value LONGTEXT NOT NULL, ' .
+			'PRIMARY KEY (username, resource_link_pk, data_key)' .
+			') ENGINE=InnoDB DEFAULT CHARSET=utf8';
+		$ok = $db->exec($sql) !== FALSE;
+	}
+
 	return $ok;
 
 }

@@ -420,6 +420,49 @@ EOD;
 	return $query->execute();
 }
 
+#
+# Add some data to the KV store
+#
+function addDataKVStore($db, $resource_pk, $user, $data_key, $data_value){
+	$prefix = DB_TABLENAME_PREFIX;
+	$sql = <<< EOD
+REPLACE INTO {$prefix}key_value_store (resource_link_pk, username, data_key, data_value)
+VALUES (:resource_pk, :user, :data_key, :data_value)
+EOD;
+	$query = $db->prepare($sql);
+	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_INT);
+	$query->bindValue('user', $user, PDO::PARAM_STR);
+	$query->bindValue('data_key', $data_key, PDO::PARAM_STR);
+	$query->bindValue('data_value', $data_value, PDO::PARAM_STR);
+	return $query->execute();
+}
+
+#
+# Get some data from the KV store
+#
+function getDataKVStore($db, $resource_pk, $user, $data_key) {
+	$prefix = DB_TABLENAME_PREFIX;
+	$sql = <<< EOD
+SELECT data_value
+FROM {$prefix}key_value_store
+WHERE
+	resource_link_pk = :resource_pk
+	AND username = :user
+	AND data_key = :data_key
+EOD;
+	$query = $db->prepare($sql);
+	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_INT);
+	$query->bindValue('user', $user, PDO::PARAM_STR);
+	$query->bindValue('data_key', $data_key, PDO::PARAM_STR);
+	$query->execute();
+
+	$row = $query->fetch(PDO::FETCH_ASSOC);
+	if (isset($row['data_value'])){
+		return $row['data_value'];
+	}
+	return NULL;
+}
+
 function processWithSourceFile($db, $resource_pk, $source_main, $template_name="standalone"){
 	$selected_module = getSelectedModule($db, $resource_pk);
 	if(!isset($selected_module)) return false;
