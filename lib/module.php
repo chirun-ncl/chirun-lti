@@ -17,7 +17,10 @@ class Content {
 	
 	public function __construct($content_item, $owner_module, $parent = NULL) {
 		$this->type = $content_item['type'];
-		$this->source = $content_item['source'];
+		$this->source = 'null';
+		if (isset($content_item['source'])){
+			$this->source = $content_item['source'];
+		}
 		$this->slug = array_key_exists('slug',$content_item)?$content_item['slug']:NULL;
 		$this->owner_module = $owner_module;
 		if(strcmp($this->type,'introduction')==0){

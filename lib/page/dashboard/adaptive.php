@@ -2,11 +2,9 @@
 class DashboardAdaptiveReleasePage {
 	use ModulePage;
 	public $title = "Adaptive Release Settings";
-	protected $resource_pk = NULL;
 	protected $db = NULL;
 	public function setup($module, $db, $res){
 		$this->module = $module;
-		$this->resource_pk = $res;
 		$this->db = $db;
 	}
 	public function main(){

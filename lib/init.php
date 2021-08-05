@@ -407,6 +407,9 @@ EOD;
 	return $query->execute();
 }
 
+#
+# Add an anonymous user session to the database
+#
 function addAnonymousUserSession($db, $resource_pk, $token){
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
