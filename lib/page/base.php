@@ -28,6 +28,7 @@ trait ModulePage {
 	protected $module = NULL;
 	protected $authLevel = 0;
 	protected $CBLTI = array(
+		'api_path' => WEBDIR.'/api.php',
 		'resource_pk' => NULL,
 		'user_id' => NULL,
 		'user_email' => NULL,
