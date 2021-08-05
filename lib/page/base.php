@@ -44,8 +44,10 @@ trait ModulePage {
 		if(isset($resource_pk)){
 			$this->CBLTI['resource_pk'] = $resource_pk;
 			$this->CBLTI['auth_method'] = 'LTI';
-			$this->CBLTI['user_id'] = $_SESSION['user_id'];
-			$this->CBLTI['user_email'] = $_SESSION['user_email'];
+			if (isset($_SESSION['user_id'])){
+				$this->CBLTI['user_id'] = $_SESSION['user_id'];
+				$this->CBLTI['user_email'] = $_SESSION['user_email'];
+			}
 			$this->module->resource_options = getResourceOptions($this->db, $resource_pk);
 		}
 	}

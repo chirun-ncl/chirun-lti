@@ -101,6 +101,7 @@ if($ok){
 		$ck_session = getUserSession($db, $ck_user_id, $ck_token);
 		if(!empty($ck_session)){
 			$session = $ck_session;
+			$session['resource_pk'] = $ck_session['resource_link_pk'];
 			$ok = true;
 		}
 	}
@@ -125,7 +126,8 @@ if($ok){
 			$request->response->data[] = ['message' => 'Missing data in request.'];
 			break;
 		}
-		storeKV($db, $session['resource_link_pk'], $session['user_id'], $request->data['key'], $request->data['value']);
+		storeKV($db, $session['resource_pk'], $session['user_id'], $request->data['key'], $request->data['value']);
+		$ok = true;
 		break;
 	case 'get':
 		if (!isset($request->data['key'])){
@@ -134,11 +136,17 @@ if($ok){
 			$request->response->data[] = ['message' => 'Missing data in request.'];
 			break;
 		}
-		$request->response->data[] = getKV($db, $session['resource_link_pk'], $session['user_id'], $request->data['key']);
+		$request->response->data[] = getKV($db, $session['resource_pk'], $session['user_id'], $request->data['key']);
+		$ok = true;
 		break;
 	}
 }
 
+if(!$ok){
+	$request->response->code = 500;
+	$request->response->status = 'error';
+	$request->response->data[] = ['message' => 'An error occured actioning your request.'];
+}
 $request->response->respond();
 exit;
 ?>
