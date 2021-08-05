@@ -520,6 +520,7 @@ function recursiveSearchScan($dir, $sstr='', &$results = array()) {
 			} elseif (is_file($file)) {
 				if(strpos($file, $sstr) !== false){
 					$results[] = $file;
+					return $results;
 				}
 			}
 		}

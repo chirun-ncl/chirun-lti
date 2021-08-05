@@ -161,8 +161,10 @@ class Part extends Content {
 		$this->slug_path = $this->slugify();
 		$this->owner_module = $owner_module;
 
-		foreach ($content_item['content'] as $child_content){
-			$this->children[] = new Content($child_content, $this->owner_module, $this);
+		if(isset($content_item['content'])){
+			foreach ($content_item['content'] as $child_content){
+				$this->children[] = new Content($child_content, $this->owner_module, $this);
+			}
 		}
 
 		$this->calculate_hidden();
