@@ -27,6 +27,13 @@ class BasePage {
 trait ModulePage {
 	protected $module = NULL;
 	protected $authLevel = 0;
+	protected $CBLTI = array(
+		'resource_pk' => NULL,
+		'user_id' => NULL,
+		'user_email' => NULL,
+		'auth_method' => NULL,
+		'auth_level' => 0
+	);
 	protected $requestedContent = NULL;
 	public function setModule($module, $resource_pk = NULL){
 		$this->module = $module;
@@ -34,6 +41,10 @@ trait ModulePage {
 			$this->title = $module->title;
 		}
 		if(isset($resource_pk)){
+			$this->CBLTI['resource_pk'] = $resource_pk;
+			$this->CBLTI['auth_method'] = 'LTI';
+			$this->CBLTI['user_id'] = $_SESSION['user_id'];
+			$this->CBLTI['user_email'] = $_SESSION['user_email'];
 			$this->module->resource_options = getResourceOptions($this->db, $resource_pk);
 		}
 	}
@@ -69,6 +80,10 @@ trait ModulePage {
 				if(isset($ck_module)){
 					$ck_module->apply_content_overrides($this->db, $session['resource_link_pk']);
 					$this->setModule($ck_module, $session['resource_link_pk']);
+					$this->CBLTI['auth_method'] = 'cookie';
+					$this->CBLTI['user_id'] = $session['user_id'];
+					$this->CBLTI['user_email'] = $session['user_email'];
+					$this->CBLTI['auth_level'] = 0;
 					setUserSession($session);
 					$error = $this->requestContentForModule($contentPath, $authLevel);
 					if(empty($error)) break;
@@ -84,6 +99,11 @@ trait ModulePage {
 				if(substr($contentPath, 0, strlen($authModule)) === $authModule){
 					$pub_module->apply_content_overrides($this->db, $module['resource_link_pk']);
 					$this->setModule($pub_module, $module['resource_link_pk']);
+					$this->CBLTI['resource_pk'] = $module['resource_link_pk'];
+					$this->CBLTI['auth_method'] = 'anonymous';
+					$this->CBLTI['user_id'] = NULL;
+					$this->CBLTI['user_email'] = NULL;
+					$this->CBLTI['auth_level'] = 0;
 					#addAnonymousUserSession($this->db, $module['resource_link_pk'], getGuid());
 					$error = $this->requestContentForModule($contentPath, $authLevel);
 					if(empty($error)) break;
@@ -119,6 +139,7 @@ trait ModulePage {
 
 			//All tests passed, We're good to print the requested content
 			$this->requestedContent = $requestedContent;			
+			$this->CBLTI['auth_level'] = $authLevel;
 			return NULL;
 		}
 		return "You are not authorised to view this content.";
@@ -126,32 +147,39 @@ trait ModulePage {
 
 	protected function filter_content($html){
 		//
-		// This function searches the DOM for content that is supposed to be hidden and removes it.
+		// This function searches the DOM for hints in the coursebuilder output and applies changes.
 		//
 		$dom = new DomDocument;
 		@$dom->loadHTML($html);
-		foreach($this->module->get_hidden() as $hidden_item){
-			$xpath = new DomXPath($dom);
-			$hidden_slug_ltrim = ltrim($hidden_item->slug_path,'/');
+		$head = $dom->getElementsByTagName('head');
+		if (count($head) > 0){
+			$script = $dom->createElement('script', 'var CBLTI = CBLTI || {}; CBLTI='.json_encode($this->CBLTI).';');
+			$head->item(0)->appendChild($script);
+		}
+		if ($this->authLevel == 0){
+			foreach($this->module->get_hidden() as $hidden_item){
+				$xpath = new DomXPath($dom);
+				$hidden_slug_ltrim = ltrim($hidden_item->slug_path,'/');
 
-			if($hidden_item->type == 'introduction') {
-				$nodes = $xpath->query("//*[contains(@class, 'lti-hint-introduction')]");
-			} else if($hidden_item->type == 'part') {
-				$nodes = $xpath->query("//*[contains(@class,'lti-hint-part') and .//a[contains(@href, '".$hidden_slug_ltrim."')]]");
-			} else if($hidden_item->type == 'url') {
-				$nodes = $xpath->query("//*[contains(@class,'lti-hint-item') and .//a[contains(@href, '".$hidden_item->source."')]]");
-			} else {
-				$nodes = $xpath->query("//*[contains(@class,'lti-hint-item') and .//a[contains(@href, '".$hidden_slug_ltrim."')]]");
+				if($hidden_item->type == 'introduction') {
+					$nodes = $xpath->query("//*[contains(@class, 'lti-hint-introduction')]");
+				} else if($hidden_item->type == 'part') {
+					$nodes = $xpath->query("//*[contains(@class,'lti-hint-part') and .//a[contains(@href, '".$hidden_slug_ltrim."')]]");
+				} else if($hidden_item->type == 'url') {
+					$nodes = $xpath->query("//*[contains(@class,'lti-hint-item') and .//a[contains(@href, '".$hidden_item->source."')]]");
+				} else {
+					$nodes = $xpath->query("//*[contains(@class,'lti-hint-item') and .//a[contains(@href, '".$hidden_slug_ltrim."')]]");
+				}
+
+				foreach ($nodes as $node){
+					$node->parentNode->removeChild($node);
+				}
 			}
-
-			foreach ($nodes as $node){
+			$xpath = new DomXPath($dom);
+			$cleanup = $xpath->query("//*[contains(@class,'lti-hint-part') and not(.//ul/li)]");
+			foreach ($cleanup as $node){
 				$node->parentNode->removeChild($node);
 			}
-		}
-		$xpath = new DomXPath($dom);
-		$cleanup = $xpath->query("//*[contains(@class,'lti-hint-part') and not(.//ul/li)]");
-		foreach ($cleanup as $node){
-			$node->parentNode->removeChild($node);
 		}
 		return html_entity_decode($dom->saveHTML());
 	}
@@ -167,9 +195,7 @@ trait ModulePage {
 			header('Content-Type: ' . get_file_mime_type($this->requestedContent));
 			header('Content-Disposition: inline; filename="'.basename($this->requestedContent).'"');
 			$file_content = file_get_contents($this->requestedContent);
-			if ($this->authLevel == 0){
-				$file_content = $this->filter_content($file_content);
-			}
+			$file_content = $this->filter_content($file_content);
 			echo $file_content;
 			return true;
 		} else {
