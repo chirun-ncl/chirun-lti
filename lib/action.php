@@ -58,8 +58,7 @@ function do_action($db){
                                         $hidden = (strcmp('on',$content_item['checked'])==0)?1:0;
                                 }
                                 if($ok) {
-                                        $ok = updateContentOverrides($db, $selected_module->selected_id,
-                                                        $path, $start, $end, $hidden);
+                                        $ok = updateContentOverrides($db, $_SESSION['resource_pk'], $path, $start, $end, $hidden);
                                 }
                         }
                         if ($ok) {
@@ -77,7 +76,7 @@ function do_action($db){
                         if(!isset($selected_module)){
                                 $ok = FALSE;
                         }
-                        $ok = deleteContentOverrides($db, $selected_module->selected_id);
+                        $ok = deleteContentOverrides($db, $_SESSION['resource_pk']);
                         if ($ok) {
                                 $_SESSION['message'] = 'Adaptive release schedule successfully set back to its defaults.';
                         } else {

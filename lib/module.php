@@ -372,7 +372,7 @@ class Module {
 	public function apply_content_overrides($db, $resource_pk){
 		$this->resource_options = getResourceOptions($db, $resource_pk);
 		if($this->selected_id){
-			$content_overrides = getContentOverrides($db, $this->selected_id);
+			$content_overrides = getContentOverrides($db, $resource_pk);
 			foreach ($this->content as $content_item){
 				$content_item->apply_overrides($content_overrides);
 			}

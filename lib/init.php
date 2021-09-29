@@ -266,19 +266,19 @@ EOD;
 }
 
 ###
-###  Return any content overrides for a specified module selection
+###  Return any content overrides for a specified resource_link_pk
 ###
-function getContentOverrides($db, $module_selected_id) {
+function getContentOverrides($db, $resource_link_pk) {
 
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-SELECT module_selected_id,slug_path,start_datetime,end_datetime,hidden
+SELECT resource_link_pk,slug_path,start_datetime,end_datetime,hidden
 FROM {$prefix}module_content_overrides
-WHERE (module_selected_id = :selected_id)
+WHERE (resource_link_pk = :pk)
 EOD;
 
 	$query = $db->prepare($sql);
-	$query->bindValue('selected_id', $module_selected_id, PDO::PARAM_INT);
+	$query->bindValue('pk', $resource_link_pk, PDO::PARAM_INT);
 	$query->execute();
 
 	$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -290,16 +290,16 @@ EOD;
 }
 
 ###
-###  Update content overrides for a specified module selection
+###  Update content overrides for a specified resource_link_pk
 ###
-function updateContentOverrides($db, $module_selected_id, $slug_path, $start_datetime, $end_datetime, $hidden) {
+function updateContentOverrides($db, $resource_link_pk, $slug_path, $start_datetime, $end_datetime, $hidden) {
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-REPLACE INTO {$prefix}module_content_overrides (module_selected_id,slug_path,start_datetime,end_datetime,hidden)
-VALUES (:module_selected_id, :slug_path, :start_datetime, :end_datetime, :hidden)
+REPLACE INTO {$prefix}module_content_overrides (resource_link_pk,slug_path,start_datetime,end_datetime,hidden)
+VALUES (:resource_link_pk, :slug_path, :start_datetime, :end_datetime, :hidden)
 EOD;
 	$query = $db->prepare($sql);
-	$query->bindValue('module_selected_id', $module_selected_id, PDO::PARAM_INT);
+	$query->bindValue('resource_link_pk', $resource_link_pk, PDO::PARAM_INT);
 	$query->bindValue('slug_path', $slug_path, PDO::PARAM_STR);
 	$query->bindValue('start_datetime', $start_datetime, PDO::PARAM_STR);
 	$query->bindValue('end_datetime', $end_datetime, PDO::PARAM_STR);
@@ -308,16 +308,16 @@ EOD;
 }
 
 ###
-###  Delete content overrides for a specified module selection
+###  Delete content overrides for a specified resource_link_pk
 ###
-function deleteContentOverrides($db, $module_selected_id) {
+function deleteContentOverrides($db, $resource_link_pk) {
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
 DELETE FROM {$prefix}module_content_overrides
-WHERE (module_selected_id = :module_selected_id)
+WHERE (resource_link_pk = :resource_link_pk)
 EOD;
 	$query = $db->prepare($sql);
-	$query->bindValue('module_selected_id', $module_selected_id, PDO::PARAM_INT);
+	$query->bindValue('resource_link_pk', $resource_link_pk, PDO::PARAM_INT);
 	return $query->execute();
 }
 
@@ -361,8 +361,6 @@ function deleteModule($db, $resource_pk, $module_selected_id) {
 	$options = getResourceOptions($db, $resource_pk);
 	$module_realdir = $selected_module->real_path();
 	$ok = true;
-	// Delete module content overrides
-	deleteContentOverrides($db, $module_selected_id);
 	// Delete the item from the disk if user uploaded
 	if($options['user_uploaded']){
 		updateResourceOptions($db, $resource_pk, array('user_uploaded'=>0));

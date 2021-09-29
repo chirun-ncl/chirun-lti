@@ -264,18 +264,18 @@ function init_db($db) {
 
 	if ($ok && !table_exists($db, "{$prefix}module_content_overrides")) {
 		$sql = "CREATE TABLE {$prefix}module_content_overrides (" .
-			'module_selected_id int(11) NOT NULL, ' .
+			'resource_link_pk int(11) NOT NULL, ' .
 			'slug_path varchar(256) NOT NULL, ' .
 			'start_datetime datetime DEFAULT NULL, ' .
 			'end_datetime datetime DEFAULT NULL, ' .
 			'hidden tinyint(1) NOT NULL DEFAULT \'0\', ' .
-			'PRIMARY KEY (module_selected_id, slug_path)' .
+			'PRIMARY KEY (resource_link_pk, slug_path)' .
 			') ENGINE=InnoDB DEFAULT CHARSET=utf8';
 		$ok = $db->exec($sql) !== FALSE;
 		if ($ok) {
 			$sql = "ALTER TABLE {$prefix}module_content_overrides " .
-				"ADD CONSTRAINT {$prefix}module_content_overrides_module_selected_FK1 FOREIGN KEY (module_selected_id) " .
-				"REFERENCES {$prefix}module_selected (module_selected_id)" .
+				"ADD CONSTRAINT {$prefix}module_content_overrides_resource_link_pk_FK1 FOREIGN KEY (resource_link_pk) " .
+				"REFERENCES {$prefix}" . DataConnector\DataConnector::RESOURCE_LINK_TABLE_NAME . ' (resource_link_pk) ' .
 				"ON DELETE CASCADE";
 			$ok = $db->exec($sql) !== FALSE;
 		}
