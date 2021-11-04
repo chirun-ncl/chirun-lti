@@ -1,0 +1,41 @@
+{% extends "dashboard.html" %}
+
+{% block dashboard %}
+	<h2>Prebuilt Modules</h2>
+	<h3>Select Coursebuilder Notes</h3>
+	<form action="index.php" method="POST">
+	<input type="hidden" name="do" value="add">
+	<table class="table">
+	<thead>
+	<tr>
+	<th scope="col">Module Code</th>
+	<th scope="col">Module Title</th>
+	<th scope="col">Author</th>
+	<th scope="col">Year</th>
+	<th scope="col">Theme</th>
+	<th scope="col">Select</th>
+	</tr>
+	</thead>
+	<tbody>
+		{% for key, module in dashPage.allModules %}
+			<tr>
+				<th scope="row"> {{ module.code }} </th>
+				<td> {{ module.title }} </td>
+				<td> {{ module.author }} </td>
+				<td class="text-nowrap"> {{ module.year }} </td>
+				<td>
+					<select class="form-select" name='theme_id[{{ module.yaml_path}}]'>
+						{% for idx, theme in module.themes %}
+							<option value="{{ idx }}">{{ theme.title }}</option>
+						{% endfor %}
+					</select>
+				</td>
+				<td class="text-nowrap">
+					<button class="btn btn-primary" name="module_path" value="{{ module.yaml_path }}">Use Module</button>
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+	</table>
+{% endblock %}
+

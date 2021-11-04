@@ -1,0 +1,44 @@
+<div id="errorMessage">
+	<p>Sorry, Coursebuilder has encountered an error loading this page. Please try reloading the page or opening the page in a new tab.</p>
+	<p><button onclick='window.open(window.location+"&do_sessid=true");' type='button' class='btn btn-primary'>Click here to open in a new tab</button></p>
+</div>
+<p class="h5">The following error details were provided:</p>
+{% for alert in alerts %}
+	{{ include('alert.html', {level: alert.level, lead: alert.lead, text: alert.text}, with_context = false) }}
+{% endfor %}
+<p class="h5">Using macOS or iOS?</p>
+<p>Due to restrictions enabled by default in the Safari browser NCL Coursebuilder content must be launched by loading it in a new tab. You can avoid this step by <a data-toggle="collapse" href="#safari">disabling cross-site tracking prevention</a> and reloading the page.</p>
+<div class="collapse" id="safari">
+	<div class="card card-body">
+		<h6>macOS Catalina and later</h6>
+		<ol>
+			<li>In the Safari app on your Mac, choose <b>Safari</b> &gt; <b>Preferences</b>, then click <b>Privacy</b>.</li>
+			<li><b>Untick</b> "Prevent cross-site tracking".</li>
+		</ol>
+		<hr>
+		<p class="h5 mt-2">iPhone/iPad</p>
+		<ol>
+			<li>Open the <b>Settings</b> app on your device.</li>
+			<li>Scroll down and select <b>Safari</b>.</li>
+			<li>Scroll down and <b>turn off</b> "Prevent Cross-Site Tracking".</li>
+		</ol>
+	</div>
+</div>
+<script>
+	var cookiePromise = document.hasStorageAccess();
+	cookiePromise.then(
+	function (hasAccess) {
+		console.log('document.hasStorageAccess: '+hasAccess);
+		if(!hasAccess){
+			document.getElementById("errorMessage").previousElementSibling.previousElementSibling.style.display = 'none';
+			document.getElementById("errorMessage").style.display = 'none';
+			document.getElementById("errorAlert").innerHTML =
+				"<p>Due to your browser's cookie settings this content must be opened in a new tab.</p>"+
+				"<button onclick='window.open(window.location+\"&do_sessid=true\");' type='button' class='btn btn-primary'>Click here to open in a new tab</button>";
+		}
+	},
+	function (reason) {
+		// Promise was rejected.
+		console.log('document.hasStorageAccess promise rejected: '+reason);
+	});
+</script>

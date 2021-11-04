@@ -1,0 +1,49 @@
+{% extends "dashboard.html" %}
+
+{% block dashboard %}
+	<h2>Build Log</h2>
+	{% if not dashPage.moduleSelected %}
+		<p>No build log was found. Upload a document source to begin building.</p>
+		<p><a class='btn btn-primary' href='index.php?dashpage=upload' role='button'>Go to Upload page</a></p>
+	{% elseif dashPage.logExists %}
+		<p>The build output from Coursebuilder is shown below. Use this to debug any errors in the build process.</p>
+		<div class="card">
+		<div class="card-header p-1">
+		Coursebuilder output log
+		<button onClick="window.location.reload();" class="btn btn-sm btn-primary float-end">Refresh</button>
+		</div>
+		<div class="card-body p-1 bg-dark">
+		<pre class="text-light pre-scrollable"><small><code id='console-log'>Starting Coursebuilder...
+{{ dashPage.logContents }}</code></small></pre>
+		</div>
+		</div>
+		<script>
+			window.addEventListener('load', (function () {
+				var log = document.getElementById("console-log");
+				log.scrollIntoView(false);
+				if(!$('#console-log').text().includes('Finished!') && !$('#console-log').text().includes('Your document failed to build')){
+					setInterval(function(){
+						var xhr = new XMLHttpRequest();
+						xhr.open('GET', 'https://mas-coursebuild.ncl.ac.uk/lti-dev/api.php?resource_pk={{ resource_pk }}&action=get_resource_build_log' , true);
+						xhr.responseType = 'json';
+						xhr.onload = function() {
+							var status = xhr.status;
+							if (status === 200) {
+								$('#console-log').text(xhr.response.data);
+							} else {
+								$('#console-log').text('Sorry, an error has occurred retrieving the build log.');
+							}
+							log.scrollIntoView(false);
+							if($('#console-log').text().includes('Finished!') || $('#console-log').text().includes('Your document failed to build')){
+								location.reload();
+							}
+						};
+						xhr.send();
+					}, 1000);
+				}
+			}), false );
+		</script>
+	{% else %}
+		<p>No build log was found. Note that prebuilt modules have no build log.</p>
+	{% endif %}
+{% endblock %}

@@ -1,25 +1,3 @@
-# License Information
-
-Coursebuilder LTI Tool is copyright E-Learning Unit, School of Mathematics, Statistics & Physics, Newcastle University.
-License: http://www.gnu.org/licenses/gpl.html GNU General Public License, Version 3.0
-Date: 2019
-
--------------------------------------------------------------------
-
-The sample LTI tool provider "Rating" by IMS Global Learning Consortium Inc provided the basis of this LTI tool.
-Though significantly modified and expanded for use with Coursebuilder, the original "Rating" tool was released under the following license notice:
-/**
- * rating - Rating: an example LTI tool provider
- *
- * @author  Stephen P Vickers <svickers@imsglobal.org>
- * @copyright  IMS Global Learning Consortium Inc
- * @date  2016
- * @version 2.0.0
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, Version 3.0
- */
-
---------------------------------------------------------------------
-
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 

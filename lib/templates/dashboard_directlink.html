@@ -1,0 +1,71 @@
+{% extends "dashboard.html" %}
+
+{% set colfirst = 'col-1' %}
+{% set collast = 'col-2' %}
+
+{% block dashboard %}
+	<h2>Direct Link</h2>
+	<p>Use the below controls to setup this item to directly link to a piece of course content. For standalone uploads there is only a single course item and so this setting can be safely ignored.</p>
+
+	{% if dashPage.directLinkedItem %}
+		<p>
+			<b>Currently selected item:</b>
+			<a target="_blank" href="{{ module.url() }}?auth_level=1">{{ dashPage.directLinkedItem.title }}</a>
+		</p>
+	{% endif %}
+	<table class="table align-middle">
+		<thead class="thead-light">
+			<tr>
+				<th class="{{ colfirst }}" scope="col"></th>
+				<th scope="col">Content Title</th>
+				<th class="{{ collast }} text-nowrap text-center" scope="col">Direct Link</th>
+			</tr>
+		</thead>
+		{% for module_content in module.content %}
+				{% if module_content.children | length > 0 %}
+					<tbody>
+						<tr class='table-primary'>
+							<td class='clickable' data-bs-toggle='collapse' data-bs-target='#table-part-{{ module_content.slug_path | replace({"/": "_"}) }}' aria-expanded='false' aria-controls='table-part-{{ module_content.slug_path }}'>
+								<i class="fa fa-3 fa-chevron-down"></i>
+							</td>
+							<td>{{ module_content.title }}</td>
+							<td class="text-center">
+								<a href="index.php?do=set_direct_link&slug={{ module_content.slug_path }} " class="btn btn-sm btn-primary">Select</a>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="4" class="p-0">
+									<div id='table-part-{{ module_content.slug_path | replace({"/": "_"}) }}' class='collapse show'>
+									<table class="table table-striped table-borderless m-0 align-middle">
+										<tbody>
+											{% for child_content in module_content.children %}
+												{% if child_content.type != 'url' %}
+												<tr>
+													<td class="{{ colfirst }}"></td>
+													<td>{{ child_content.title }}</td>
+													<td class="text-center {{ collast }}">
+														<a href="index.php?do=set_direct_link&slug={{ child_content.slug_path }}" class="btn btn-sm btn-outline-primary">Select</a>
+													</td>
+												</tr>
+												{% endif %}
+											{% endfor %}
+										</tbody>
+									</table>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				{% elseif module_content.type != 'url' %}
+					<tbody>
+						<tr>
+							<td class="{{ colfirst }}"></td>
+							<td>{{ module_content.title }}</td>
+							<td class="text-center {{ collast }}">
+								<a href="index.php?do=set_direct_link&slug={{ module_content.slug_path }}" class="btn btn-sm btn-primary">Select</a>
+							</td>
+						</tr>
+					</tbody>
+				{% endif %}
+		{% endfor %}
+	</table>
+{% endblock %}

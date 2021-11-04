@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}NCL Coursebuilder Registration{% endblock %}
+{% block main %}
+    <h1>Coursebuilder Registration</h1>
+	<form action="register.php" method="post">
+		{% if error %}
+			<p>{{error}}</p>
+		{% endif %}
+		<p>Click the <strong>Register</strong> button below to complete the registration process.</p>
+		<p>
+			<input style="margin-right: 10px" type="submit" name="do" value="Cancel" />
+			<input type="submit" name="do" value="Register" />
+		</p>
+	</form>
+{% endblock %}

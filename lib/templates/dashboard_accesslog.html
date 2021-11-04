@@ -1,0 +1,39 @@
+{% extends "dashboard.html" %}
+
+{% block dashboard %}
+	<h2>Access Logs</h2>
+	<p>Student access to the loaded module is logged and shown in the table below.</p>
+	<table id="access-log-table" class="table table-striped">
+	<thead>
+	<tr>
+	<th scope="col">Date/Time</th>
+	<th scope="col">Name</th>
+	<th scope="col">Username</th>
+	<th scope="col">Role</th>
+	</tr>
+	</thead>
+	<tbody>
+		{% for userSession in dashPage.userSessions %}
+			<tr>
+			<th scope="row">
+				{% if userSession.timestamp %}
+					{{ userSession.timestamp }}
+				{% else %}
+					{{ userSession.expiry | date_modify("-1 day") | date('Y-m-d H:i:s') }}
+				{% endif %}
+			</th>
+			<td>{{ userSession.user_fullname }}</td>
+			<td>{{ userSession.user_id }}</td>
+			<td>{% if userSession.isStaff > 0 %}Staff{% else %}Student{% endif %}</td>
+			</tr>
+		{% endfor%}
+	</tbody>
+	</table>
+	<script>
+	window.addEventListener('load', function () {
+		$('#access-log-table').DataTable({
+			"order": [[ 0, "desc" ]]
+		});
+	});
+	</script>
+{% endblock %}

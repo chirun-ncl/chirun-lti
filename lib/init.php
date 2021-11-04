@@ -15,7 +15,7 @@ error_reporting(E_ALL);
 require_once(__DIR__.'/../config.php');
 require_once(__DIR__.'/db.php');
 require_once(__DIR__.'/action.php');
-require_once(__DIR__.'/module.php');
+require_once(__DIR__.'/content.php');
 require_once(__DIR__.'/mime_type.php');
 require_once(__DIR__.'/page.php');
 
@@ -38,32 +38,32 @@ function init(&$db, $checkSession = NULL) {
 	ini_set('session.cookie_path', getAppPath());
 
 	if(array_key_exists('do_sessid', $_GET) && !is_null($_GET['do_sessid']) &&
-	       array_key_exists(SESSION_NAME.'_sessid', $_GET) && !is_null($_GET[SESSION_NAME.'_sessid'])){
+		array_key_exists(SESSION_NAME.'_sessid', $_GET) && !is_null($_GET[SESSION_NAME.'_sessid'])){
 		session_id($_GET[SESSION_NAME.'_sessid']);
-	}
+}
 
 	// Open session
-	session_name(SESSION_NAME);
+session_name(SESSION_NAME);
 
 	// Set session samesite to None
-	session_set_cookie_params(0, '/;SameSite=None; Secure; HttpOnly');
+session_set_cookie_params(0, '/;SameSite=None; Secure; HttpOnly');
 
-	session_start();
+session_start();
 
-	if (!is_null($checkSession) && $checkSession) {
-		$ok = isset($_SESSION['consumer_pk']) && (isset($_SESSION['resource_pk']) || is_null($_SESSION['resource_pk'])) &&
-			isset($_SESSION['user_consumer_pk']) && (isset($_SESSION['user_pk']) || is_null($_SESSION['user_pk'])) && isset($_SESSION['isStudent']);
-	}
+if (!is_null($checkSession) && $checkSession) {
+	$ok = isset($_SESSION['consumer_pk']) && (isset($_SESSION['resource_pk']) || is_null($_SESSION['resource_pk'])) &&
+	isset($_SESSION['user_consumer_pk']) && (isset($_SESSION['user_pk']) || is_null($_SESSION['user_pk'])) && isset($_SESSION['isStudent']);
+}
 
+if (!$ok) {
+	$_SESSION['error_message'] = 'Unable to open session. Ensure that you are loading this page through your VLE (e.g. via a module in Blackboard or Canvas).';
+} else {
+	$ok = $db !== FALSE;
 	if (!$ok) {
-		$_SESSION['error_message'] = 'Unable to open session. Ensure that you are loading this page through your VLE (e.g. via a module in Blackboard or Canvas).';
-	} else {
-		$ok = $db !== FALSE;
-		if (!$ok) {
-			if (!is_null($checkSession) && $checkSession) {
+		if (!is_null($checkSession) && $checkSession) {
 				// Display a more user-friendly error message to LTI users
-				$_SESSION['error_message'] = 'Unable to open database.';
-			}
+			$_SESSION['error_message'] = 'Unable to open database.';
+		}
 		} else {//if (!is_null($checkSession) && !$checkSession) {
 			// Create database tables (if needed)
 			$ok = init_db($db);  // assumes a MySQL/SQLite database is being used
@@ -85,9 +85,9 @@ function getSelectedModule($db, $resource_pk) {
 
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-SELECT module_selected_id, module_yaml_path, module_theme_id
-FROM {$prefix}module_selected
-WHERE (resource_link_pk = :resource_pk)
+	SELECT module_selected_id, module_yaml_path, module_theme_id
+	FROM {$prefix}module_selected
+	WHERE (resource_link_pk = :resource_pk)
 EOD;
 
 	$query = $db->prepare($sql);
@@ -111,11 +111,11 @@ function getUserSession($db, $user_id, $token) {
 
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-SELECT *
-FROM {$prefix}user_session
-WHERE user_id = :user_id
-AND user_session_token = :token
-AND expiry > NOW()
+	SELECT *
+	FROM {$prefix}user_session
+	WHERE user_id = :user_id
+	AND user_session_token = :token
+	AND expiry > NOW()
 EOD;
 
 	$query = $db->prepare($sql);
@@ -136,11 +136,11 @@ EOD;
 ###
 
 function setUserSession($session) {
-        $_SESSION['user_id'] = $session['user_id'];
-        $_SESSION['user_email'] = $session['user_email'];
-        $_SESSION['user_fullname'] = $session['user_fullname'];
-        $_SESSION['isStudent'] = $session['isStudent'];
-        $_SESSION['isStaff'] = $session['isStaff'];
+	$_SESSION['user_id'] = $session['user_id'];
+	$_SESSION['user_email'] = $session['user_email'];
+	$_SESSION['user_fullname'] = $session['user_fullname'];
+	$_SESSION['isStudent'] = $session['isStudent'];
+	$_SESSION['isStaff'] = $session['isStaff'];
 	$_SESSION['isAdmin'] = false;
 }
 
@@ -151,9 +151,9 @@ function getAllUserSessions($db, $resource_pk) {
 
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-SELECT user_email, user_id, user_fullname, isStudent, isStaff, timestamp, expiry
-FROM {$prefix}user_session
-WHERE (resource_link_pk = :resource_pk)
+	SELECT user_email, user_id, user_fullname, isStudent, isStaff, timestamp, expiry
+	FROM {$prefix}user_session
+	WHERE (resource_link_pk = :resource_pk)
 EOD;
 
 	$query = $db->prepare($sql);
@@ -163,7 +163,7 @@ EOD;
 	$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 	$user_sessions=array();
 	foreach($rows as $row){
-		 $user_sessions[] = $row;
+		$user_sessions[] = $row;
 	}
 	return $user_sessions;
 }
@@ -175,8 +175,8 @@ EOD;
 function setUploadUser($db, $guid, $username){
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-INSERT INTO {$prefix}uploaded_content (guid, username)
-VALUES (:guid, :username)
+	INSERT INTO {$prefix}uploaded_content (guid, username)
+	VALUES (:guid, :username)
 EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('guid', $guid, PDO::PARAM_STR);
@@ -189,10 +189,10 @@ EOD;
 function getUploadUser($db, $guid){
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-SELECT username
-FROM {$prefix}uploaded_content
-WHERE (guid = :guid)
-LIMIT 1
+	SELECT username
+	FROM {$prefix}uploaded_content
+	WHERE (guid = :guid)
+	LIMIT 1
 EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('guid', $guid, PDO::PARAM_STR);
@@ -209,10 +209,10 @@ function getResourceOptions($db, $resource_pk) {
 
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-SELECT *
-FROM {$prefix}resource_options
-WHERE (resource_link_pk = :resource_pk)
-LIMIT 1
+	SELECT *
+	FROM {$prefix}resource_options
+	WHERE (resource_link_pk = :resource_pk)
+	LIMIT 1
 EOD;
 
 	$query = $db->prepare($sql);
@@ -228,11 +228,11 @@ EOD;
 function getPublicModules($db) {
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-SELECT module_selected_id, module_yaml_path, {$prefix}module_selected.resource_link_pk as resource_link_pk
-FROM {$prefix}module_selected
-JOIN {$prefix}resource_options
-ON {$prefix}module_selected.resource_link_pk = {$prefix}resource_options.resource_link_pk
-WHERE {$prefix}resource_options.public_access = 1
+	SELECT module_selected_id, module_yaml_path, {$prefix}module_selected.resource_link_pk as resource_link_pk
+	FROM {$prefix}module_selected
+	JOIN {$prefix}resource_options
+	ON {$prefix}module_selected.resource_link_pk = {$prefix}resource_options.resource_link_pk
+	WHERE {$prefix}resource_options.public_access = 1
 EOD;
 
 	$query = $db->prepare($sql);
@@ -241,7 +241,7 @@ EOD;
 	$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 	$modules=array();
 	foreach($rows as $row){
-		 $modules[] = $row;
+		$modules[] = $row;
 	}
 	return $modules;
 }
@@ -253,8 +253,8 @@ EOD;
 function updateResourceOptions($db, $resource_pk, $opt){
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-REPLACE INTO {$prefix}resource_options (resource_link_pk, hide_by_default, user_uploaded, public_access, direct_link_slug)
-VALUES (:resource_pk, :hide_by_default, :user_uploaded, :public_access ,:direct_link_slug)
+	REPLACE INTO {$prefix}resource_options (resource_link_pk, hide_by_default, user_uploaded, public_access, direct_link_slug)
+	VALUES (:resource_pk, :hide_by_default, :user_uploaded, :public_access ,:direct_link_slug)
 EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_INT);
@@ -272,9 +272,9 @@ function getContentOverrides($db, $resource_link_pk) {
 
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-SELECT resource_link_pk,slug_path,start_datetime,end_datetime,hidden
-FROM {$prefix}module_content_overrides
-WHERE (resource_link_pk = :pk)
+	SELECT resource_link_pk,slug_path,start_datetime,end_datetime,hidden
+	FROM {$prefix}module_content_overrides
+	WHERE (resource_link_pk = :pk)
 EOD;
 
 	$query = $db->prepare($sql);
@@ -284,7 +284,7 @@ EOD;
 	$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 	$content_overrides=array();
 	foreach($rows as $row){
-		 $content_overrides[] = $row;
+		$content_overrides[] = $row;
 	}
 	return $content_overrides;
 }
@@ -295,8 +295,8 @@ EOD;
 function updateContentOverrides($db, $resource_link_pk, $slug_path, $start_datetime, $end_datetime, $hidden) {
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-REPLACE INTO {$prefix}module_content_overrides (resource_link_pk,slug_path,start_datetime,end_datetime,hidden)
-VALUES (:resource_link_pk, :slug_path, :start_datetime, :end_datetime, :hidden)
+	REPLACE INTO {$prefix}module_content_overrides (resource_link_pk,slug_path,start_datetime,end_datetime,hidden)
+	VALUES (:resource_link_pk, :slug_path, :start_datetime, :end_datetime, :hidden)
 EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('resource_link_pk', $resource_link_pk, PDO::PARAM_INT);
@@ -313,8 +313,8 @@ EOD;
 function deleteContentOverrides($db, $resource_link_pk) {
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-DELETE FROM {$prefix}module_content_overrides
-WHERE (resource_link_pk = :resource_link_pk)
+	DELETE FROM {$prefix}module_content_overrides
+	WHERE (resource_link_pk = :resource_link_pk)
 EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('resource_link_pk', $resource_link_pk, PDO::PARAM_INT);
@@ -327,8 +327,8 @@ EOD;
 function selectTheme($db, $resource_pk, $theme_id = 0) {
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-UPDATE {$prefix}module_selected SET module_theme_id = :theme_id
-WHERE resource_link_pk = :resource_pk
+	UPDATE {$prefix}module_selected SET module_theme_id = :theme_id
+	WHERE resource_link_pk = :resource_pk
 EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('theme_id', $theme_id, PDO::PARAM_INT);
@@ -342,8 +342,8 @@ EOD;
 function selectModule($db, $resource_pk, $module_path, $theme_id = 0) {
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-REPLACE INTO {$prefix}module_selected (resource_link_pk, module_yaml_path, module_theme_id)
-VALUES (:resource_pk, :module_path, :theme_id)
+	REPLACE INTO {$prefix}module_selected (resource_link_pk, module_yaml_path, module_theme_id)
+	VALUES (:resource_pk, :module_path, :theme_id)
 EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('module_path', $module_path, PDO::PARAM_STR);
@@ -372,8 +372,8 @@ function deleteModule($db, $resource_pk, $module_selected_id) {
 	// Delete the item from the DB
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-DELETE FROM {$prefix}module_selected
-WHERE (module_selected_id = :module_selected_id) AND (resource_link_pk = :resource_pk)
+	DELETE FROM {$prefix}module_selected
+	WHERE (module_selected_id = :module_selected_id) AND (resource_link_pk = :resource_pk)
 EOD;
 	
 	$query = $db->prepare($sql);
@@ -389,9 +389,9 @@ EOD;
 function addUserSession($db, $resource_pk, $token, $session) {
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-INSERT INTO {$prefix}user_session (user_session_token, resource_link_pk, 
+	INSERT INTO {$prefix}user_session (user_session_token, resource_link_pk, 
 	user_id, user_email, user_fullname, isStudent, isStaff, timestamp, expiry)
-VALUES (:user_session_token, :resource_link_pk, :user_id, :user_email, 
+	VALUES (:user_session_token, :resource_link_pk, :user_id, :user_email, 
 	:user_fullname, :isStudent, :isStaff, NOW(), NOW() + INTERVAL 1 DAY)
 EOD;
 	$query = $db->prepare($sql);
@@ -411,9 +411,9 @@ EOD;
 function addAnonymousUserSession($db, $resource_pk, $token){
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-INSERT INTO {$prefix}user_session (user_session_token, resource_link_pk, 
+	INSERT INTO {$prefix}user_session (user_session_token, resource_link_pk, 
 	user_id, user_email, user_fullname, isStudent, isStaff, timestamp, expiry)
-VALUES (:user_session_token, :resource_link_pk, '', '', 'Anonymous User', 0, 0, NOW(), NULL)
+	VALUES (:user_session_token, :resource_link_pk, '', '', 'Anonymous User', 0, 0, NOW(), NULL)
 EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('user_session_token', $token, PDO::PARAM_STR);
@@ -427,8 +427,8 @@ EOD;
 function addDataKVStore($db, $resource_pk, $user, $data_key, $data_value){
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-REPLACE INTO {$prefix}key_value_store (resource_link_pk, username, data_key, data_value)
-VALUES (:resource_pk, :user, :data_key, :data_value)
+	REPLACE INTO {$prefix}key_value_store (resource_link_pk, username, data_key, data_value)
+	VALUES (:resource_pk, :user, :data_key, :data_value)
 EOD;
 	$query = $db->prepare($sql);
 	$query->bindValue('resource_pk', $resource_pk, PDO::PARAM_INT);
@@ -444,9 +444,9 @@ EOD;
 function getDataKVStore($db, $resource_pk, $user, $data_key) {
 	$prefix = DB_TABLENAME_PREFIX;
 	$sql = <<< EOD
-SELECT data_value
-FROM {$prefix}key_value_store
-WHERE
+	SELECT data_value
+	FROM {$prefix}key_value_store
+	WHERE
 	resource_link_pk = :resource_pk
 	AND username = :user
 	AND data_key = :data_key
@@ -487,7 +487,7 @@ function processWithSourceFile($db, $resource_pk, $source_main, $template_name="
 ###  Get the web path to the application
 ###
 function getAppPath() {
-       return WEBDIR.'/';
+	return WEBDIR.'/';
 }
 
 ###
@@ -532,8 +532,8 @@ function recursiveSearchScan($dir, $sstr='', &$results = array()) {
 function getHost() {
 
 	$scheme = (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on")
-		? 'http'
-		: 'https';
+	? 'http'
+	: 'https';
 	$url = $scheme . '://' . $_SERVER['HTTP_HOST'];
 
 	return $url;
@@ -627,7 +627,7 @@ function unzip($file){
 function getGuid() {
 
 	return sprintf('%04x%04x-%04x-%04x-%02x%02x-%04x%04x%04x',
-			mt_rand(0, 65535),
+		mt_rand(0, 65535),
 			mt_rand(0, 65535),        // 32 bits for "time_low"
 			mt_rand(0, 65535),        // 16 bits for "time_mid"
 			mt_rand(0, 4096) + 16384, // 16 bits for "time_hi_and_version", with
@@ -640,7 +640,7 @@ function getGuid() {
 			mt_rand(0, 65535),        // 16 bits for "node 0" and "node 1"
 			mt_rand(0, 65535),        // 16 bits for "node 2" and "node 3"
 			mt_rand(0, 65535)         // 16 bits for "node 4" and "node 5"
-			);
+		);
 
 }
 

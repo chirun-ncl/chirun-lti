@@ -1,0 +1,8 @@
+<div class="alert alert-{{ level }} alert-dismissible fade show" role="alert">
+	<i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+	{% if lead %}
+		<strong>{{ lead }}:</strong>
+	{% endif %}
+	{{ text }}
+	<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>

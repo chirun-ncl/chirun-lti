@@ -45,7 +45,7 @@ class Request {
 			$content_type = $_SERVER['CONTENT_TYPE'];
 		}
 		switch($content_type) {
-		case "application/json":
+			case "application/json":
 			$body_params = json_decode($body, true);
 			if($body_params) {
 				foreach($body_params as $param_name => $param_value) {
@@ -58,13 +58,13 @@ class Request {
 				$this->response->data[] = ['message' => 'JSON failed to decode in request.'];
 			}
 			break;
-		case "application/x-www-form-urlencoded":
+			case "application/x-www-form-urlencoded":
 			parse_str($body, $postvars);
 			foreach($postvars as $field => $value) {
 				$data[$field] = $value;
 			}
 			break;
-		default:
+			default:
 			break;
 		}
 		$this->data = $data;
@@ -96,7 +96,7 @@ if($ok){
 	$ok = false;
 	$session = NULL;
 	if (isset($_COOKIE['coursebuilder_user_id']) && isset($_COOKIE['coursebuilder_session'][$request->data['resource_pk']])) {
-        	$ck_token = $_COOKIE['coursebuilder_session'][$request->data['resource_pk']];
+		$ck_token = $_COOKIE['coursebuilder_session'][$request->data['resource_pk']];
 		$ck_user_id = $_COOKIE['coursebuilder_user_id'];
 		$ck_session = getUserSession($db, $ck_user_id, $ck_token);
 		if(!empty($ck_session)){
@@ -119,7 +119,7 @@ if($ok){
 if($ok){
 	$ok = false;
 	switch($request->data['action']){
-	case 'set':
+		case 'set':
 		if (!isset($request->data['key']) || !isset($request->data['value'])){
 			$request->response->code = 500;
 			$request->response->status = 'error';
@@ -129,7 +129,7 @@ if($ok){
 		storeKV($db, $session['resource_pk'], $session['user_id'], $request->data['key'], $request->data['value']);
 		$ok = true;
 		break;
-	case 'get':
+		case 'get':
 		if (!isset($request->data['key'])){
 			$request->response->code = 500;
 			$request->response->status = 'error';
@@ -137,6 +137,24 @@ if($ok){
 			break;
 		}
 		$request->response->data[] = getKV($db, $session['resource_pk'], $session['user_id'], $request->data['key']);
+		$ok = true;
+		break;
+		case 'get_resource_build_log':
+		$module = getSelectedModule($db, $session['resource_pk']);
+		if (empty($module)){
+			$request->response->code = 500;
+			$request->response->status = 'error';
+			$request->response->data[] = ['message' => 'Invalid request.'];
+			break;
+		}
+		$fullLogPath = INSTALLDIR .'/process/logs'. dirname($module->yaml_path).'.log';
+		if (!file_exists($fullLogPath)){
+			$request->response->code = 404;
+			$request->response->status = 'error';
+			$request->response->data[] = ['message' => 'Build log not found.'];
+			break;
+		}
+		$request->response->data[] = file_get_contents($fullLogPath);
 		$ok = true;
 		break;
 	}

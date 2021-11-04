@@ -37,9 +37,9 @@ function do_action($db){
                 exit;
         } else if ($action == 'delete' && !empty($req_id) && $_SESSION['isStaff']) {
                 if (deleteModule($db, $_SESSION['resource_pk'], $req_id)) {
-                        $_SESSION['message'] = 'The module has been successfully deselected.';
+                        $_SESSION['message'] = 'The content for this resource has been successfully removed.';
                 } else {
-                        $_SESSION['error_message'] = 'Unable to remove module; please try again.';
+                        $_SESSION['error_message'] = 'Unable to remove resource content; please try again.';
                 }
                 header('Location: ./');
                 exit;
@@ -85,20 +85,6 @@ function do_action($db){
                         header('Location: ./?dashpage=adaptive');
                         exit;
                 }
-	} else if ($action == 'change_theme' && $_SESSION['isStaff'] && isset($_SESSION['resource_pk']) && isset($_POST["theme_id"]) ){
-		$selected_module = getSelectedModule($db, $_SESSION['resource_pk']);
-		$ok = TRUE;
-		if(!isset($selected_module)){
-			$ok = FALSE;
-		}
-		$ok = selectTheme($db, $_SESSION['resource_pk'], $_POST["theme_id"]);
-		if ($ok) {
-			$_SESSION['message'] = 'Default theme updated!';
-		} else {
-			$_SESSION['error_message'] = 'Unable to update default theme; please try again';
-		}
-		header('Location: ./');
-		exit;
 	} else  if($action == 'set_direct_link' && isset($_REQUEST["slug"])) {
 		$options = getResourceOptions($db, $_SESSION['resource_pk']);
 		$new_opt = $options;
@@ -121,8 +107,13 @@ function do_action($db){
 			}
 		}
 		$ok = updateResourceOptions($db, $_SESSION['resource_pk'], $new_opt);
+
+		if ($ok && isset($_POST["theme_id"])) {
+			$ok = selectTheme($db, $_SESSION['resource_pk'], $_POST["theme_id"]);
+		}
+
 		if ($ok) {
-			$_SESSION['message'] = 'Options updated!';
+			$_SESSION['message'] = 'Options successfully updated!';
 		} else {
 			$_SESSION['error_message'] = 'Unable to update options; please try again';
 		}

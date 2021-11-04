@@ -1,0 +1,91 @@
+{% extends "dashboard.html" %}
+
+{% block dashboard %}
+	<h2>Upload Content</h2>
+	{% if not dashPage.uploaded %}
+		<h3 class="mt-4">New Document</h3>
+		<p>Upload a <em>Coursebuilder package</em>, <em>LaTeX</em> document or <em>Markdown</em> document for automatic conversion by the Coursebuilder LTI tool. The following file formats are acceptable: <code>.tex</code>, <code>.md</code>, <code>.zip</code>. If your document contains several source files, select them all or combine them into a <code>.zip</code> file for upload.</p>
+		<div class="col-lg-6">
+			<form action="index.php" method="POST" enctype="multipart/form-data">
+				<div class="mb-3">
+					<input id="docUpload" name="docUpload[]" type="file" class="form-control" multiple data-show-upload="true" data-show-caption="true">
+				</div>
+				<p>
+					<a data-bs-toggle="collapse" href="#extra_settings" aria-expanded="false" aria-controls="extra_settings">
+						Show/hide settings
+					</a>
+				</p>
+				<div class="collapse" id="extra_settings">
+					<div class="mb-3">
+						<label for="itemType" class="form-label">Item Type</label>
+						<select name="itemType" id="itemType" class="form-select">
+							<option selected value="document">Document</option>
+							<option value="slides">Slides</option>
+							<option value="html">HTML</option>
+							<option value="exam">Exam</option>
+							<option value="notebook">Code Notebook</option>
+						</select>
+					</div>
+					<div class="mb-3">
+						<label for="docSplit" class="form-label">Document Split Level</label>
+						<select name="docSplit" id="docSplit" class="form-select">
+							<option selected value="-2">No Splitting</option>
+							<option value="-1">Split on Parts</option>
+							<option value="0">Split on Chapters</option>
+							<option value="1">Split on Sections</option>
+							<option value="2">Split on Subsections</option>
+						</select>
+					</div>
+					<div class="mb-3">
+						<label for="itemTitle" class="form-label">Item Title</label>
+						<input name="itemTitle" id="itemTitle" placeholder="Document [file].tex" class="form-control"></input>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Other</label>
+						<div class="form-check">
+							<input name="buildPDF" id="buildPDF" class="form-check-input" type="checkbox" value="" checked>
+							<label class="form-check-label" for="buildPDF">
+								Build and include PDF
+							</label>
+						</div>
+					</div>
+					<p class="form-text text-muted">Note: The above settings are overridden by <code>config.yml</code>, such as when uploading a full Coursebuilder course.</p>
+				</div>
+				<input type="hidden" name="do" value="processUpload">
+				<button type="submit" onclick="$('#uploadSpinner').show(); setTimeout(function(){ $('#uploadButton').prop('disabled', true);}, 0);" id="uploadButton" class="btn btn-primary mb-3">
+					<span id="uploadSpinner" style="display:none;" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Upload
+				</button>
+			</form>
+		</div>
+		<hr>
+		<h3>Existing Document</h3>
+		<p>Enter an existing <i>GUID</i> to reuse existing content previously uploaded to Cousebuilder. The GUID can be found on the <b>Selected Content</b> dashboard page once content has been successfuly uploaded.</p>
+		<p><i>Existing content must have been uploaded by the same user currently logged in.</i></p>
+		<div class="col-lg-6">
+			<form action="index.php" method="POST" enctype="multipart/form-data">
+				<div class="mb-3">
+					<label for="guidSelect" class="form-label">GUID</label>
+					<input id="guidSelect" name="guidSelect" class="form-control form-control-sm" type="text" placeholder="00000000-0000-0000-000000000000">
+				</div>
+				<input type="hidden" name="do" value="processGuidSelect">
+				<button type="submit" id="guidButton" class="btn btn-sm btn-primary">Submit</button>
+			</form>
+		</div>
+	{% elseif dashPage.uploadFileOptions %}
+		<h3>Select Document Source</h3>
+		<p>Please select the main source document to begin building this content:</p>
+		<form action="index.php" method="POST">
+			<div class="mb-3">
+				{% for key, file in dashPage.uploadFileOptions %}
+				<div class="form-check">
+					<input class="form-check-input" type="radio" id="source_main_{{ key }}" name="source_main" value="{{ file }}">
+					<label class="form-check-label" for="source_main_{{ key }}">{{ file }}</label>
+				</div>
+				{% endfor %}
+			</div>
+			<input type="hidden" name="do" value="processBuild">
+			<button type="submit" class="btn btn-primary">Continue</button>
+		</form>
+	{% endif %}
+{% endblock %}
+

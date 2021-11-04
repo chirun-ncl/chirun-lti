@@ -4,3 +4,8 @@ td.clickable.collapsed i.fa {
 	-ms-transform: rotate(270deg);
 	transform: rotate(270deg);
 }
+
+.pre-scrollable {
+  max-height: 340px;
+  overflow-y: scroll;
+}

@@ -1,97 +1,262 @@
 <?php
 class LTIPage extends BasePage {
-	use ModulePage;
-	public $title = "Coursebuilder LTI Tool";
+	use ModuleInfo;
+	protected $authLevel = 0;
+	protected $CBLTI = array(
+		'api_path' => WEBDIR.'/api.php',
+		'resource_pk' => NULL,
+		'user_id' => NULL,
+		'user_email' => NULL,
+		'auth_method' => NULL,
+		'auth_level' => 0
+	);
+	protected $authorisedContent = NULL;
 	protected $webdir = WEBDIR;
-	protected $alerts = array();
+	public $alerts = array();
+	public $template = "ltipage.html";
+	public $title = "NCL Coursebuilder LTI Tool";
+	public $css = array(
+		'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css',
+		'https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
+		'css/styles.css',
+	);
+	public $js = array(
+		'https://code.jquery.com/jquery-3.6.0.min.js',
+		'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js',
+	);
 
-	public function getTitle(){
-		return $this->title;
+	public function setModule($module, $resource_pk = NULL){
+		$this->module = $module;
+
+		// Use the module title for the title of the page
+		if (!empty($this->module->title)){
+			$this->title = $module->title;
+		}
+
+		// If an LTI launch and successful, setup the CBLTI object with auth information
+		if(isset($resource_pk)){
+			$this->CBLTI['resource_pk'] = $resource_pk;
+			$this->CBLTI['auth_method'] = 'LTI';
+			if (isset($_SESSION['user_id'])){
+				$this->CBLTI['user_id'] = $_SESSION['user_id'];
+				$this->CBLTI['user_email'] = $_SESSION['user_email'];
+			}
+
+			// Load the resource options from the database
+			$this->module->resource_options = getResourceOptions($this->db, $resource_pk);
+		}
+	}
+
+	public function requestContent($contentPath, $authLevel = 0){
+		/*
+			Try to request access to a piece of content. The request is made first to the current
+			resource's accociated module. Next the request is made to any modules/resources associated
+			with valid sessions in the user's cookies. Finally a request is made to all modules marked
+			as public.
+
+			If the request is granted, and the module is not associated with the current resourse,
+			the LTIPage's module property is updated to point to the module containing the requested
+			content and the CBLTI object is updated to reflect the change in the active session.
+
+			Returns true if successful, false otherwise.
+		*/
+		$success = false;
+		$errorMsg = NULL;
+
+		// Check if the requested content is part of the currently set module
+		if ($this->isModuleEmpty()){
+			$errorMsg = "No Coursebuilder content has been configured for this resource. Please check this page again later or contact your course instructor for advice.";
+		} else {
+			$success = $this->requestContentForModule($contentPath, $this->module, $authLevel, $errorMsg);
+		}
+
+		// Check the user's cookies for other valid sessions, the content may be part of some
+		// other recently launched LTI content item.
+		if (!$success && isset($_COOKIE['coursebuilder_session']) && isset($_COOKIE['coursebuilder_user_id'])){
+			$ck_user_id = $_COOKIE['coursebuilder_user_id'];
+			foreach ($_COOKIE['coursebuilder_session'] as $ck_resource_pk => $ck_token) {
+				$session = getUserSession($this->db, $ck_user_id, $ck_token);
+				if(empty($session)) continue;
+
+				$ck_module = getSelectedModule($this->db, $session['resource_link_pk']);
+				if(isset($ck_module)){
+					$ck_module->apply_content_overrides($this->db, $session['resource_link_pk']);
+					if($success = $this->requestContentForModule($contentPath, $ck_module, $authLevel)){
+						$this->setModule($ck_module, $session['resource_link_pk']);
+						$this->CBLTI['resource_pk'] = $session['resource_link_pk'];
+						$this->CBLTI['auth_method'] = 'cookie';
+						$this->CBLTI['user_id'] = $session['user_id'];
+						$this->CBLTI['user_email'] = $session['user_email'];
+						setUserSession($session);
+						break;
+					}
+				}
+			}
+		}
+
+		// Check for module content marked public in the database.
+		// Anyone is allowed to load content from those modules.
+		if (!$success){
+			foreach (getPublicModules($this->db) as $module){
+				$pub_module = getSelectedModule($this->db, $module['resource_link_pk']);
+				$moduleCode = $pub_module->code;
+				if(substr($contentPath, 0, strlen($moduleCode)) === $moduleCode){
+					$pub_module->apply_content_overrides($this->db, $module['resource_link_pk']);
+					if($success = $this->requestContentForModule($contentPath, $pub_module, $authLevel)){
+						$this->setModule($pub_module, $module['resource_link_pk']);
+						$this->CBLTI['resource_pk'] = $module['resource_link_pk'];
+						$this->CBLTI['auth_method'] = 'anonymous';
+						$this->CBLTI['user_id'] = NULL;
+						$this->CBLTI['user_email'] = NULL;
+						addAnonymousUserSession($this->db, $module['resource_link_pk'], getGuid());
+						break;
+					}
+				}
+			}
+		}
+
+		if(!$success){
+			$this->alerts[] = new Alert($errorMsg, "Error", "danger");
+		}
+
+		return $success;
+	}
+
+	protected function requestContentForModule($contentPath, $module, $authLevel, &$errorMsg = NULL){
+		/*
+			Request access to a piece of content from a specfic module.
+
+			For the request to be granted the content must be some subpath of the root
+			content path of the module argument.
+
+			The request is denied if authLevel = 0 and the requested content is hidden by
+			adaptive release in the resource settings.
+
+			Returns true if successful, false otherwise.
+		*/
+		$authorisedContent = NULL;
+		$success = false;
+
+		$moduleCode = $module->code;
+		$fullContentPath = CONTENTDIR .'/'. $contentPath;
+		
+		// Check content path is a subpath of this module
+		if(substr($contentPath, 0, strlen($moduleCode)) === $moduleCode){
+			// Check if content path exists on disk
+			if (is_file($fullContentPath)){
+				$authorisedContent = $fullContentPath;
+			}
+			if (is_dir($fullContentPath)){
+				if(is_file($fullContentPath.'/index.html')){
+					$authorisedContent = $fullContentPath.'/index.html';
+				} else if (is_file($fullContentPath.'/index.php')){
+					$authorisedContent = $fullContentPath.'/index.php';
+				}
+			}
+			if(isset($authorisedContent)){
+				// Check to make sure the content is not hidden
+				$matched_content = $module->get_content_for_path($fullContentPath);
+				if($matched_content && $matched_content->hidden > 0 && $authLevel == 0){
+					$errorMsg = "The requested content is not available.";
+				} else {
+					//All tests passed, grant access to the content.
+					$this->authorisedContent = $authorisedContent;			
+					$this->CBLTI['auth_level'] = $authLevel;
+					$this->authLevel = $authLevel;
+					$success = true;
+				}
+			} else $errorMsg = "The requested content item was not found.";
+		} else $errorMsg = "You are not authorised to view this content.";
+
+		return $success;
+	}
+
+	protected function filter_content($html){
+		/* 
+		   Applies filters to the provided HTML content.
+		   TODO: Separate out into indiviual filters.
+		*/
+		$dom = new DomDocument;
+		@$dom->loadHTML($html);
+
+		// Inject the CBLTI JS object into the output, providing LTI authentication information
+		// to the client in a form that can be used in JS.
+		$head = $dom->getElementsByTagName('head');
+		if (count($head) > 0){
+			$script = $dom->createElement('script', 'var CBLTI = CBLTI || {}; CBLTI='.json_encode($this->CBLTI).';');
+			$head->item(0)->appendChild($script);
+		}
+
+		/* Search for LTI hints in the html items and apply coursebuilder filters.
+		   Hints such as 'lti-hint-item' are used to hide/remove content when required by
+		   the resource's adaptive release settings.
+		*/
+		if ($this->authLevel == 0){
+			foreach($this->module->get_hidden() as $hidden_item){
+				$xpath = new DomXPath($dom);
+				$hidden_slug_ltrim = ltrim($hidden_item->slug_path,'/');
+
+				if($hidden_item->type == 'introduction') {
+					$nodes = $xpath->query("//*[contains(@class, 'lti-hint-introduction')]");
+				} else if($hidden_item->type == 'part') {
+					$nodes = $xpath->query("//*[contains(@class,'lti-hint-part') and .//a[contains(@href, '".$hidden_slug_ltrim."')]]");
+				} else if($hidden_item->type == 'url') {
+					$nodes = $xpath->query("//*[contains(@class,'lti-hint-item') and .//a[contains(@href, '".$hidden_item->source."')]]");
+				} else {
+					$nodes = $xpath->query("//*[contains(@class,'lti-hint-item') and .//a[contains(@href, '".$hidden_slug_ltrim."')]]");
+				}
+
+				foreach ($nodes as $node){
+					$node->parentNode->removeChild($node);
+				}
+			}
+			$xpath = new DomXPath($dom);
+			$cleanup = $xpath->query("//*[contains(@class,'lti-hint-part') and not(.//ul/li)]");
+			foreach ($cleanup as $node){
+				$node->parentNode->removeChild($node);
+			}
+		}
+
+		return html_entity_decode($dom->saveHTML());
+	}
+
+	protected function renderAuthorisedContent(){
+		/* Render authorised content has been successfully requested. The content
+		   is loaded from disk, then output to the client. PHP content is includ()-ed,
+		   raw HTML content is first run through filters to check for CB LTI hints, and
+		   any other content is output directly.
+
+		   Returns true if authorised content is rendered, false otherwise.
+		*/
+		if(!isset($this->authorisedContent)) return false;
+		$ext = pathinfo($this->authorisedContent, PATHINFO_EXTENSION);
+
+		if ($ext === 'php'){
+			include $this->authorisedContent;
+			return true;
+		} else if ($ext === 'html' or $ext === 'htm') {
+			header('Content-Type: ' . get_file_mime_type($this->authorisedContent));
+			header('Content-Disposition: inline; filename="'.basename($this->authorisedContent).'"');
+			$file_content = file_get_contents($this->authorisedContent);
+			$file_content = $this->filter_content($file_content);
+			echo $file_content;
+			return true;
+		} else {
+			header('Content-Type: ' . get_file_mime_type($this->authorisedContent));
+			header('Content-Disposition: inline; filename="'.basename($this->authorisedContent).'"');
+			$file_content = file_get_contents($this->authorisedContent);
+			echo $file_content;
+			return true;
+		}
+
+		return false;
 	}
 
 	public function render(){
-		if(isset($this->requestedContent)){
-			$error = $this->renderRequestedContent();
-			if($error) return;
+		// If some content was requested successfully, render it.
+		if(!$this->renderAuthorisedContent()){
+			parent::render();
 		}
-		parent::render();
-	}
-
-	public function addAlert($alertText, $alertLevel="primary"){
-		$alert = new Alert($alertText);
-		$alert->setLevel($alertLevel);
-		$this->alerts[] = $alert;
-	}
-
-	protected function coursebuilderIconHeader(){
-		$iconHeader = <<< EOD
-			<div class="justify-content-center row mt-5">
-				<div class="col-2">
-				<img alt="Coursebuilder logo" width="100%" src="{$this->webdir}/images/coursebuilder_icon_512.png">
-				</div>
-			</div>
-EOD;
-		return $iconHeader;
-	}
-
-	protected function main(){
-		$main = '<main role="main" class="container mt-2">';
-		$main .= '<div class="row">';
-		$main .= '<div class="col">';
-		foreach($this->alerts as $alert){
-			$main .= $alert->html();
-		}
-		$main .= '</div>';
-		$main .= '</div>';
-		$main .= '</main>';
-		return $main;
-	}
-	protected function css() {
-		$css = <<< EOD
-			<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-			<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-			<link rel="stylesheet" href="css/styles.css">
-EOD;
-		return $css;
-	}
-	protected function js(){
-		$js = <<< EOD
-			<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-			<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-EOD;
-		return $js;
-	}
-	protected function header() {
-		$header = <<< EOD
-			<!doctype html>
-			<html lang="en">
-			<head>
-			<title>{$this->getTitle()}</title>
-			<meta charset="utf-8">
-			<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-			{$this->css()}
-			{$this->js()}
-			</head>
-			<body id="CBBody">
-
-EOD;
-		return $header;
-	}
-	protected function footer(){
-		$footer = <<< EOD
-			<hr>
-			<footer class="text-muted">
-				<div class="container">
-					<p>Coursebuilder LTI Tool<br>&copy; E-Learning Unit, School of Mathematics,
-						Statistics &amp; Physics, Newcastle University</p>
-				</div>
-			</footer>
-			</body>
-			</html>	
-EOD;
-		return $footer;
 	}
 }
 ?>

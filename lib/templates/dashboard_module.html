@@ -1,0 +1,62 @@
+{% extends "dashboard.html" %}
+
+{% block dashboard %}
+	<h2>Selected Content Information</h2>
+	{% if dashPage.isModuleEmpty() %}
+		<p>
+			<strong>A module has been uploaded but has not yet been successfully built</strong><br/>
+			Visit the "Upload Document" page to continue building this module.
+		</p>
+		<h3>Delete content</h3>
+		<p>To select different content, first <i>remove</i> the content asssociated with this item using the button below.</p>
+		<a class="btn btn-danger" href="./index.php?do=delete&req_id={{ module.selected_id }}">Delete Coursebuilder Content</a>
+	{% elseif dashPage.isModuleStandalone() %}
+		<p>
+			<strong>Document source:</strong> {{ module.content[0].title }}<br/>
+			<strong>Theme:</strong> {{ module.selected_theme.title}}</br>
+			<strong>GUID:</strong> {{ module.code }}
+		</p>
+		<h3>Delete content</h3>
+		<p>To select different content, first <i>remove</i> the content asssociated with this item using the button below.</p>
+		<a class="btn btn-danger" href="./index.php?do=delete&req_id={{ module.selected_id }}">Remove Content</a>
+	{% else %}
+		<h3>Module Information</h3>
+		<p>
+			<strong>Module:</strong> {{ module.title }} </br>
+			<strong>Theme:</strong>
+			{% for idx, theme in module.themes %}
+				{% if module.selected_theme.path == theme.path %} {{ theme.title }} {% endif %}
+			{% endfor %}
+			</br>
+			<strong>GUID:</strong> {{ module.code }}
+		</p>
+		<h3>Options</h3>
+		<div class="col-lg-6">
+			<form action="index.php" method="POST">
+				<input type="hidden" name="dashpage" value="opt">
+				<input type='hidden' value='0' name="opt[hide_by_default]">
+				<div class="mb-3">
+					<label for="theme_id" class="form-label">Theme</label>
+					<select class="form-select" name="theme_id" id="theme_id">
+					{% for idx, theme in module.themes %}
+						<option {% if module.selected_theme.path == theme.path %} selected {% endif %}  value="{{ idx }}">{{ theme.title }}</option>
+					{% endfor %}
+					</select>
+				</div>
+				<div class="mb-3">
+					<div class="form-check">
+						<input name="opt[hide_by_default]" id="hide_by_default" class="form-check-input" type="checkbox" {% if dashPage.resource_options.hide_by_default %}checked{% endif %}>
+						<label class="form-check-label" for="hide_by_default">
+							Hide in adaptive release by default.
+						</label>
+					</div>
+				</div>
+				<button class="btn btn-primary mb-3" name="do" value="options_save">Save Changes</button>
+			</form>
+		</div>
+		<h3>Deselect Module</h3>
+		<p>To select a different module, first <i>remove</i> the current module using the button below.</p>
+		<a class="btn btn-danger" href="./index.php?do=delete&req_id={{ module.selected_id }}">Deselect Module</a>
+	{% endif %}
+{% endblock %}
+

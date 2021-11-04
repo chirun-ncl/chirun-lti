@@ -1,5 +1,6 @@
 base_dir: {BASE}
 code: {GUID}
+year: {}
 root_url: '{base}/{code}/{theme}/'
 structure: 
   - type: standalone
@@ -7,7 +8,8 @@ structure:
     topbar: False
     footer: True
     source: {DOCUMENT}
-    title: {DOCUMENT}
+    title: "Document: {DOCUMENT}"
+    splitlevel: 0
 themes: 
   - title: Standalone
     source: default

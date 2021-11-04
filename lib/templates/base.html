@@ -1,0 +1,24 @@
+<!doctype html>
+	<html lang="en">
+	{% block head %}
+		<head>
+			<title>{% block title %}{{ title }}{% endblock %}</title>
+			<meta charset="utf-8">
+    		<meta name="viewport" content="width=device-width, initial-scale=1">
+			{% block css %}
+				{% for href in css %}
+					<link rel="stylesheet" href="{{href}}" crossorigin="anonymous">
+				{% endfor %}
+			{% endblock %}
+		</head>
+	{% endblock %}
+	<body id="CBBody">
+		{% block main %}{% endblock %}
+		{% block footer %}{% endblock %}
+		{% block js %}
+			{% for src in js %}
+				<script src="{{src}}" crossorigin="anonymous"></script>
+			{% endfor %}
+		{% endblock %}
+	</body>
+	</html>
