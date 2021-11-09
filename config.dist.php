@@ -1,15 +1,11 @@
 <?php
-###
-###  Application settings
-###
+
+// Application settings
 define('APP_NAME', 'Coursebuilder LTI Tool');
 define('SESSION_NAME', 'php-coursebuilder');
-define('VERSION', '0.1.00');
+define('VERSION', '0.2.0');
 
-
-###
-### Setup paths
-###
+// Setup paths
 define('WEBDIR', '/lti');
 define('WEBCONTENTDIR', WEBDIR.'/content');
 define('INSTALLDIR', '/var/www/webroot/lti');
@@ -18,9 +14,7 @@ define('UPLOADDIR', INSTALLDIR.'/upload');
 define('PROCESSDIR', INSTALLDIR.'/process');
 define('PROCESSUSER', "programs");
 
-###
-###  Database connection settings
-###
+// Database connection settings
 define('DB_NAME', 'mysql:dbname=#######;host=#######');
 define('DB_USERNAME', '#######');
 define('DB_PASSWORD', '#######');
