@@ -28,6 +28,10 @@ class StudentPage extends LTIPage {
 				$path = ltrim($path,'/');
 			}
 
+			if($this->resource->isModuleStandalone()){
+				$this->resource->isModuleStandalone($path);
+			}
+
 			// Get the full path to the item, including the path to the module
 			// associated with this resource
 			$indexContent = str_replace('{base}/','',$this->resource->module->root_url);

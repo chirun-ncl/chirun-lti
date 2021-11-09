@@ -37,10 +37,14 @@ class Resource {
 		return false;
 	}
 
-	public function isModuleStandalone(){
-		if (!isset($this->module)) return true;
-		// TODO: Replace this check so that it instead tests if there is only a single content item
-		if ($this->module->selected_theme->title == "Standalone") return true;
+	public function isModuleStandalone(&$path = NULL){
+		if (!isset($this->module)) return false;
+		// Check to see if there's only one content item. If there is, skip the introduction
+		$noIntroContent = array_filter($this->module->content, function($item) { return $item->type != 'introduction'; });
+		if (count($noIntroContent) == 1){
+			$path = $noIntroContent[0]->slug_path.'/';
+			return true;
+		}
 		return false;
 	}
 

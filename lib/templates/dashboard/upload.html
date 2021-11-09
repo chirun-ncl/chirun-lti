@@ -18,8 +18,8 @@
 				<div class="collapse" id="extra_settings">
 					<div class="mb-3">
 						<label for="itemType" class="form-label">Item Type</label>
-						<select name="itemType" id="itemType" class="form-select">
-							<option selected value="document">Document</option>
+						<select name="itemType" class="form-select">
+							<option selected value="standalone">Document</option>
 							<option value="slides">Slides</option>
 							<option value="html">HTML</option>
 							<option value="exam">Exam</option>
@@ -28,7 +28,7 @@
 					</div>
 					<div class="mb-3">
 						<label for="docSplit" class="form-label">Document Split Level</label>
-						<select name="docSplit" id="docSplit" class="form-select">
+						<select name="docSplit" class="form-select">
 							<option selected value="-2">No Splitting</option>
 							<option value="-1">Split on Parts</option>
 							<option value="0">Split on Chapters</option>
@@ -38,12 +38,18 @@
 					</div>
 					<div class="mb-3">
 						<label for="itemTitle" class="form-label">Item Title</label>
-						<input name="itemTitle" id="itemTitle" placeholder="Document [file].tex" class="form-control"></input>
+						<input name="itemTitle" placeholder="Document [file].tex" class="form-control"></input>
 					</div>
 					<div class="mb-3">
 						<label class="form-label">Other</label>
 						<div class="form-check">
-							<input name="buildPDF" id="buildPDF" class="form-check-input" type="checkbox" value="" checked>
+							<input name="sidebar" class="form-check-input" type="checkbox" value="">
+							<label class="form-check-label" for="sidebar">
+								Show sidebar
+							</label>
+						</div>
+						<div class="form-check">
+							<input name="buildPDF" class="form-check-input" type="checkbox" value="" checked>
 							<label class="form-check-label" for="buildPDF">
 								Build and include PDF
 							</label>

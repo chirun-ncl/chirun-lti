@@ -152,9 +152,8 @@ function do_action($db){
 		} else {
 			$content_files = glob($upload_dir.'/'."*.{tex,md,yml}",GLOB_BRACE);
 			$config_files = glob($upload_dir.'/'."config.yml");
-			$template_name = isset($_POST['split_chapters'])?'split':'standalone';
 			if(count($content_files) == 1 || count($config_files) == 1){
-				$ok = Process::fromSourceFile($db, $guid, basename($content_files[0]), $template_name);
+				$ok = Process::fromSourceFile($db, $guid, basename($content_files[0]));
 			}
 		}
 
@@ -172,9 +171,8 @@ function do_action($db){
 			$_SESSION['error_message'] = 'Failed to process build, no module found for this resource';
 		} else {
 			$source_main = $_POST['source_main'];
-			$template_name = isset($_POST['split_chapters'])?'split':'standalone';
 			$guid = basename(dirname($resource->module->yaml_path));
-			$ok = Process::fromSourceFile($db, $guid, $source_main, $template_name);
+			$ok = Process::fromSourceFile($db, $guid, $source_main);
 		}
 
 		if(!$ok){

@@ -240,9 +240,9 @@ class Module {
 		return CONTENTDIR.dirname($this->yaml_path);
 	}
 
-	public function url($allow_direct_link = true){
+	public function url($student_view = true){
 		$path = '/';
-		if($this->get_direct_linked_item() && $allow_direct_link){
+		if($this->get_direct_linked_item() && $student_view){
 			if($this->get_direct_linked_item()->type != 'introduction' && $this->get_direct_linked_item()->type != 'standalone'){
 				if(strcmp($this->get_direct_linked_item()->type,'html')==0){
 					$path = $this->get_direct_linked_item()->slug_path;
@@ -251,6 +251,12 @@ class Module {
 				}
 			}
 		}
+
+		$noIntroContent = array_filter($this->content, function($item) { return $item->type != 'introduction'; });
+		if (count($noIntroContent) == 1 && $student_view){
+			$path = $noIntroContent[0]->slug_path.'/';
+		}
+
 		if($this->selected_theme){
 			return WEBCONTENTDIR.dirname($this->yaml_path).'/'.$this->selected_theme->path.$path;
 		}

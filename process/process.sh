@@ -15,22 +15,22 @@ failed() {
   exit 1;
 }
 
-while getopts ":g:d:b:t:" o
+while getopts ":g:d:b:i:l:t:s:p:" o
 do
   case "${o}" in
     g) guid=${OPTARG} ;;
     d) doc=${OPTARG} ;;
     b) base=${OPTARG} ;;
-    t) template=${OPTARG} ;;
-    *) usage ;;
+    i) itemtype=${OPTARG} ;;
+    l) splitlevel=${OPTARG} ;;
+    t) title=${OPTARG} ;;
+    s) sidebar=${OPTARG} ;;
+    p) buildpdf=${OPTARG} ;;
+    *) error ;;
   esac
 done
 shift $((OPTIND-1))
 
-if [[ -z "${template}" ]]; then
-  echo 'No template specified, using "standalone".'
-  template="standalone"
-fi
 [[ -n "${guid}" && -n "${base}" ]] || error
 
 UPLOAD_TARGET="$(pwd)/../upload/${guid//\//_}"
@@ -45,8 +45,8 @@ rsync -a "${UPLOAD_TARGET}" "${PROCESS_TARGET}"
 
 cp "templates/Makefile" "${PROCESS_TARGET}"
 if [[ ! -f "${PROCESS_TARGET}/config.yml" ]]; then
-  cp "templates/config.${template//\/\_}.yml" "${PROCESS_TARGET}config.yml"
-  sed -i -e "s+{BASE}+${base}+g" -e "s/{GUID}/${guid}/g" -e "s/{DOCUMENT}/${doc}/g" "${PROCESS_TARGET}config.yml"
+  cp "templates/config.yml" "${PROCESS_TARGET}config.yml"
+  sed -i -e "s+{BASE}+${base}+g" -e "s/{GUID}/${guid}/g" -e "s/{DOCUMENT}/${doc}/g" -e "s/{ITEMTYPE}/${itemtype}/g" -e "s/{SPLITLEVEL}/${splitlevel}/g" -e "s/{TITLE}/${title}/g" -e "s/{SIDEBAR}/${sidebar}/g" -e "s/{BUILDPDF}/${buildpdf}/g" "${PROCESS_TARGET}config.yml"
 else
   cp "${PROCESS_TARGET}config.yml" "${PROCESS_TARGET}config.yml.orig"
   echo "base_dir: ${base}" >> "${PROCESS_TARGET}config.yml"
