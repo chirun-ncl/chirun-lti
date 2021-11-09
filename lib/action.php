@@ -206,7 +206,7 @@ function do_action($db){
 		}
 
 		if($ok){
-			$ok = $resource->selectModule('/'.$guid.'/MANIFEST.yml', $_REQUEST['theme_id'][$_REQUEST['module_path']]);
+			$ok = $resource->selectModule('/'.$guid.'/MANIFEST.yml');
 		} else {
 			$_SESSION['error_message'] = 'You do not have permission to access this GUID.';
 		}
