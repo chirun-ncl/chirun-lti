@@ -1,4 +1,4 @@
-{% extends "dashboard.html" %}
+{% extends "dashboard/dashboard.html" %}
 
 {% set colfirst = 'col-1' %}
 {% set colmid = 'col-2' %}
@@ -6,16 +6,14 @@
 
 {% block dashboard %}
 	<h2>Adaptive Release</h2>
-	{% if module.content | length == 0 %}
+	{% if resource.module.content | length == 0 %}
 		<p>This item has no content. Please check your uploaded content's <code>config.yml</code> file.
-	{% elseif (module.content | length == 1) and (module.content[0].children | length < 2) %}
+	{% elseif (resource.module.content | length == 1) and (resource.module.content[0].children | length < 2) %}
 		<p>This item is a standalone item or does not contain multiple pieces of content to release adaptively.</p>
 		<p>Instead, manage visibility of the Coursebuilder content using the tools provided by your VLE.</p>
 	{% else %}
 		<p>Use the below controls to manage when content will be visible to students on a part or chapter basis.</p>
-		<form action="index.php" method="POST">
-			<button class="btn btn-primary" name="do" value="content_saveall">Save All Changes</button>
-			<button class="btn btn-secondary" name="do" value="content_clearall">Restore Defaults</button>
+		<form action="index.php" method="POST" class="mb-3">
 			<table class="table">
 				<thead class="thead-light">
 						<tr>
@@ -27,7 +25,7 @@
 						<th class="{{ collast }} text-nowrap text-center" scope="col">Force Hidden</th>
 					</tr>
 				</thead>
-				{% for module_content in module.content %}
+				{% for module_content in resource.module.content %}
 						{% if module_content.children | length > 0 %}
 							<tbody>
 								<tr class='table-primary'>
@@ -49,7 +47,7 @@
 								<tr>
 									<td colspan="6" class="p-0">
 											<div id='table-part-{{ module_content.slug_path | replace({"/": "_"}) }}' class='collapse show'>
-											<table class="table table-striped table-borderless m-0 align-middle">
+											<table class="table table-borderless m-0 align-middle">
 												<tbody>
 													{% for child_content in module_content.children %}
 														{% if child_content.type != 'url' %}
@@ -61,7 +59,7 @@
 																<input class="flatpickr" name="content[{{ child_content.slug_path }}][start_datetime]" type="text" value="{{ child_content.start_datetime }}">
 															</td>
 															<td class="{{ colmid }}">
-																<input class="flatpickr" name="content[{{ child_content.slug_path }}][end_datetime]" type="text" value="{{ module_content.end_datetime }}">
+																<input class="flatpickr" name="content[{{ child_content.slug_path }}][end_datetime]" type="text" value="{{ child_content.end_datetime }}">
 															</td>
 															<td class="text-center {{ collast }}">
 																<input type="checkbox" name="content[{{ child_content.slug_path}}][checked]" {% if child_content.hidden == 1 %}checked{% endif%}>
@@ -95,9 +93,23 @@
 						{% endif %}
 				{% endfor %}
 			</table>
-			<input type="hidden" name="dashpage" value="adapt"></input>
-			<button class="btn btn-primary" name="do" value="content_saveall">Save All Changes</button>
-			<button class="btn btn-secondary" name="do" value="content_clearall">Restore Defaults</button>
+			<button class="btn btn-primary" name="do" value="adaptive_save">Save Schedule</button>
+			<button class="btn btn-secondary" name="do" value="adaptive_clear">Restore Defaults</button>
+		</form>
+		<h3>Further Options</h3>
+		<form action="index.php" method="POST">
+			<input type='hidden' value='0' name="opt[hide_by_default]">
+			<div class="mb-3">
+				<div class="form-check">
+					<input name="opt[hide_by_default]" id="hide_by_default" class="form-check-input" type="checkbox" {% if resource.options.hide_by_default %}checked{% endif %}>
+					<label class="form-check-label" for="hide_by_default">
+						Hide content unless explicitly made visible by adaptive release dates
+					</label>
+				</div>
+			</div>
+			<input type="hidden" name="do" value="options_save">
+			<input type="hidden" name="redirect_loc" value="adaptive">
+			<button type="submit" id="publicAccessButton" class="btn btn-primary mb-3">Update Options</button>
 		</form>
 		<script>
 			window.addEventListener('load', function () {

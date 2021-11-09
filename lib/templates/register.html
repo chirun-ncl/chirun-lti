@@ -5,7 +5,10 @@
     <h1>Coursebuilder Registration</h1>
 	<form action="register.php" method="post">
 		{% if error %}
-			<p>{{error}}</p>
+			<p><strong>Error:</strong> {{ error }}</p>
+		{% endif %}
+		{% if lti_msg %}
+			<p>{{ lti_msg }}</p>
 		{% endif %}
 		<p>Click the <strong>Register</strong> button below to complete the registration process.</p>
 		<p>

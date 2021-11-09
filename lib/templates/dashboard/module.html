@@ -1,0 +1,53 @@
+{% extends "dashboard/dashboard.html" %}
+
+{% block dashboard %}
+	<h2>Selected Content Information</h2>
+	{% if resource.isModuleEmpty() %}
+		<p>
+			<strong>A module has been uploaded but has not yet been successfully built</strong><br/>
+			Visit the "Upload Document" page to continue building this module.
+		</p>
+		<h3>Delete content</h3>
+		<p>To select different content, first <i>remove</i> the content asssociated with this item using the button below.</p>
+		<a class="btn btn-danger" href="./index.php?do=delete&req_id={{ resource.module.selected_id }}">Delete Coursebuilder Content</a>
+	{% elseif resource.isModuleStandalone() %}
+		<p>
+			<strong>Document source:</strong> {{ resource.module.content[0].title }}<br/>
+			<strong>Theme:</strong> {{ resource.module.selected_theme.title}}</br>
+			<strong>GUID:</strong> {{ resource.module.code }}
+		</p>
+		<h3>Delete content</h3>
+		<p>To select different content, first <i>remove</i> the content asssociated with this item using the button below.</p>
+		<a class="btn btn-danger" href="./index.php?do=delete&req_id={{ resource.module.id }}">Remove Content</a>
+	{% else %}
+		<h3>Module Information</h3>
+		<p>
+			<strong>Module:</strong> {{ resource.module.title }} </br>
+			<strong>Theme:</strong>
+			{% for idx, theme in resource.module.themes %}
+				{% if resource.module.selected_theme.path == theme.path %} {{ theme.title }} {% endif %}
+			{% endfor %}
+			</br>
+			<strong>GUID:</strong> {{ resource.module.code }}
+		</p>
+		<div class="col-lg-6">
+			<form action="index.php" method="POST">
+				<input type="hidden" name="dashpage" value="opt">
+				<input type='hidden' value='0' name="opt[hide_by_default]">
+				<div class="mb-3">
+					<label for="theme_id" class="form-label">Theme</label>
+					<select class="form-select" name="theme_id" id="theme_id">
+					{% for idx, theme in resource.module.themes %}
+						<option {% if resource.module.selected_theme.path == theme.path %} selected {% endif %}  value="{{ idx }}">{{ theme.title }}</option>
+					{% endfor %}
+					</select>
+				</div>
+				<button class="btn btn-primary btn-sm mb-3" name="do" value="set_theme">Update Theme</button>
+			</form>
+		</div>
+		<h3>Deselect Module</h3>
+		<p>To select a different module, first <i>remove</i> the current module using the button below.</p>
+		<a class="btn btn-danger" href="./index.php?do=delete&req_id={{ resource.module.id }}">Deselect Module</a>
+	{% endif %}
+{% endblock %}
+

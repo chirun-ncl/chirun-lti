@@ -1,16 +1,18 @@
 <?php
-/*
- * This page displays a UI for registering the tool with a tool consumer.
- */
 
 require_once('lib/vendor/autoload.php');
 require_once('lib/toolprovider.php');
+
+use IMSGlobal\LTI\Profile;
+use IMSGlobal\LTI\ToolProvider;
+use IMSGlobal\LTI\ToolProvider\DataConnector;
 
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 
 // Initialise session and database
 $error_msg = '';
+$lti_msg = '';
 $db = NULL;
 $loader = new FilesystemLoader('lib/templates');
 $twig = new Environment($loader, [
@@ -27,7 +29,7 @@ if (init($db)) {
 			$sep = '&';
 		}
 		$data_connector = DataConnector\DataConnector::getDataConnector(DB_TABLENAME_PREFIX, $db);
-		$tool = new RatingToolProvider($data_connector);
+		$tool = new CBLTIToolProvider($data_connector);
 		$tool->consumer = ToolProvider\ToolConsumer::fromRecordId($_SESSION['consumer_pk'], $data_connector);
 		$do = $_POST['do'];
 		if ($do == 'Register') {
@@ -47,7 +49,9 @@ if (init($db)) {
 	}
 }
 
+if (isset($_GET['lti_msg'])){
+	$lti_msg = $_GET['lti_msg'];
+}
 $page = $twig->load('register.html');
-echo $page->render(['error' => $error_msg]);
-
+echo $page->render(['error' => $error_msg, 'lti_msg' => $lti_msg]);
 ?>

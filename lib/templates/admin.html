@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block main %}
+	<main role="main" class="container mt-2 ml-3 mr-3">
+		<div class="row">
+			<div class="col">
+				{% for alert in alerts %}
+					{{ include('alert.html', {level: alert.level, lead: alert.lead, text: alert.text}, with_context = false) }}
+				{% endfor %}
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<h1>NCL CourseBuilder LTI Tool: Manage tool consumers</h1>
+				{% if consumers | length == 0 %}
+					<p>No consumers have been added yet.</p>
+				{% else %}
+					<form action="./?do=delete" method="post" onsubmit="return confirm('Delete selected consumers; are you sure?');">
+						<table class="table">
+							<thead class="thead-light">
+								<tr>
+									<th scope="col"></th>
+									<th scope="col" class="col-3">Name</th>
+									<th scope="col" class="col-3">Key</th>
+									<th scope="col" class="col-2">Consumer GUID</th>
+									<th scope="col">Available?</th>
+									<th scope="col">Protected?</th>
+									<th scope="col" class="col-2">Options</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for consumer in consumers %}
+									<tr>
+										<td><input type="checkbox" name="ids[]" value="{{ consumer.getRecordId() | url_encode }}" onclick="toggleSelect(this);"></td>
+										<td>{{ consumer.name }}</td>
+										<td>{{ consumer.getKey() }}</td>
+										<td>
+											{% if consumer.consumerGuid %}
+												{{ consumer.consumerGuid }} : {{ consumer.consumerVersion }}
+											{% else %}
+												None
+											{% endif %}
+										</td>
+										<td>
+											{% if consumer.getIsAvailable() %}
+												<i class="fa fa-check" aria-hidden="true"></i>
+											{% else %}
+												<i class="fa fa-times" aria-hidden="true"></i>
+											{% endif %}
+										</td>
+										<td>
+											{% if consumer.protected %}
+												<i class="fa fa-check" aria-hidden="true"></i>
+											{% else %}
+												<i class="fa fa-times" aria-hidden="true"></i>
+											{% endif %}
+										</td>
+										<td class="text-nowrap">
+											<a href="./?id={{ consumer.getRecordId() | url_encode }}#edit" class="btn btn-sm btn-outline-primary">Edit consumer</a>
+											<a href="./?do=delete&id={{ consumer.getRecordId() | url_encode }}" onclick="return confirm('Delete consumer; are you sure?');" class="btn btn-sm btn-outline-primary">Delete consumer</a>
+										</td>
+									</tr>
+								{% endfor%}
+							</tbody>
+						</table>
+						<p>
+							<input type="submit" value="Delete selected tool consumers" id="delsel">
+						</p>
+					</form>
+				{% endif %}
+				<hr>
+				{% if update_consumer.created %}
+					<h2>Update Consumer</h2>
+				{% else %}
+					<h2>Add New Consumer</h2>
+				{% endif %}
+
+				<form action="./" class="mb-3" method="post">
+					<div class="mb-3">
+						<label for="name" class="form-label">Name</label>
+						<input name="name" type="text" maxlength="50" value="{{ update_consumer.name | e }}" class="form-control" required="true"></input>
+					</div>
+					<div class="mb-3">
+						<label for="key" class="form-label">Key</label>
+						<input name="key" type="text" maxlength="50" value="{{ update_consumer.getKey() | e }}" class="form-control" required="true"
+							{% if update_consumer.created %}
+								disabled
+							{% endif %}
+						></input>
+					</div>
+					<div class="mb-3">
+						<label for="secret" class="form-label">Secret</label>
+						<input name="secret" type="text" maxlength="200" value="{{ update_consumer.secret | e }}" class="form-control" required="true"></input>
+					</div>
+					<div class="mb-3">
+						<div class="form-check">
+							<input name="enabled" class="form-check-input" type="checkbox" value="1" {% if update_consumer.enabled %}checked{% endif %}>
+							<label class="form-check-label" for="enabled">
+								Enabled?
+							</label>
+						</div>
+					</div>
+					<div class="mb-3">
+						<label for="enable_from" class="form-label">Enable from</label>
+						<input name="enable_from" type="text" maxlength="200" value="{{ update_consumer.enableFrom }}" class="form-control"></input>
+					</div>
+					<div class="mb-3">
+						<label for="enable_until" class="form-label">Enable until</label>
+						<input name="enable_until" type="text" maxlength="200" value="{{ update_consumer.enableUntil }}" class="form-control"></input>
+					</div>
+					<div class="mb-3">
+						<div class="form-check">
+							<input name="protected" class="form-check-input" type="checkbox" value="1" {% if update_consumer.protected %}checked{% endif %}>
+							<label class="form-check-label" for="protected">
+								Protected?
+							</label>
+						</div>
+					</div>
+					<input type="hidden" name="do" value="add">
+					<input type="hidden" name="id" value="{{ id }}">
+					{% if update_consumer.created %}
+						<input type="submit" class="btn btn-primary" value="Update consumer">
+						<input type="reset" class="btn btn-primary" value="Cancel" onclick="location.href='./';">
+					{% else %}
+						<input type="submit" class="btn btn-primary" value="Add new consumer">
+					{% endif %}
+				</form>
+				<p class="clear">Note: The launch URL for this instance is {{ launchUrl }}</p>
+			</div>
+		</div>
+	</main>
+{% endblock %}

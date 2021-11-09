@@ -10,34 +10,24 @@ use IMSGlobal\LTI\ToolProvider\Service;
 require_once(__DIR__.'/init.php');
 
 
-class RatingToolProvider extends ToolProvider\ToolProvider {
-
+class CBLTIToolProvider extends ToolProvider\ToolProvider {
 	function __construct($data_connector) {
-
 		parent::__construct($data_connector);
-
 		$this->baseUrl = getAppUrl();
-
 		$this->vendor = new Profile\Item('ncl', 'NCL', 'Newcastle University', 'https://www.ncl.ac.uk/');
 		$this->product = new Profile\Item('coursebuilder', 'Coursebuilder', 'Coursebuilder',
 			'https://www.mas-coursebuild.ncl.ac.uk/', VERSION);
-
 		$requiredMessages = array(new Profile\Message('basic-lti-launch-request', 'connect.php', array('User.id', 'Membership.role')));
 		$optionalMessages = array(new Profile\Message('ContentItemSelectionRequest', 'connect.php', array('User.id', 'Membership.role')),
 			new Profile\Message('DashboardRequest', 'connect.php', array('User.id'), array('a' => 'User.id'), array('b' => 'User.id')));
-
 		$this->resourceHandlers[] = new Profile\ResourceHandler(
 			new Profile\Item('coursebuilder', 'Coursebuilder', 'Produce flexible and accessible notes, in a variety of formats, using LaTeX or Markdown source'), 'lti/images/coursebuilder_icon_512.png',
 			$requiredMessages, $optionalMessages);
-
 		$this->requiredServices[] = new Profile\ServiceDefinition(array('application/vnd.ims.lti.v2.toolproxy+json'), array('POST'));
-
 	}
 
 	function onLaunch() {
-
 		global $db;
-
 		// Initialise the user session
 		$_SESSION['consumer_pk'] = $this->consumer->getRecordId();
 		$_SESSION['resource_pk'] = $this->resourceLink->getRecordId();
@@ -54,7 +44,7 @@ class RatingToolProvider extends ToolProvider\ToolProvider {
 
 		// Set a cookie in the user's browser for persistence
 		$new_token = bin2hex(openssl_random_pseudo_bytes(32));
-		addUserSession($db, $_SESSION['resource_pk'], $new_token, $_SESSION);
+		Session::addUserSession($db, $_SESSION['resource_pk'], $new_token, $_SESSION);
 		setcookie("coursebuilder_session[{$_SESSION['user_resource_pk']}]",
 			$new_token, time() + 24*3600, "/");
 		setcookie("coursebuilder_user_id", $_SESSION['user_id'], time() + 24*3600, "/");
@@ -64,7 +54,6 @@ class RatingToolProvider extends ToolProvider\ToolProvider {
 	}
 
 	function onContentItem() {
-
 		// Check that the Tool Consumer is allowing the return of an LTI link
 		$this->ok = in_array(ToolProvider\ContentItem::LTI_LINK_MEDIA_TYPE, $this->mediaTypes) || in_array('*/*', $this->mediaTypes);
 		if (!$this->ok) {
@@ -86,29 +75,16 @@ class RatingToolProvider extends ToolProvider\ToolProvider {
 			$_SESSION['isContentItem'] = TRUE;
 			$_SESSION['lti_version'] = $_POST['lti_version'];
 			$_SESSION['return_url'] = $this->returnUrl;
-			$_SESSION['title'] = postValue('title');
-			$_SESSION['text'] = postValue('text');
-			$_SESSION['data'] = postValue('data');
+			$_SESSION['title'] = isset($_POST['title'])?$_POST['title']:NULL;
+			$_SESSION['text'] = isset($_POST['text'])?$_POST['text']:NULL;
+			$_SESSION['data'] = isset($_POST['data'])?$_POST['data']:NULL;
 			$_SESSION['document_targets'] = $this->documentTargets;
 			// Redirect the user to display the list of items for the resource link
 			$this->redirectUrl = getAppUrl();
 		}
-
-	}
-
-	function onDashboard() {
-
-		global $db;
-
-		$title = APP_NAME;
-		$app_url = 'https://mas-coursebuild.ncl.ac.uk/lti/';
-		$icon_url = getAppUrl() . 'images/coursebuilder_icon_512.png';
-		$context_id = postValue('context_id', '');
-
 	}
 
 	function onRegister() {
-
 		// Initialise the user session
 		$_SESSION['consumer_pk'] = $this->consumer->getRecordId();
 		$_SESSION['tc_profile_url'] = $_POST['tc_profile_url'];
@@ -117,28 +93,21 @@ class RatingToolProvider extends ToolProvider\ToolProvider {
 
 		// Redirect the user to process the registration
 		$this->redirectUrl = getAppUrl() . 'register.php';
-
 	}
 
 	function onError() {
-
 		$msg = $this->message;
 		if ($this->debugMode && !empty($this->reason)) {
-			$msg = $this->reason;
+			$msg = 'LTI Error: ' . $this->reason;
 		}
-		$title = APP_NAME;
+		$loader = new FilesystemLoader('lib/templates');
+		$twig = new Environment($loader, [
+			'cache' => '/tmp/cb_site_cache/php',
+			'auto_reload' => true,
+		]);
 
-		$this->errorOutput = <<< EOD
-		<html>
-		<head>
-		<title>{$title}</title>
-		</head>
-		<body>
-		<h1>Error</h1>
-		<p style="font-weight: bold; color: #f00;">{$msg}</p>
-		</body>
-		</html>
-EOD;
+		$page = $twig->load('error.html');
+		$this->errorOutput = $page->render(['errorTitle' => $msg]);
 	}
 
 }

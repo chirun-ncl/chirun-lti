@@ -72,16 +72,13 @@ class Request {
 	}
 }
 
-function storeKV($db, $resource_pk, $user, $data_key, $data_value){
-	addDataKVStore($db, $resource_pk, $user, $data_key, $data_value);
-}
-
 function getKV($db, $resource_pk, $user, $data_key){
 	return getDataKVStore($db, $resource_pk, $user, $data_key);
 }
 
 
 $request = new Request();
+$resource = NULL;
 $ok = $request->parse();
 
 if (!$ok || !isset($request->data['resource_pk']) || !isset($request->data['action'])){
@@ -98,7 +95,7 @@ if($ok){
 	if (isset($_COOKIE['coursebuilder_user_id']) && isset($_COOKIE['coursebuilder_session'][$request->data['resource_pk']])) {
 		$ck_token = $_COOKIE['coursebuilder_session'][$request->data['resource_pk']];
 		$ck_user_id = $_COOKIE['coursebuilder_user_id'];
-		$ck_session = getUserSession($db, $ck_user_id, $ck_token);
+		$ck_session = Session::getUserSession($db, $ck_user_id, $ck_token);
 		if(!empty($ck_session)){
 			$session = $ck_session;
 			$session['resource_pk'] = $ck_session['resource_link_pk'];
@@ -109,6 +106,9 @@ if($ok){
 		$session = $_SESSION;
 		$ok = true;
 	}
+
+	$resource = new Resource($db, $session['resource_pk']);
+
 	if (!$ok){
 		$request->response->code = 500;
 		$request->response->status = 'error';
@@ -126,7 +126,7 @@ if($ok){
 			$request->response->data[] = ['message' => 'Missing data in request.'];
 			break;
 		}
-		storeKV($db, $session['resource_pk'], $session['user_id'], $request->data['key'], $request->data['value']);
+		$resource->addDataKVStore($session['user_id'], $request->data['key'], $request->data['value']);
 		$ok = true;
 		break;
 		case 'get':
@@ -136,11 +136,11 @@ if($ok){
 			$request->response->data[] = ['message' => 'Missing data in request.'];
 			break;
 		}
-		$request->response->data[] = getKV($db, $session['resource_pk'], $session['user_id'], $request->data['key']);
+		$request->response->data[] = $resource->getDataKVStore($session['user_id'], $request->data['key']);
 		$ok = true;
 		break;
 		case 'get_resource_build_log':
-		$module = getSelectedModule($db, $session['resource_pk']);
+		$module = $resource->module;
 		if (empty($module)){
 			$request->response->code = 500;
 			$request->response->status = 'error';

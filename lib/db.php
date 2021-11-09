@@ -1,7 +1,4 @@
 <?php
-/*
- * This page provides functions for accessing the database.
- */
 
 use IMSGlobal\LTI\ToolProvider;
 use IMSGlobal\LTI\ToolProvider\DataConnector;
@@ -9,10 +6,7 @@ use IMSGlobal\LTI\ToolProvider\DataConnector;
 require_once(__DIR__.'/../config.php');
 require_once(__DIR__.'/vendor/autoload.php');
 
-
-###
-###  Return a connection to the database, return FALSE if an error occurs
-###
+// Return a connection to the database, return FALSE if an error occurs
 function open_db() {
 
 	try {
@@ -26,10 +20,7 @@ function open_db() {
 
 }
 
-
-###
-###  Check if a table exists
-###
+// Check if a table exists
 function table_exists($db, $name) {
 
 	$sql = "select 1 from {$name}";
@@ -38,10 +29,7 @@ function table_exists($db, $name) {
 
 }
 
-
-###
-###  Create any missing database tables (only for MySQL and SQLite databases)
-###
+// Create any missing database tables (only for MySQL and SQLite databases)
 function init_db($db) {
 
 	$db_type = '';
@@ -262,8 +250,8 @@ function init_db($db) {
 		}
 	}
 
-	if ($ok && !table_exists($db, "{$prefix}module_content_overrides")) {
-		$sql = "CREATE TABLE {$prefix}module_content_overrides (" .
+	if ($ok && !table_exists($db, "{$prefix}resource_adaptive_release")) {
+		$sql = "CREATE TABLE {$prefix}resource_adaptive_release (" .
 		'resource_link_pk int(11) NOT NULL, ' .
 		'slug_path varchar(256) NOT NULL, ' .
 		'start_datetime datetime DEFAULT NULL, ' .
@@ -273,8 +261,8 @@ function init_db($db) {
 		') ENGINE=InnoDB DEFAULT CHARSET=utf8';
 		$ok = $db->exec($sql) !== FALSE;
 		if ($ok) {
-			$sql = "ALTER TABLE {$prefix}module_content_overrides " .
-			"ADD CONSTRAINT {$prefix}module_content_overrides_resource_link_pk_FK1 FOREIGN KEY (resource_link_pk) " .
+			$sql = "ALTER TABLE {$prefix}resource_adaptive_release " .
+			"ADD CONSTRAINT {$prefix}resource_adaptive_release_resource_link_pk_FK1 FOREIGN KEY (resource_link_pk) " .
 			"REFERENCES {$prefix}" . DataConnector\DataConnector::RESOURCE_LINK_TABLE_NAME . ' (resource_link_pk) ' .
 			"ON DELETE CASCADE";
 			$ok = $db->exec($sql) !== FALSE;

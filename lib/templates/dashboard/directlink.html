@@ -1,4 +1,4 @@
-{% extends "dashboard.html" %}
+{% extends "dashboard/dashboard.html" %}
 
 {% set colfirst = 'col-1' %}
 {% set collast = 'col-2' %}
@@ -10,7 +10,7 @@
 	{% if dashPage.directLinkedItem %}
 		<p>
 			<b>Currently selected item:</b>
-			<a target="_blank" href="{{ module.url() }}?auth_level=1">{{ dashPage.directLinkedItem.title }}</a>
+			<a target="_blank" href="{{ resource.module.url() }}?auth_level=1">{{ dashPage.directLinkedItem.title }}</a>
 		</p>
 	{% endif %}
 	<table class="table align-middle">
@@ -21,7 +21,7 @@
 				<th class="{{ collast }} text-nowrap text-center" scope="col">Direct Link</th>
 			</tr>
 		</thead>
-		{% for module_content in module.content %}
+		{% for module_content in resource.module.content %}
 				{% if module_content.children | length > 0 %}
 					<tbody>
 						<tr class='table-primary'>
@@ -36,7 +36,7 @@
 						<tr>
 							<td colspan="4" class="p-0">
 									<div id='table-part-{{ module_content.slug_path | replace({"/": "_"}) }}' class='collapse show'>
-									<table class="table table-striped table-borderless m-0 align-middle">
+									<table class="table table-borderless m-0 align-middle">
 										<tbody>
 											{% for child_content in module_content.children %}
 												{% if child_content.type != 'url' %}

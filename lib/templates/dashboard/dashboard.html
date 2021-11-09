@@ -27,12 +27,12 @@
 						<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
 							{% for navItemKey, navItem in navHeading.items %}
 								<li>
-								{% if navItemKey == 'viewall' and not module.isModuleEmpty()%}
-									<a class="dropdown-item" href="{{ module.url(false) }}?auth_level=1" target="_blank">
+								{% if navItemKey == 'viewall' and not resource.module.isModuleEmpty()%}
+									<a class="dropdown-item" href="{{ resource.module.url(false) }}?auth_level=1" target="_blank">
 										<i class="fa {{ navItem.navIcon }}" aria-hidden="true"></i> {{ navItem.navTitle }}
 									</a>
-								{% elseif navItemKey == 'view' and not module.isModuleEmpty()%}
-									<a class="dropdown-item" href="{{ module.url() }}?auth_level=0" target="_blank">
+								{% elseif navItemKey == 'view' and not resource.module.isModuleEmpty()%}
+									<a class="dropdown-item" href="{{ resource.module.url() }}?auth_level=0" target="_blank">
 										<i class="fa {{ navItem.navIcon }}" aria-hidden="true"></i> {{ navItem.navTitle }}
 									</a>
 								{% else %}
@@ -55,6 +55,17 @@
 					{{ include('alert.html', {level: alert.level, lead: alert.lead, text: alert.text}, with_context = false) }}
 				{% endfor %}
 			</div>
+			<script>
+				window.addEventListener('load', function () {
+					setTimeout(function () {
+						var alertNodes = document.getElementsByClassName('alert-primary alert-dismissible');
+						for (const alertNode of alertNodes) {
+							var alert = new bootstrap.Alert(alertNode);
+							alert.close();
+						}
+					}, 3000);
+				});
+			</script>
 		</div>
 		<div class="row">
 			<div class="col">

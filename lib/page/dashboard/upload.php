@@ -10,23 +10,23 @@ function tex_array_filter($fn){
 
 class DashboardUploadPage extends BaseDashboardContent {
 	public $title = "Upload Document";
-	public $template = "dashboard_upload.html";
+	public $template = "dashboard/upload.html";
 	public $uploaded = NULL;
 	public $uploadFileOptions = NULL;
-	public function setup($module, $db, $res){
-		parent::setup($module, $db, $res);
+	public function setup($resource){
+		parent::setup($resource);
 
-		if(empty($this->module)){
+		if(empty($this->resource->module)){
 			// Nothing at all has been uploaded
 			$this->uploaded = False;
-		} else if($this->isModuleEmpty() && $this->resource_options['user_uploaded']==0){
+		} else if($this->resource->isModuleEmpty() && $this->resource->options['user_uploaded']==0){
 			/*
 				Something has been uploaded but it has not yet started processing
 				Assume there is no config.yml and we don't yet know which file to process
 				in standalone mode.
 			*/
 			$this->uploaded = True;
-			$fullUploadPath = INSTALLDIR.'/upload'.dirname($this->module->yaml_path);
+			$fullUploadPath = INSTALLDIR.'/upload'.dirname($this->resource->module->yaml_path);
 			$this->uploadFileOptions = array_diff(scandir($fullUploadPath),array('..','.'));
 			$this->uploadFileOptions = array_filter($this->uploadFileOptions, 'tex_array_filter');
 		} else {

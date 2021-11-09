@@ -34,33 +34,18 @@ class Alert {
 	}
 }
 
-trait ModuleInfo {
-	protected $module = NULL;
-
-	public function isModuleEmpty(){
-		if (!isset($this->module)) return true;
-		if (empty($this->module->code)) return true;
-		return false;
-	}
-
-	public function isModuleStandalone(){
-		if (!isset($this->module)) return true;
-		// TODO: Replace this check so that it instead tests if there is only a single content item
-		if ($this->module->selected_theme->title == "Standalone") return true;
-		return false;
-	}
-}
-
 class BasePage {
 	protected $page;
 	protected $db;
+	protected $resource;
 	public $template = "base.html";
 	public $css = array();
 	public $js = array();
 	public $title = "NCL Coursebuilder";
 
-	public function setDB($db){
+	private function __construct($db = NULL, $resource = NULL){
 		$this->db = $db;
+		$this->resource = $resource;
 	}
 
 	public function render() {

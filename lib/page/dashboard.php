@@ -11,11 +11,9 @@ require_once(__DIR__.'/dashboard/buildlog.php');
 require_once(__DIR__.'/dashboard/publicaccess.php');
 
 class DashboardPage extends LTIPage {
-	public $template = "dashboard.html";
+	public $template = "dashboard/dashboard.html";
 	public $title = "NCL Coursebuilder";
-	protected $resource_pk = NULL;
 	protected $dashPage = NULL;
-	protected $resource_options = NULL;
 	protected $pageStructure = array(
 		'content' => array(
 			'navTitle' => 'Content',
@@ -89,7 +87,11 @@ class DashboardPage extends LTIPage {
 		'publicaccess' => 'DashboardPublicAccessPage'
 	);
 
-	public function __construct(){
+	public function setResource($resource_pk){
+		$this->resource_pk = $resource_pk;
+	}
+
+	public function render(){
 		$this->js = array_merge($this->js, array(
 			"https://cdn.jsdelivr.net/npm/flatpickr",
 			"https://cdn.datatables.net/v/bs5/dt-1.11.3/datatables.min.js",
@@ -106,20 +108,13 @@ class DashboardPage extends LTIPage {
 			);
 		}
 
-	}
-
-	public function setResource($resource_pk){
-		$this->resource_pk = $resource_pk;
-	}
-
-	public function render(){
 		$req = isset($_REQUEST['dashpage'])?$_REQUEST['dashpage']:'selected';
 		if (array_key_exists($req,  $this->pageClass)){
 			$this->dashPage = new $this->pageClass[$req];
 		} else {
 			$this->dashPage = new DashboardSelectedContentPage();
 		}
-		$this->dashPage->setup($this->module, $this->db, $this->resource_pk);		
+		$this->dashPage->setup($this->resource);
 		$this->template = $this->dashPage->template;
 		$this->title = $this->dashPage->title . ' | ' . $this->title;
 		parent::render();

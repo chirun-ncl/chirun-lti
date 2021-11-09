@@ -4,5 +4,7 @@
 		<strong>{{ lead }}:</strong>
 	{% endif %}
 	{{ text }}
-	<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	{% if not sticky %}
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>	
+	{% endif %}
 </div>

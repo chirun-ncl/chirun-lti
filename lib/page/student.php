@@ -18,7 +18,7 @@ class StudentPage extends LTIPage {
 
 			// However, find the direct linked item if it exists for this resource,
 			// and set the path accordingly if so
-			$direct_link = $this->module->get_direct_linked_item();
+			$direct_link = $this->resource->module->get_direct_linked_item();
 			if(!empty($direct_link) && $direct_link->type != 'introduction'){
 				if(strcmp($direct_link->type,'html')==0){
 					$path = $direct_link->slug_path;
@@ -30,16 +30,16 @@ class StudentPage extends LTIPage {
 
 			// Get the full path to the item, including the path to the module
 			// associated with this resource
-			$indexContent = str_replace('{base}/','',$this->module->root_url);
-			$indexContent = str_replace('{code}',$this->module->code, $indexContent);
-			$indexContent = str_replace('{year}',$this->module->year, $indexContent);
-			$indexContent = str_replace('{theme}',$this->module->selected_theme->path, $indexContent);
+			$indexContent = str_replace('{base}/','',$this->resource->module->root_url);
+			$indexContent = str_replace('{code}',$this->resource->module->code, $indexContent);
+			$indexContent = str_replace('{year}',$this->resource->module->year, $indexContent);
+			$indexContent = str_replace('{theme}',$this->resource->module->selected_theme->path, $indexContent);
 			$indexContent .= $path;
 			$indexContent = ltrim($indexContent,'/');
 
 			// Request the default item, this should succeed immediately if our LTI launch was successful
 			// We force students to have authLevel = 0
-			if($this->requestContentForModule($indexContent, $this->module, 0, $this->reqContentError)){
+			if($this->requestContentForModule($indexContent, $this->resource->module, 0, $this->reqContentError)){
 				// Request granted, redirect to the default content to ensure relative paths work
 				header("Location: ".WEBCONTENTDIR."/".$indexContent);
 			} else {

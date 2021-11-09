@@ -4,7 +4,7 @@ class Content {
 	public $slug_path = '';
 	public $start_datetime = NULL;
 	public $end_datetime = NULL;
-	public $hidden = NULL;
+	public $hidden = 0;
 	public $hidden_reason = 'Visible';
 	public $type = NULL;
 	public $title = '';
@@ -38,29 +38,8 @@ class Content {
 
 	public function get_hidden(){
 		$hidden = array();
-		if($this->hidden) $hidden[] = $this;
+		if($this->hidden > 0) $hidden[] = $this;
 		return $hidden;
-	}
-
-	public function adaptive_release_tbl_row(){
-		$html = '<tr>';
-		$html .= '<td></td>';
-		$html .= '<td>'.$this->title.'</td>';
-		$html .= '<td>'.$this->hidden_reason.'</td>';
-		$html .= '<td>'.($this->start_datetime?
-			'<input class="flatpickr" name="content['.$this->slug_path.'][start_datetime]"
-			type="text" value="'.$this->start_datetime.'">':
-			'<input class="flatpickr" name="content['.$this->slug_path.'][start_datetime]"
-			type="text">').'</td>';
-		$html .= '<td>'.($this->end_datetime?
-			'<input class="flatpickr" name="content['.$this->slug_path.'][end_datetime]"
-			type="text" value="'.$this->end_datetime.'">':
-			'<input class="flatpickr" name="content['.$this->slug_path.'][end_datetime]"
-			type="text">').'</td>';
-		$html .= '<td class="text-center"><input type="checkbox" name="content['.$this->slug_path.'][checked]"';
-		$html .= ($this->hidden==1?' checked ':'').'></td>';
-		$html .= '</tr>';
-		return $html;
 	}
 
 	public function slugify(){
@@ -77,12 +56,17 @@ class Content {
 	}
 
 	public function calculate_hidden(){
-		if(isset($this->hidden) && $this->hidden) return;
-		if(isset($this->parent) && $this->parent->hidden) {//Content is hidden because parent is hidden
+		// Check to see if this item's hidden status already been calculated
+		// or has been forced.
+		if($this->hidden > 0) return;
+
+		//Content is hidden because the parent item is hidden
+		if(isset($this->parent) && $this->parent->hidden) {
 			$this->hidden = 3;
 			$this->hidden_reason='Hidden (via parent)';
 			return;
 		}
+
 		//Check if startdate hasn't passed yet
 		$now = new DateTime();
 		if(isset($this->start_datetime)){
@@ -90,38 +74,43 @@ class Content {
 			if($now < $start){
 				$this->hidden = 2;
 				$this->hidden_reason='Hidden (Too early)';
+				return;
 			}
 		}
+
+		//Check if enddate has already passed
 		if(isset($this->end_datetime)){
 			$end = new DateTime($this->end_datetime);
 			if($now > $end){
 				$this->hidden = 2;
 				$this->hidden_reason='Hidden (Too late)';
+				return;
 			}
 		}
-		if(!isset($this->hidden) && isset($this->owner_module->resource_options)){
-			if($this->owner_module->resource_options['hide_by_default']){
-				$this->hidden = 1;
+
+		// Check if this item will be hidden because items are hidden by default
+		if(isset($this->owner_module->resource->options)){
+			if(!isset($this->end_datetime) && !isset($this->start_datetime) && $this->owner_module->resource->options['hide_by_default']){
+				$this->hidden = 4;
 				$this->hidden_reason='Hidden (by default)';
 			}
 		}
-		if($this->hidden) return;
+		if($this->hidden > 0) return;
 
 		foreach ($this->children as $child_content){
 			if($child_content->hidden){
-				$this->hidden = 0;
 				$this->hidden_reason='Partially Hidden';
 			}
 		}
 	}
 	public function apply_overrides($content_overrides){
 		foreach ($content_overrides as $override){
-			if(strcmp($override['slug_path'],$this->slug_path)==0){
+			if(strcmp($override['slug_path'], $this->slug_path)==0){
 				$this->start_datetime = $override['start_datetime'];
 				$this->end_datetime = $override['end_datetime'];
 				if($override['hidden']==1){
 					$this->hidden = 1;
-					$this->hidden_reason='Hidden (Always)';
+					$this->hidden_reason='Hidden (Forced)';
 				} else {
 					$this->hidden = 0;
 				}
@@ -160,40 +149,12 @@ class Part extends Content {
 		}
 		return $hidden;
 	}
-
-	public function adaptive_release_tbl_row(){
-		$html = "<tbody><tr class='table-primary'>";
-		$html .= "<td class='clickable collapsed' data-toggle='collapse' data-target='#table-part-{$this->slug_path}' aria-expanded='false' aria-controls='table-part-{$this->slug_path}'>";
-
-		$html .= '<i class="fa fa-3 fa-chevron-down"></i></td>';
-		$html .= '<td>'.$this->title.'</td>';
-		$html .= '<td>'.$this->hidden_reason.'</td>';
-		$html .= '<td>'.($this->start_datetime?
-			'<input class="flatpickr" name="content['.$this->slug_path.'][start_datetime]"
-			type="text" value="'.$this->start_datetime.'">':
-			'<input class="flatpickr" name="content['.$this->slug_path.'][start_datetime]"
-			type="text">').'</td>';
-		$html .= '<td>'.($this->end_datetime?
-			'<input class="flatpickr" name="content['.$this->slug_path.'][end_datetime]"
-			type="text" value="'.$this->end_datetime.'">':
-			'<input class="flatpickr" name="content['.$this->slug_path.'][end_datetime]"
-			type="text">').'</td>';
-		$html .= '<td class="text-center"><input type="checkbox" name="content['.$this->slug_path.'][checked]"';
-		$html .= ($this->hidden==1?' checked ':'').'></td>';
-		$html .= '</tr></tbody>';
-		$html .= "<tbody id='table-part-{$this->slug_path}' class='collapse'>";
-		foreach ($this->children as $child_content){
-			$html .= $child_content->adaptive_release_tbl_row();
-		}
-		$html .= '</tbody>';
-		return $html;
-	}
 }
 
 class Standalone extends Part {
 	public $type = 'standalone';
 	public function __construct($content_item, $owner_module) {
-		$this->title = $content_item['title'];
+		$this->title = isset($content_item['title'])?$content_item['title']:"";
 		$this->slug = '';
 		$this->slug_path = '/';
 		$this->owner_module = $owner_module;
@@ -227,20 +188,28 @@ class Module {
 	public $code = NULL;
 	public $yaml_path = NULL;
 	public $root_url =  NULL;
-	public $selected_id = NULL;
+	public $id = NULL;
 	public $selected_theme = NULL;
-	public $resource_options = NULL;
+	public $resource = NULL;
 	public $yaml = array();
 	public $content = array();
 	public $themes = array();
 
-	public function __construct($yaml_path = "", $module_selected_id = NULL) {
+	public function __construct($yaml_path = "", $module_id = NULL, $resource = NULL) {
 		if(empty($yaml_path)) return;
-		$this->selected_id = $module_selected_id;
+
+		$this->id = $module_id;
 		$this->yaml_path = $yaml_path;
 		$this->parse_yaml();
 		$this->parse_content();
 		$this->parse_themes();
+
+		if(isset($module_id) && isset($resource)){
+			$this->resource = $resource;
+			foreach ($this->content as $content_item){
+				$content_item->apply_overrides($resource->getAdaptiveRelease());
+			}
+		}
 	}
 	
 	public function get_hidden(){
@@ -251,21 +220,14 @@ class Module {
 		return $hidden;
 	}
 
-	public function is_public_access(){
-		if(array_key_exists('public_access',$this->resource_options)){
-			return boolval($this->resource_options['public_access']);
-		}
-		return false;
-	}
-
 	public function get_direct_linked_item(){
-		if(array_key_exists('direct_link_slug',$this->resource_options)){
+		if(array_key_exists('direct_link_slug',$this->resource->options)){
 			foreach ($this->content as $content){
-				if ($content->slug_path == $this->resource_options['direct_link_slug']){
+				if ($content->slug_path == $this->resource->options['direct_link_slug']){
 					return $content;
 				}
 				foreach ($content->children as $item){
-					if ($item->slug_path == $this->resource_options['direct_link_slug']){
+					if ($item->slug_path == $this->resource->options['direct_link_slug']){
 						return $item;
 					}
 				}
@@ -342,22 +304,6 @@ class Module {
 			}
 		}
 		return false;
-	}
-	
-	public function apply_content_overrides($db, $resource_pk){
-		/*
-			TODO: Don't take resource_pk here, instead check for all linked resources for this module
-			and combine settings cleverly.
-			Q: Should resources share adaptive release settings?
-			Q: Can resource settings be meaningfully combined?
-		*/
-		$this->resource_options = getResourceOptions($db, $resource_pk);
-		if($this->selected_id){
-			$content_overrides = getContentOverrides($db, $resource_pk);
-			foreach ($this->content as $content_item){
-				$content_item->apply_overrides($content_overrides);
-			}
-		}
 	}
 }
 

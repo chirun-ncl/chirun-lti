@@ -1,10 +1,10 @@
 <?php
 class DashboardAdaptiveReleasePage extends BaseDashboardContent {
 	public $title = "Adaptive Release";
-	public $template = "dashboard_adaptive.html";
-	public function setup($module, $db, $res){
-		parent::setup($module, $db, $res);
-		if($this->isModuleEmpty()){
+	public $template = "dashboard/adaptive.html";
+	public function setup($resource){
+		parent::setup($resource);
+		if($this->resource->isModuleEmpty()){
 			$_SESSION['ack_messages'] = False;
 			header("Location: index.php");
 		}

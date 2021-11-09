@@ -1,6 +1,5 @@
 <?php
 class LTIPage extends BasePage {
-	use ModuleInfo;
 	protected $authLevel = 0;
 	protected $CBLTI = array(
 		'api_path' => WEBDIR.'/api.php',
@@ -13,7 +12,7 @@ class LTIPage extends BasePage {
 	protected $authorisedContent = NULL;
 	protected $webdir = WEBDIR;
 	public $alerts = array();
-	public $template = "ltipage.html";
+	public $template = "base.html";
 	public $title = "NCL Coursebuilder LTI Tool";
 	public $css = array(
 		'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css',
@@ -25,25 +24,28 @@ class LTIPage extends BasePage {
 		'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js',
 	);
 
-	public function setModule($module, $resource_pk = NULL){
-		$this->module = $module;
+	public function __construct($db = NULL, $resource = NULL){
+		$this->db = $db;
+		$this->resource = $resource;
 
-		// Use the module title for the title of the page
-		if (!empty($this->module->title)){
-			$this->title = $module->title;
-		}
-
-		// If an LTI launch and successful, setup the CBLTI object with auth information
-		if(isset($resource_pk)){
-			$this->CBLTI['resource_pk'] = $resource_pk;
+		// If an LTI launch and successful, setup the resource and auth information
+		if(isset($resource)){
+			$this->setResource($resource);
 			$this->CBLTI['auth_method'] = 'LTI';
 			if (isset($_SESSION['user_id'])){
 				$this->CBLTI['user_id'] = $_SESSION['user_id'];
 				$this->CBLTI['user_email'] = $_SESSION['user_email'];
 			}
+		}
+	}
 
-			// Load the resource options from the database
-			$this->module->resource_options = getResourceOptions($this->db, $resource_pk);
+	public function setResource($resource){
+		$this->resource = $resource;
+		$this->CBLTI['resource_pk'] = $resource->resource_link_pk;
+
+		// Use the module title for the title of the page
+		if (!empty($resource->module->title)){
+			$this->title = $resource->module->title;
 		}
 	}
 
@@ -64,10 +66,12 @@ class LTIPage extends BasePage {
 		$errorMsg = NULL;
 
 		// Check if the requested content is part of the currently set module
-		if ($this->isModuleEmpty()){
+		if(isset($this->resource) && $this->resource->isModuleEmpty()){
 			$errorMsg = "No Coursebuilder content has been configured for this resource. Please check this page again later or contact your course instructor for advice.";
+		} elseif(isset($this->resource)) {
+			$success = $this->requestContentForModule($contentPath, $this->resource->module, $authLevel, $errorMsg);
 		} else {
-			$success = $this->requestContentForModule($contentPath, $this->module, $authLevel, $errorMsg);
+			$errorMsg = "You are not authorised to view this content.";
 		}
 
 		// Check the user's cookies for other valid sessions, the content may be part of some
@@ -75,19 +79,16 @@ class LTIPage extends BasePage {
 		if (!$success && isset($_COOKIE['coursebuilder_session']) && isset($_COOKIE['coursebuilder_user_id'])){
 			$ck_user_id = $_COOKIE['coursebuilder_user_id'];
 			foreach ($_COOKIE['coursebuilder_session'] as $ck_resource_pk => $ck_token) {
-				$session = getUserSession($this->db, $ck_user_id, $ck_token);
+				$session = Session::getUserSession($this->db, $ck_user_id, $ck_token);
 				if(empty($session)) continue;
-
-				$ck_module = getSelectedModule($this->db, $session['resource_link_pk']);
-				if(isset($ck_module)){
-					$ck_module->apply_content_overrides($this->db, $session['resource_link_pk']);
-					if($success = $this->requestContentForModule($contentPath, $ck_module, $authLevel)){
-						$this->setModule($ck_module, $session['resource_link_pk']);
-						$this->CBLTI['resource_pk'] = $session['resource_link_pk'];
+				$ck_resource = new Resource($this->db, $session['resource_link_pk']);
+				if(isset($ck_resource->module)){
+					if($success = $this->requestContentForModule($contentPath, $ck_resource->module, $authLevel)){
+						$this->setResource($ck_resource);
 						$this->CBLTI['auth_method'] = 'cookie';
 						$this->CBLTI['user_id'] = $session['user_id'];
 						$this->CBLTI['user_email'] = $session['user_email'];
-						setUserSession($session);
+						Session::setUserSession($session);
 						break;
 					}
 				}
@@ -97,18 +98,16 @@ class LTIPage extends BasePage {
 		// Check for module content marked public in the database.
 		// Anyone is allowed to load content from those modules.
 		if (!$success){
-			foreach (getPublicModules($this->db) as $module){
-				$pub_module = getSelectedModule($this->db, $module['resource_link_pk']);
-				$moduleCode = $pub_module->code;
+			foreach (Resource::getPublicModules($this->db) as $module){
+				$pub_resource = new Resource($this->db, $module['resource_link_pk']);
+				$moduleCode = $pub_resource->module->code;
 				if(substr($contentPath, 0, strlen($moduleCode)) === $moduleCode){
-					$pub_module->apply_content_overrides($this->db, $module['resource_link_pk']);
-					if($success = $this->requestContentForModule($contentPath, $pub_module, $authLevel)){
-						$this->setModule($pub_module, $module['resource_link_pk']);
-						$this->CBLTI['resource_pk'] = $module['resource_link_pk'];
+					if($success = $this->requestContentForModule($contentPath, $pub_resource->module, $authLevel)){
+						$this->setResource($pub_resource);
 						$this->CBLTI['auth_method'] = 'anonymous';
 						$this->CBLTI['user_id'] = NULL;
 						$this->CBLTI['user_email'] = NULL;
-						addAnonymousUserSession($this->db, $module['resource_link_pk'], getGuid());
+						Session::addAnonymousUserSession($this->db, $pub_resource->resource_link_pk, getGuid());
 						break;
 					}
 				}
@@ -192,7 +191,7 @@ class LTIPage extends BasePage {
 		   the resource's adaptive release settings.
 		*/
 		if ($this->authLevel == 0){
-			foreach($this->module->get_hidden() as $hidden_item){
+			foreach($this->resource->module->get_hidden() as $hidden_item){
 				$xpath = new DomXPath($dom);
 				$hidden_slug_ltrim = ltrim($hidden_item->slug_path,'/');
 

@@ -1,4 +1,4 @@
-{% extends "dashboard.html" %}
+{% extends "dashboard/dashboard.html" %}
 
 {% block dashboard %}
 	<h2>Public Access</h2>
@@ -9,7 +9,7 @@
 		<input type='hidden' value='0' name="opt[public_access]">
 		<div class="mb-3">
 			<div class="form-check">
-				<input name="opt[public_access]" id="public_access" class="form-check-input" type="checkbox" {% if dashPage.resource_options.public_access %}checked{% endif %}>
+				<input name="opt[public_access]" id="public_access" class="form-check-input" type="checkbox" {% if resource.options.public_access %}checked{% endif %}>
 				<label class="form-check-label" for="public_access">
 					Enable public access to content
 				</label>
