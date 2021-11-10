@@ -45,7 +45,7 @@ class LTIPage extends BasePage {
 
 		// Use the module title for the title of the page
 		if (!empty($resource->module->title)){
-			$this->title = "$resource->module->title";
+			$this->title = $resource->module->title;
 		}
 	}
 
