@@ -95,13 +95,3 @@ When content is uploaded to the LTI tool for processing, the following series of
   * Finally, the output of the process script is written to a log file at `PROCESSDIR/logs/<guid>.log`.
 
 The `UPLOADDIR` directory should be emptied periodically to avoid filling the disk. For example, this can be handled by adding a cronjob for the `programs` user.
-
-# Contributions and Libraries
-
-This tool has been written by the E-Learning Unit, School of Mathematics, Statistics & Physics, Newcastle University.
-
-The following libraries are shipped as part of the NCL CourseBuilder LTI tool:
-  * IMSGlobal LTI
-  * Twig
-
-This tool was initially based on the IMSGlobal `LTI-Sample-Tool-Provider-PHP` sample application, released under the GNU GPL-3.0 License.
