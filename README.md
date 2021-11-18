@@ -39,6 +39,7 @@ Directory | Mode | Owner:Group
 ----------|------|--------------
 `INSTALLDIR` | 755 | `programs:programs`
 `UPLOADDIR`  | 775 | `programs:www-data`
+`CONTENTDIR`  | 775 | `programs:www-data`
 `PROCESSDIR/logs` |775 | `programs:www-data`
 
 ### Sudo Permission Setup
