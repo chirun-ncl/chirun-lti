@@ -16,7 +16,7 @@ $lti_msg = '';
 $db = NULL;
 $loader = new FilesystemLoader('lib/templates');
 $twig = new Environment($loader, [
-	'cache' => '/tmp/cb_site_cache/php',
+	'cache' => '/tmp/cb_site_cache_lti/php',
 	'auto_reload' => true,
 ]);
 

@@ -41,7 +41,7 @@ class Resource {
 		if (!isset($this->module)) return false;
 		// Check to see if there's only one content item. If there is, skip the introduction
 		$noIntroContent = array_filter($this->module->content, function($item) { return $item->type != 'introduction'; });
-		if (count($noIntroContent) == 1){
+		if (count($noIntroContent) == 1 && isset($noIntroContent[0]->slug_path)){
 			$path = $noIntroContent[0]->slug_path.'/';
 			return true;
 		}
