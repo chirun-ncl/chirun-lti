@@ -28,6 +28,9 @@ function init(&$db, $checkSession = NULL) {
 
 	// Open database connection
 	$db = open_db(!$checkSession);
+	if (!$db) {
+		return;
+	}
 
 	// Set timezone
 	if (!ini_get('date.timezone')) {
