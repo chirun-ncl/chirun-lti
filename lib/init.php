@@ -6,12 +6,6 @@
 use IMSGlobal\LTI\ToolProvider;
 use IMSGlobal\LTI\ToolProvider\DataConnector;
 
-error_reporting(0);
-@ini_set('display_errors', false);
-
-// Uncomment the next line to enable error messages
-error_reporting(E_ALL);
-
 require_once(__DIR__.'/../config.php');
 require_once(__DIR__.'/db.php');
 require_once(__DIR__.'/resource.php');
