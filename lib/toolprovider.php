@@ -6,6 +6,8 @@
 use IMSGlobal\LTI\Profile;
 use IMSGlobal\LTI\ToolProvider;
 use IMSGlobal\LTI\ToolProvider\Service;
+use Twig\Loader\FilesystemLoader;
+use Twig\Environment;
 
 require_once(__DIR__.'/init.php');
 
