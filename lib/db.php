@@ -22,11 +22,15 @@ function open_db() {
 
 // Check if a table exists
 function table_exists($db, $name) {
-
 	$sql = "select 1 from {$name}";
 	$query = $db->prepare($sql);
-	return $query->execute() !== FALSE;
-
+	$exist = FALSE;
+	try {
+		$exist = $query->execute();
+	} catch (Exception $e) {
+		return FALSE;   
+	}
+	return $exist !== FALSE;
 }
 
 // Create any missing database tables (only for MySQL and SQLite databases)
