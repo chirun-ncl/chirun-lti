@@ -147,7 +147,7 @@ if($ok){
 			$request->response->data[] = ['message' => 'Invalid request.'];
 			break;
 		}
-		$fullLogPath = INSTALLDIR .'/process/logs'. dirname($module->yaml_path).'.log';
+		$fullLogPath = PROCESSDIR .'/logs'. dirname($module->yaml_path).'.log';
 		if (!file_exists($fullLogPath)){
 			$request->response->code = 404;
 			$request->response->status = 'error';

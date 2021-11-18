@@ -10,7 +10,7 @@ class DashboardBuildLogPage extends BaseDashboardContent {
 		parent::setup($resource);
 		if(!empty($this->resource->module)){
 			$this->moduleSelected = True;
-			$fullLogPath = INSTALLDIR .'/process/logs'. dirname($this->resource->module->yaml_path).'.log';
+			$fullLogPath = PROCESSDIR .'/logs'. dirname($this->resource->module->yaml_path).'.log';
 			$this->logExists = file_exists($fullLogPath);
 			if ($this->logExists){
 				$this->logContents = file_get_contents($fullLogPath);
