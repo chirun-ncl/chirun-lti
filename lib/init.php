@@ -32,6 +32,12 @@ function init(&$db, $checkSession = NULL) {
 		return;
 	}
 
+	// Ensure AUTH_USER constants exist
+	if(!defined('AUTH_USER_IDS') || !defined('AUTH_USER_EMAILS')){
+		define('AUTH_USER_IDS', array());
+		define('AUTH_USER_EMAILS', array());
+	}
+
 	// Set timezone
 	if (!ini_get('date.timezone')) {
 		date_default_timezone_set('UTC');
