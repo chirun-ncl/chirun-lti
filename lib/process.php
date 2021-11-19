@@ -29,11 +29,16 @@ class Process {
 			return false;
 		$webbase = WEBCONTENTDIR;
 		$logloc = PROCESSDIR.'/logs/'.$guid.'.log';
+		$processuser = PROCESSUSER;
 		$escaped_guid = escapeshellarg($guid);
 		$escaped_source = escapeshellarg($source_main);
 		$escaped_webbase = escapeshellarg($webbase);
 		$escaped_logloc = escapeshellarg($logloc);
-
+		$escaped_processdir = escapeshellarg(PROCESSDIR);
+		$escaped_uploaddir = escapeshellarg(UPLOADDIR);
+		$escaped_contentdir = escapeshellarg(CONTENTDIR);
+		$escaped_docker_volume = escapeshellarg(isset($_ENV["DOCKER_PROCESSING_VOLUME"])?$_ENV['DOCKER_PROCESSING_VOLUME']:'');
+		
 		// Template variables for standalone mode
 		$escaped_itemtype = escapeshellarg(isset($_POST['itemType'])?$_POST['itemType']:"standalone");
 		$escaped_splitlevel = escapeshellarg(isset($_POST['docSplit'])?$_POST['docSplit']:"-2");
@@ -41,11 +46,10 @@ class Process {
 		$escaped_sidebar = escapeshellarg(isset($_POST['sidebar'])?"True":"False");
 		$escaped_buildpdf = escapeshellarg(isset($_POST['buildPDF'])?"True":"False");
 		
-		$script_dir = PROCESSDIR;
-		$script_owner = PROCESSUSER;
-		exec("cd {$script_dir} && sudo -u {$script_owner} ./process.sh -g {$escaped_guid} -d {$escaped_source} -b {$escaped_webbase} -i {$escaped_itemtype} -l {$escaped_splitlevel} -t {$escaped_title} -s {$escaped_sidebar} -p {$escaped_buildpdf} > {$escaped_logloc} 2>&1 &");
+		exec("cd {$escaped_processdir} && sudo -u {$processuser} PROCESSDIR={$escaped_processdir} CONTENTDIR={$escaped_contentdir} UPLOADDIR={$escaped_uploaddir} DOCKER_PROCESSING_VOLUME={$escaped_docker_volume} ./process.sh -g {$escaped_guid} -d {$escaped_source} -b {$escaped_webbase} -i {$escaped_itemtype} -l {$escaped_splitlevel} -t {$escaped_title} -s {$escaped_sidebar} -p {$escaped_buildpdf} > {$escaped_logloc} 2>&1 &");
 		return Process::setUploadUser($db, $guid, $_SESSION['user_id']);
 	}
+
 }
 
 ?>

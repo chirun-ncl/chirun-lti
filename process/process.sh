@@ -4,8 +4,9 @@ error() {
   exit 1;
 }
 cleanup(){
+  echo "Cleaning up..."
   # Tidy up processing directory
-  docker run --rm -v "$(pwd):/opt/cb/" -w /opt/cb coursebuilder/coursebuilder-docker make clean >/dev/null 2>&1;
+  docker run --rm -v "${DOCKER_BIND}" -w ${PROCESS_TARGET} coursebuilder/coursebuilder-docker make clean >/dev/null 2>&1;
   # Remove processing directory
   rm -rf ${PROCESS_TARGET};
 }
@@ -31,15 +32,12 @@ do
 done
 shift $((OPTIND-1))
 
-[[ -n "${guid}" && -n "${base}" ]] || error
+[[ -n "${guid}" && -n "${base}" && -n "${UPLOADDIR}" && -n "${PROCESSDIR}" && -n "${CONTENTDIR}" ]] || error
 
-UPLOAD_TARGET="$(pwd)/../upload/${guid//\//_}"
-PROCESS_TARGET="$(pwd)/../process/${guid//\//_}"
-CONTENT_TARGET="$(pwd)/../content/${guid//\//_}"
+UPLOAD_TARGET="${UPLOADDIR}/${guid//\//_}"
+PROCESS_TARGET="${PROCESSDIR}/${guid//\//_}"
+CONTENT_TARGET="${CONTENTDIR}/${guid//\//_}"
 [[ -d "${UPLOAD_TARGET}" ]] || error
-UPLOAD_TARGET="$(realpath -s $UPLOAD_TARGET)/"
-PROCESS_TARGET="$(realpath -s $PROCESS_TARGET)/"
-CONTENT_TARGET="$(realpath -s $CONTENT_TARGET)/"
 
 rsync -a "${UPLOAD_TARGET}" "${PROCESS_TARGET}"
 
@@ -54,15 +52,21 @@ else
   echo "root_url: '{base}/{code}/{theme}/'" >> "${PROCESS_TARGET}config.yml"
 fi
 
+if [[ -z ${DOCKER_PROCESSING_VOLUME} ]]; then
+	DOCKER_BIND="${PROCESS_TARGET}:${PROCESS_TARGET}"
+else
+	DOCKER_VOLUME=$(docker volume ls | grep -oE '[-A-Za-z0-9_]+processing$' | tail -n 1)
+	DOCKER_BIND="${DOCKER_VOLUME}:${PROCESSDIR}"
+fi
+
 cd "${PROCESS_TARGET}"
-touch empty.md
-docker run --rm -v "$(pwd):/opt/cb/" -w /opt/cb coursebuilder/coursebuilder-docker make
+docker run --rm -v "${DOCKER_BIND}" -w ${PROCESS_TARGET} coursebuilder/coursebuilder-docker make
 [[ $? -eq 0 ]] || failed
 
 echo "Build successful. Copying output to LTI content directory..."
 rsync -a "build/" ${CONTENT_TARGET}
 cp config.yml ${CONTENT_TARGET}
-chown -R programs:www-data ${CONTENT_TARGET}
+chown -R cblti:www-data ${CONTENT_TARGET}
 chmod -R g+w ${CONTENT_TARGET}
 
 cleanup
