@@ -13,6 +13,7 @@ define('CONTENTDIR', INSTALLDIR.'/content');
 define('UPLOADDIR', INSTALLDIR.'/upload');
 define('PROCESSDIR', INSTALLDIR.'/process');
 define('PROCESSUSER', "programs");
+define('TEMPLATECACHE', "/tmp/cb_php/template_cache");
 
 // Database connection settings
 define('DB_NAME', 'mysql:dbname=#######;host=#######');

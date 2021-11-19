@@ -104,7 +104,7 @@ class CBLTIToolProvider extends ToolProvider\ToolProvider {
 		}
 		$loader = new FilesystemLoader('lib/templates');
 		$twig = new Environment($loader, [
-			'cache' => '/tmp/cb_site_cache_lti/php',
+			'cache' => TEMPLATECACHE,
 			'auto_reload' => true,
 		]);
 
