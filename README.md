@@ -66,12 +66,43 @@ $ docker pull coursebuilder/coursebuilder-docker:latest
 
 ### Admin Directory Setup
 
-The web path `lti/admin/` should be protected for only server administrator access. An example `.htaccess` file is shipped in the `admin` directory for this purpose.
+Apache rewriting should be used to direct all requests of the form `lti/content/[...]` to `lti/index.php?req_content=[...]`. In addition, the following directories should be made forbidden to the public:
 
-The example `.htaccess` file is designed for use by Apache and allows access to only the `coursebuilder_admin` user via Basic authentication. The `coursebuilder_admin` Apache user can be setup using the command:
+ * `UPLOADIR`
+ * `PROCESSDIR`
+ * `INSTALLDIR/lib`
+ * `INSTALLDIR/admin`
+
+The path `WEBPATH/admin` should be protected for only server administrator access. An example Apache setup using Basic Authentication is shown below.
 
 ```
-# htpasswd /etc/apache2/.htpasswd coursebuilder_admin
+        <Location />
+	    Require all granted
+            DirectorySlash Off
+            RewriteEngine on
+            RewriteRule /lti/content/(.*)$ /lti/index.php?req_content=$1 [L,QSA]
+        </Location>
+        <Location /lti/upload>
+	    Require all denied
+        </Location>
+        <Location /lti/process>
+	    Require all denied
+        </Location>
+        <Location /lti/lib>
+	    Require all denied
+        </Location>
+        <Location /lti/admin>
+	    AuthType Basic
+	    AuthName "Restricted admin section"
+	    AuthUserFile /etc/apache2/.htpasswd
+	    Require user admin
+        </Location>
+```
+
+In this example a username and password for admin access can be setup by running:
+
+```
+# htpasswd /etc/apache2/.htpasswd admin
 ```
 
 ## LTI Setup
