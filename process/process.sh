@@ -34,9 +34,9 @@ shift $((OPTIND-1))
 
 [[ -n "${guid}" && -n "${base}" && -n "${UPLOADDIR}" && -n "${PROCESSDIR}" && -n "${CONTENTDIR}" ]] || error
 
-UPLOAD_TARGET="${UPLOADDIR}/${guid//\//_}"
-PROCESS_TARGET="${PROCESSDIR}/${guid//\//_}"
-CONTENT_TARGET="${CONTENTDIR}/${guid//\//_}"
+UPLOAD_TARGET="${UPLOADDIR}/${guid//\//_}/"
+PROCESS_TARGET="${PROCESSDIR}/${guid//\//_}/"
+CONTENT_TARGET="${CONTENTDIR}/${guid//\//_}/"
 [[ -d "${UPLOAD_TARGET}" ]] || error
 
 rsync -a "${UPLOAD_TARGET}" "${PROCESS_TARGET}"
