@@ -44,10 +44,15 @@ Directory | Mode | Owner:Group
 
 ### Sudo Permission Setup
 
-The `sudo` command should be configured so that the user running the web server process (e.g. `www-data`) can start the CourseBuilder processing script as the processing user. This can be setup by adding the following line to the `/etc/sudoers` file,
+The `sudo` command should be configured so that the user running the web server process (e.g. `www-data`) can start the CourseBuilder processing script as the processing user and set some environment variables. This can be setup by adding the following line to the `/etc/sudoers` file,
 
 ```
 www-data ALL = (programs) NOPASSWD: [PROCESSDIR]/process.sh
+Defaults env_keep += "PROCESSDIR"
+Defaults env_keep += "CONTENTDIR"
+Defaults env_keep += "UPLOADDIR"
+Defaults env_keep += "DOCKER_PROCESSING_VOLUME"
+
 ```
 
 replacing `[PROCESSDIR]` with the full path to the processing directory.
