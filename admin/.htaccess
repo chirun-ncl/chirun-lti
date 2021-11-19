@@ -1,4 +1,0 @@
-AuthType Basic
-AuthName "Restricted admin section"
-AuthUserFile /etc/apache2/.htpasswd
-Require user coursebuilder_admin
