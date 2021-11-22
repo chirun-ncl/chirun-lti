@@ -116,7 +116,7 @@ In this example a username and password for admin access can be setup by running
 
 To use the NCL CourseBuilder LTI tool with your VLE, an administrator will need to add the tool to your own instance of the VLE. To do this, the VLE needs to be setup beforehand as a tool consumer in the admin panel accessible on your web server at https://coursebuilder.example.com/lti/admin/.
 
-Create a Name, Key, and Secret for your VLE using the *Add New Consumer* form on the admin page, and then forward that information on to your VLE administrator to be added as an external LTI tool. They might also need the URL for the LTI configuration XML file: https://coursebuilder.example.com/lti/xml/config.xml or the launch URL, https://coursebuilder.example.com/lti/connect.php.
+Create a Name, Key, and Secret for your VLE using the *Add New Consumer* form on the admin page, and then forward that information on to your VLE administrator to be added as an external LTI tool. They might also need the URL for the LTI XML configuration: https://coursebuilder.example.com/lti/xml/ or the LTI launch URL, https://coursebuilder.example.com/lti/connect.php.
 
 ## Build Process Information
 
