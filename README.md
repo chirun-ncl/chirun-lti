@@ -138,4 +138,15 @@ When content is uploaded to the LTI tool for processing, the following series of
 
   * Finally, the output of the process script is written to a log file at `PROCESSDIR/logs/<guid>.log` and the log is shown to the user.
 
+## Other Information
+
 The `UPLOADDIR` directory should be emptied periodically to avoid filling the disk. For example, this can be handled by adding a cron job or systemd timer for the `programs` user.
+
+An example command that clears the upload directory of all files could be,
+
+```
+find [INSTALLDIR]/upload/ -mindepth 1 -maxdepth 1 -exec rm -r -- {} +
+```
+
+replacing `[INSTALLDIR]` with the full path to the install directory. The `find` command can be tweaked with arguments such as `-mtime` to more finely tune what files are deleted.
+
