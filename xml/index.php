@@ -1,3 +1,9 @@
+<?php
+require_once('../lib/init.php');
+$url = $_SERVER['HTTP_HOST'] . WEBDIR;
+header('Content-type: application/xml');
+
+echo <<<EOD
 <?xml version="1.0" encoding="UTF-8"?>
 <cartridge_basiclti_link xmlns="http://www.imsglobal.org/xsd/imslticc_v1p0"
     xmlns:blti = "http://www.imsglobal.org/xsd/imsbasiclti_v1p0"
@@ -8,19 +14,13 @@
     http://www.imsglobal.org/xsd/imsbasiclti_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd
     http://www.imsglobal.org/xsd/imslticm_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticm_v1p0.xsd
     http://www.imsglobal.org/xsd/imslticp_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticp_v1p0.xsd">
-    <blti:title>Coursebuilder</blti:title>
-    <blti:description>Direct students to Coursebuilder content.</blti:description>
-    <blti:icon>https://mas-coursebuild.ncl.ac.uk/lti/images/coursebuilder_icon_128.png</blti:icon>
-    <blti:launch_url>https://mas-coursebuild.ncl.ac.uk/lti/connect.php</blti:launch_url>
-	<blti:vendor>
-		<lticp:code>mas-coursebuilder.ncl.ac.uk</lticp:code>
-		<lticp:name>Coursebuilder</lticp:name>
-		<lticp:description>Coursebuilder is a system for producing flexible and accessible notes, in a variety of formats, using a shared LaTeX or Markdown source.</lticp:description>
-		<lticp:url>https://mas-coursebuilder.ncl.ac.uk/</lticp:url>
-		<lticp:contact>
-			<lticp:email>george.stagg@ncl.ac.uk</lticp:email>
-		</lticp:contact>
-	</blti:vendor>
+    <blti:title>NCL CourseBuilder</blti:title>
+    <blti:description>Direct students to CourseBuilder content.</blti:description>
+    <blti:icon>https://${url}/images/coursebuilder_icon_128.png</blti:icon>
+    <blti:launch_url>https://${url}/connect.php</blti:launch_url>
     <cartridge_bundle identifierref="BLTI001_Bundle"/>
     <cartridge_icon identifierref="BLTI001_Icon"/>
 </cartridge_basiclti_link>
+EOD;
+
+?>
