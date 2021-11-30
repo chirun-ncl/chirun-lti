@@ -12,7 +12,7 @@ require_once(__DIR__.'/dashboard/publicaccess.php');
 
 class DashboardPage extends LTIPage {
 	public $template = "dashboard/dashboard.html";
-	public $title = "NCL Coursebuilder";
+	public $title = "Chirun";
 	protected $dashPage = NULL;
 	protected $pageStructure = array(
 		'content' => array(

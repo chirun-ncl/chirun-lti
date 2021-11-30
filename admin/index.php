@@ -101,8 +101,9 @@ if ($ok) {
 	// Fetch a list of existing tool consumer records
 	$consumers = $tool->getConsumers();
 
-	// Set launch URL for information
+	// Set launch and xml URL for information
 	$launchUrl = getAppUrl() . 'connect.php';
+	$xmlUrl = getAppUrl() . 'xml/';
 }
 
 $css = array(
@@ -117,6 +118,7 @@ $js = array(
 $page = $twig->load('admin.html');
 echo $page->render([
 	'launchUrl' => $launchUrl,
+	'xmlUrl' => $xmlUrl,
 	'id' => $id,
 	'css' => $css,
 	'js' => $js,

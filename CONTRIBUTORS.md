@@ -2,7 +2,7 @@ This tool has been written by the E-Learning Unit, School of Mathematics, Statis
 
 # Libraries and Contributors
 
-The following libraries are shipped as part of the NCL CourseBuilder LTI tool:
+The following libraries are shipped as part of the Chirun LTI tool:
   * IMSGlobal LTI
   * Twig
 

@@ -4,23 +4,23 @@
 <hr>
 	<footer class="text-muted">
 		<div class="container">
-			<p>NCL Coursebuilder LTI Tool</p>
+			<p>Chirun LTI Tool</p>
 			<p>&copy; E-Learning Unit, School of Mathematics, Statistics &amp; Physics, Newcastle University</p>
 		</div>
 	</footer>
 {% endblock %}
 
 {% block main %}
-	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<nav class="navbar navbar-expand-lg navbar-light mb-3 p-1">
 		<div class="container-fluid">
-			<a class="navbar-brand" href="index.php"><img width="45" src="{{ webdir}}/images/coursebuilder_icon_128.png" alt="Coursebuilder Logo"> Coursebuilder Dashboard</a>
+			<a class="navbar-brand" href="index.php"><img height="32" src="{{ webdir}}/images/chirun_logo_64.png" alt="Chirun Logo"></a>
 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
 			</button>
 			<div class="collapse navbar-collapse" id="navbarSupportedContent">
 				<ul class="navbar-nav me-auto mb-2 mb-md-0">
 				{% for navHeading in pageStructure %}
-					<li class="nav-item dropdown">
+					<li class="nav-item dropdown pt-1">
 						<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							<i class="fa {{ navHeading.navIcon }}" aria-hidden="true"></i> {{ navHeading.navTitle }}
 						</a>

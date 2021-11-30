@@ -1,8 +1,8 @@
 <?php
 
 // Application settings
-define('APP_NAME', 'Coursebuilder LTI Tool');
-define('SESSION_NAME', 'php-coursebuilder');
+define('APP_NAME', 'Chirun LTI Tool');
+define('SESSION_NAME', 'php-chirun');
 define('VERSION', '0.2.0');
 
 // Setup paths

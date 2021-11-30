@@ -17,13 +17,13 @@ class CBLTIToolProvider extends ToolProvider\ToolProvider {
 		parent::__construct($data_connector);
 		$this->baseUrl = getAppUrl();
 		$this->vendor = new Profile\Item('ncl', 'NCL', 'Newcastle University', 'https://www.ncl.ac.uk/');
-		$this->product = new Profile\Item('coursebuilder', 'Coursebuilder', 'Coursebuilder',
+		$this->product = new Profile\Item('chirun', 'Chirun', 'Chirun',
 			'https://www.mas-coursebuild.ncl.ac.uk/', VERSION);
 		$requiredMessages = array(new Profile\Message('basic-lti-launch-request', 'connect.php', array('User.id', 'Membership.role')));
 		$optionalMessages = array(new Profile\Message('ContentItemSelectionRequest', 'connect.php', array('User.id', 'Membership.role')),
 			new Profile\Message('DashboardRequest', 'connect.php', array('User.id'), array('a' => 'User.id'), array('b' => 'User.id')));
 		$this->resourceHandlers[] = new Profile\ResourceHandler(
-			new Profile\Item('coursebuilder', 'Coursebuilder', 'Produce flexible and accessible notes, in a variety of formats, using LaTeX or Markdown source'), 'lti/images/coursebuilder_icon_512.png',
+			new Profile\Item('chirun', 'Chirun', 'Produce flexible and accessible notes, in a variety of formats, using LaTeX or Markdown source'), 'lti/images/chirun_icon_512.png',
 			$requiredMessages, $optionalMessages);
 		$this->requiredServices[] = new Profile\ServiceDefinition(array('application/vnd.ims.lti.v2.toolproxy+json'), array('POST'));
 	}
@@ -47,9 +47,9 @@ class CBLTIToolProvider extends ToolProvider\ToolProvider {
 		// Set a cookie in the user's browser for persistence
 		$new_token = bin2hex(openssl_random_pseudo_bytes(32));
 		Session::addUserSession($db, $_SESSION['resource_pk'], $new_token, $_SESSION);
-		setcookie("coursebuilder_session[{$_SESSION['user_resource_pk']}]",
+		setcookie("chirun_session[{$_SESSION['user_resource_pk']}]",
 			$new_token, time() + 24*3600, "/");
-		setcookie("coursebuilder_user_id", $_SESSION['user_id'], time() + 24*3600, "/");
+		setcookie("chirun_user_id", $_SESSION['user_id'], time() + 24*3600, "/");
 
 		// Redirect the user to display the list of items for the resource link
 		$this->redirectUrl = getAppUrl();

@@ -3,7 +3,7 @@ class StudentPage extends LTIPage {
 	protected $reqContentError = NULL;
 	public function render(){
 		/*
-			Render the page for students launching the Coursebuilder LTI item
+			Render the page for students launching the Chirun LTI item
 			First, check if there is specific requested content and render it if request granted.
 
 			If the requested content was denied, or no direct path was requested, load the default
@@ -50,8 +50,8 @@ class StudentPage extends LTIPage {
 				// Something still went wrong, show an error page
 				$this->alerts[] = new Alert($this->reqContentError, "Error", "danger");
 				$this->template = "error.html";
-				$this->title = "Launch Error | NCL Coursebuilder";
-				$this->errorTitle = "Launching NCL Coursebuilder Failed";
+				$this->title = "Launch Error | Chirun";
+				$this->errorTitle = "Launching Chirun Failed";
 				$this->errorTemplate = "launch_failed.html";
 				parent::render();
 			}

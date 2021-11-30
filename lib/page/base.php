@@ -41,7 +41,7 @@ class BasePage {
 	public $template = "base.html";
 	public $css = array();
 	public $js = array();
-	public $title = "NCL Coursebuilder";
+	public $title = "Chirun";
 
 	private function __construct($db = NULL, $resource = NULL){
 		$this->db = $db;

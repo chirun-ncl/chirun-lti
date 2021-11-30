@@ -6,14 +6,14 @@
 		<p>No build log was found. Upload a document source to begin building.</p>
 		<p><a class='btn btn-primary' href='index.php?dashpage=upload' role='button'>Go to Upload page</a></p>
 	{% elseif dashPage.logExists %}
-		<p>The build output from Coursebuilder is shown below. Use this to debug any errors in the build process.</p>
+		<p>The build output from Chirun is shown below. Use this to debug any errors in the build process.</p>
 		<div class="card">
 		<div class="card-header p-1">
-		Coursebuilder output log
+		Chirun output log
 		<button onClick="window.location.reload();" class="btn btn-sm btn-primary float-end">Refresh</button>
 		</div>
 		<div class="card-body p-1 bg-dark">
-		<pre class="text-light pre-scrollable"><small><code id='console-log'>Starting Coursebuilder...
+		<pre class="text-light pre-scrollable"><small><code id='console-log'>Starting Chirun...
 {{ dashPage.logContents }}</code></small></pre>
 		</div>
 		</div>

@@ -92,9 +92,9 @@ if (!$ok || !isset($request->data['resource_pk']) || !isset($request->data['acti
 if($ok){
 	$ok = false;
 	$session = NULL;
-	if (isset($_COOKIE['coursebuilder_user_id']) && isset($_COOKIE['coursebuilder_session'][$request->data['resource_pk']])) {
-		$ck_token = $_COOKIE['coursebuilder_session'][$request->data['resource_pk']];
-		$ck_user_id = $_COOKIE['coursebuilder_user_id'];
+	if (isset($_COOKIE['chirun_user_id']) && isset($_COOKIE['chirun_session'][$request->data['resource_pk']])) {
+		$ck_token = $_COOKIE['chirun_session'][$request->data['resource_pk']];
+		$ck_user_id = $_COOKIE['chirun_user_id'];
 		$ck_session = Session::getUserSession($db, $ck_user_id, $ck_token);
 		if(!empty($ck_session)){
 			$session = $ck_session;

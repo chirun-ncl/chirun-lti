@@ -1,17 +1,17 @@
 #!/bin/bash
 error() {
-  echo "An error has occured launching the CourseBuilder LTI document processor. Please contact your local administration." 1>&2;
+  echo "An error has occured launching the Chirun LTI document processor. Please contact your local administration." 1>&2;
   exit 1;
 }
 cleanup(){
   echo "Cleaning up..."
   # Tidy up processing directory
-  docker run --rm -v "${DOCKER_BIND}" -w ${PROCESS_TARGET} coursebuilder/coursebuilder-docker make clean >/dev/null 2>&1;
+  docker run --rm -v "${DOCKER_BIND}" -w ${PROCESS_TARGET} coursebuilder/chirun-docker make clean >/dev/null 2>&1;
   # Remove processing directory
   rm -rf ${PROCESS_TARGET};
 }
 failed() {
-  echo "Your document failed to build with CourseBuilder. If the error shown above is TeX related, try simplifying your document by removing unsupported LaTeX packages and try again." 1>&2;
+  echo "Your document failed to build with Chirun. If the error shown above is TeX related, try simplifying your document by removing unsupported LaTeX packages and try again." 1>&2;
   cleanup
   exit 1;
 }
@@ -60,7 +60,7 @@ else
 fi
 
 cd "${PROCESS_TARGET}"
-docker run --rm -v "${DOCKER_BIND}" -w ${PROCESS_TARGET} coursebuilder/coursebuilder-docker make
+docker run --rm -v "${DOCKER_BIND}" -w ${PROCESS_TARGET} coursebuilder/chirun-docker make
 [[ $? -eq 0 ]] || failed
 
 echo "Build successful. Copying output to LTI content directory..."

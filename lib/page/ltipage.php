@@ -13,7 +13,7 @@ class LTIPage extends BasePage {
 	protected $webdir = WEBDIR;
 	public $alerts = array();
 	public $template = "base.html";
-	public $title = "NCL Coursebuilder LTI Tool";
+	public $title = "Chirun LTI Tool";
 	public $css = array(
 		'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css',
 		'https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
@@ -67,7 +67,7 @@ class LTIPage extends BasePage {
 
 		// Check if the requested content is part of the currently set module
 		if(isset($this->resource) && $this->resource->isModuleEmpty()){
-			$errorMsg = "No Coursebuilder content has been configured for this resource. Please check this page again later or contact your course instructor for advice.";
+			$errorMsg = "No Chirun content has been configured for this resource. Please check this page again later or contact your course instructor for advice.";
 		} elseif(isset($this->resource)) {
 			$success = $this->requestContentForModule($contentPath, $this->resource->module, $authLevel, $errorMsg);
 		} else {
@@ -76,9 +76,9 @@ class LTIPage extends BasePage {
 
 		// Check the user's cookies for other valid sessions, the content may be part of some
 		// other recently launched LTI content item.
-		if (!$success && isset($_COOKIE['coursebuilder_session']) && isset($_COOKIE['coursebuilder_user_id'])){
-			$ck_user_id = $_COOKIE['coursebuilder_user_id'];
-			foreach ($_COOKIE['coursebuilder_session'] as $ck_resource_pk => $ck_token) {
+		if (!$success && isset($_COOKIE['chirun_session']) && isset($_COOKIE['chirun_user_id'])){
+			$ck_user_id = $_COOKIE['chirun_user_id'];
+			foreach ($_COOKIE['chirun_session'] as $ck_resource_pk => $ck_token) {
 				$session = Session::getUserSession($this->db, $ck_user_id, $ck_token);
 				if(empty($session)) continue;
 				$ck_resource = new Resource($this->db, $session['resource_link_pk']);
@@ -186,7 +186,7 @@ class LTIPage extends BasePage {
 			$head->item(0)->appendChild($script);
 		}
 
-		/* Search for LTI hints in the html items and apply coursebuilder filters.
+		/* Search for LTI hints in the html items and apply chirun filters.
 		   Hints such as 'lti-hint-item' are used to hide/remove content when required by
 		   the resource's adaptive release settings.
 		*/

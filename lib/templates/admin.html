@@ -11,7 +11,11 @@
 		</div>
 		<div class="row">
 			<div class="col">
-				<h1>NCL CourseBuilder LTI Tool: Manage tool consumers</h1>
+				<h1>Chirun LTI Tool: Manage tool consumers</h1>
+				<h2>Information</h2>
+				<p class="clear">The LTI XML configuration URL for this instance is {{ xmlUrl }}</p>
+				<p class="clear">The launch URL is {{ launchUrl }}</p>
+				<h2>Manage consumers</h2>
 				{% if consumers | length == 0 %}
 					<p>No consumers have been added yet.</p>
 				{% else %}
@@ -63,12 +67,8 @@
 								{% endfor%}
 							</tbody>
 						</table>
-						<p>
-							<input type="submit" value="Delete selected tool consumers" id="delsel">
-						</p>
 					</form>
 				{% endif %}
-				<hr>
 				{% if update_consumer.created %}
 					<h2>Update Consumer</h2>
 				{% else %}
@@ -125,7 +125,6 @@
 						<input type="submit" class="btn btn-primary" value="Add new consumer">
 					{% endif %}
 				</form>
-				<p class="clear">Note: The launch URL for this instance is {{ launchUrl }}</p>
 			</div>
 		</div>
 	</main>

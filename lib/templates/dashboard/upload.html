@@ -4,7 +4,7 @@
 	<h2>Upload Content</h2>
 	{% if not dashPage.uploaded %}
 		<h3 class="mt-4">New Document</h3>
-		<p>Upload a <em>Coursebuilder package</em>, <em>LaTeX</em> document or <em>Markdown</em> document for automatic conversion by the Coursebuilder LTI tool. The following file formats are acceptable: <code>.tex</code>, <code>.md</code>, <code>.zip</code>. If your document contains several source files, select them all or combine them into a <code>.zip</code> file for upload.</p>
+		<p>Upload a <em>Chirun package</em>, <em>LaTeX</em> document or <em>Markdown</em> document for automatic conversion by the Chirun LTI tool. The following file formats are acceptable: <code>.tex</code>, <code>.md</code>, <code>.zip</code>. If your document contains several source files, select them all or combine them into a <code>.zip</code> file for upload.</p>
 		<div class="col-lg-6">
 			<form action="index.php" method="POST" enctype="multipart/form-data">
 				<div class="mb-3">
@@ -55,7 +55,7 @@
 							</label>
 						</div>
 					</div>
-					<p class="form-text text-muted">Note: The above settings are overridden by <code>config.yml</code>, such as when uploading a full Coursebuilder course.</p>
+					<p class="form-text text-muted">Note: The above settings are overridden by <code>config.yml</code>, such as when uploading a full Chirun course.</p>
 				</div>
 				<input type="hidden" name="do" value="processUpload">
 				<button type="submit" onclick="$('#uploadSpinner').show(); setTimeout(function(){ $('#uploadButton').prop('disabled', true);}, 0);" id="uploadButton" class="btn btn-primary mb-3">
