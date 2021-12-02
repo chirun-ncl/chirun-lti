@@ -240,8 +240,11 @@ class Module {
 		return CONTENTDIR.dirname($this->yaml_path);
 	}
 
-	public function url($student_view = true){
-		$path = '/';
+	public function indexContent($student_view = true){
+		$path = '';
+
+		// Find the direct linked item if it exists for this resource,
+		// and set the path accordingly if so
 		if($this->get_direct_linked_item() && $student_view){
 			if($this->get_direct_linked_item()->type != 'introduction' && $this->get_direct_linked_item()->type != 'standalone'){
 				if(strcmp($this->get_direct_linked_item()->type,'html')==0){
@@ -249,18 +252,28 @@ class Module {
 				} else {
 					$path = $this->get_direct_linked_item()->slug_path.'/';
 				}
+				$path = ltrim($path,'/');
 			}
 		}
 
+		// If this module is standalone, ignore direct link and get the path of the standalone item instead
 		$noIntroContent = array_filter($this->content, function($item) { return $item->type != 'introduction'; });
 		if (count($noIntroContent) == 1 && $student_view){
 			$path = $noIntroContent[0]->slug_path.'/';
 		}
+		$path = ltrim($path,'/');
 
-		if($this->selected_theme){
-			return WEBCONTENTDIR.dirname($this->yaml_path).'/'.$this->selected_theme->path.$path;
-		}
-		return WEBCONTENTDIR.dirname($this->yaml_path).$path;
+		// Get the full path to the item, using the root_url property
+		$indexContent = str_replace('{base}/','',$this->root_url);
+		$indexContent = str_replace('{code}',$this->code, $indexContent);
+		$indexContent = str_replace('{year}',$this->year, $indexContent);
+		$indexContent = str_replace('{theme}',$this->selected_theme->path, $indexContent);
+		$indexContent .= $path;
+		return ltrim($indexContent,'/');
+	}
+
+	public function url($student_view = true){
+		return WEBCONTENTDIR.'/'.$this->indexContent($student_view);
 	}
 
 	public function select_theme($theme_id){

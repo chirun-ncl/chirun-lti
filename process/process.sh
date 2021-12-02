@@ -49,7 +49,7 @@ else
   cp "${PROCESS_TARGET}config.yml" "${PROCESS_TARGET}config.yml.orig"
   echo "base_dir: ${base}" >> "${PROCESS_TARGET}config.yml"
   echo "code: ${guid}" >> "${PROCESS_TARGET}config.yml"
-  echo "root_url: '{base}/{code}/{theme}/'" >> "${PROCESS_TARGET}config.yml"
+  sed -i '/root_url:/d' "${PROCESS_TARGET}config.yml"
 fi
 
 if [[ -z ${DOCKER_PROCESSING_VOLUME} ]]; then

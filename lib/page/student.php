@@ -14,32 +14,9 @@ class StudentPage extends LTIPage {
 			// Don't report an error, just load the root of the module associated with
 			// this resource instead
 			$this->alerts = array();
-			$path = '';
 
-			// However, find the direct linked item if it exists for this resource,
-			// and set the path accordingly if so
-			$direct_link = $this->resource->module->get_direct_linked_item();
-			if(!empty($direct_link) && $direct_link->type != 'introduction'){
-				if(strcmp($direct_link->type,'html')==0){
-					$path = $direct_link->slug_path;
-				} else {
-					$path = $direct_link->slug_path.'/';
-				}
-				$path = ltrim($path,'/');
-			}
-
-			if($this->resource->isModuleStandalone()){
-				$this->resource->isModuleStandalone($path);
-			}
-
-			// Get the full path to the item, including the path to the module
-			// associated with this resource
-			$indexContent = str_replace('{base}/','',$this->resource->module->root_url);
-			$indexContent = str_replace('{code}',$this->resource->module->code, $indexContent);
-			$indexContent = str_replace('{year}',$this->resource->module->year, $indexContent);
-			$indexContent = str_replace('{theme}',$this->resource->module->selected_theme->path, $indexContent);
-			$indexContent .= $path;
-			$indexContent = ltrim($indexContent,'/');
+			// Get the indexContent for the module
+			$indexContent = $this->resource->module->indexContent(true);
 
 			// Request the default item, this should succeed immediately if our LTI launch was successful
 			// We force students to have authLevel = 0

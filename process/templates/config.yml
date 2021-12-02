@@ -3,7 +3,6 @@ code: {GUID}
 year: {}
 author: ""
 title: ""
-root_url: '{base}/{code}/{theme}/'
 structure: 
   - type: {ITEMTYPE}
     sidebar: {SIDEBAR}
