@@ -186,7 +186,7 @@ function do_action($db){
 		} else {
 			$_SESSION['error_message'] = 'Upload process failed!';
 		}
-		header('Location: ./?dashpage=upload');
+		header('Location: ./?dashpage=buildlog');
 		exit;
 	} else if ($action == 'processGuidSelect' && $_SESSION['isStaff'] && isset($_POST['guidSelect'])){
 		$guid = $_POST['guidSelect'];

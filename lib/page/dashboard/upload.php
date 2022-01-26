@@ -2,7 +2,7 @@
 
 function tex_array_filter($fn){
 	$ret = false;
-	if (str_replace('.tex', '', $fn) != $fn) {
+	if (str_replace('.tex', '', $fn) != $fn || str_replace('.md', '', $fn) ) {
 		$ret = true;
 	}
 	return $ret;
@@ -19,7 +19,7 @@ class DashboardUploadPage extends BaseDashboardContent {
 		if(empty($this->resource->module)){
 			// Nothing at all has been uploaded
 			$this->uploaded = False;
-		} else if($this->resource->isModuleEmpty() && $this->resource->options['user_uploaded']==0){
+		} else if($this->resource->isModuleEmpty() && $this->resource->options['user_uploaded']==1){
 			/*
 				Something has been uploaded but it has not yet started processing
 				Assume there is no config.yml and we don't yet know which file to process
