@@ -121,48 +121,54 @@ function do_action($db){
 		$guid = getGuid();
 		$upload_dir = UPLOADDIR.'/'.$guid;
 		$ok = mkdir($upload_dir);
-
 		if(!$ok){
 			$_SESSION['error_message'] = 'Unable to create new upload directory!';
-		} else {
-			foreach ($_FILES["docUpload"]["error"] as $key => $error) {
-				if ($error == UPLOAD_ERR_OK) {
-					$tmp_name = $_FILES["docUpload"]["tmp_name"][$key];
-					$name = basename($_FILES["docUpload"]["name"][$key]);
-					move_uploaded_file($tmp_name, $upload_dir.'/'.$name);
-					$uploadedFilePathInfo = pathinfo($upload_dir.'/'.$name);
-					if($uploadedFilePathInfo['extension'] === 'zip'){
-						$ok = unzip($upload_dir.'/'.$name);
-					}
-				} else {
-					$ok = false;
-					$_SESSION['error_message'] = "Problem uploading files!";
-				}
-			}
+			header("Location: ./?dashpage=upload");
+			exit;
 		}
 
+		foreach ($_FILES["docUpload"]["error"] as $key => $error) {
+			if ($error == UPLOAD_ERR_OK) {
+				$tmp_name = $_FILES["docUpload"]["tmp_name"][$key];
+				$name = basename($_FILES["docUpload"]["name"][$key]);
+				move_uploaded_file($tmp_name, $upload_dir.'/'.$name);
+				$uploadedFilePathInfo = pathinfo($upload_dir.'/'.$name);
+				if($uploadedFilePathInfo['extension'] === 'zip'){
+					$ok = unzip($upload_dir.'/'.$name);
+				}
+			} else {
+				$ok = false;
+				$_SESSION['error_message'] = "Problem uploading files!";
+			}
+		}
 		if(!$ok){
 			$_SESSION['error_message'] = 'Unable to save uploaded files!';
-		} else {
-			$ok = $resource->selectModule('/'.$guid.'/MANIFEST.yml');
+			header("Location: ./?dashpage=upload");
+			exit;
 		}
 
+		$ok = $resource->selectModule('/'.$guid.'/MANIFEST.yml');
 		if(!$ok){
 			$_SESSION['error_message'] = 'Unable to select module!';
-		} else {
-			$content_files = glob($upload_dir.'/'."*.{tex,md,yml}",GLOB_BRACE);
-			$config_files = glob($upload_dir.'/'."config.yml");
-			if(count($content_files) == 1 || count($config_files) == 1){
-				$ok = Process::fromSourceFile($db, $guid, basename($content_files[0]));
-			}
+			header("Location: ./?dashpage=upload");
+			exit;
 		}
 
-		if(!$ok){
-			$_SESSION['error_message'] = 'Upload processing failed: '. basename($content_files[0]);
-		} else {
-			$ok = $resource->updateOptions(array('user_uploaded'=>1));
+		$resource->updateOptions(array('user_uploaded'=>1));
+		$content_files = glob($upload_dir.'/'."*.{tex,md,yml}",GLOB_BRACE);
+		$config_files = glob($upload_dir.'/'."config.yml");
+		if(count($content_files) == 1 || count($config_files) == 1){
+			$ok = Process::fromSourceFile($db, $guid, basename($content_files[0]));
+			if($ok){
+				header("Location: ./?dashpage=buildlog");
+			} else {
+				$_SESSION['error_message'] = 'Upload processing failed: '. basename($content_files[0]);
+				header("Location: ./?dashpage=upload");
+			}
+			exit;
 		}
-		header('Location: ./?dashpage=upload&upload=processed');
+
+		header("Location: ./?dashpage=upload");
 		exit;
 	} else if ($action == 'processBuild' && isset($_REQUEST["source_main"]) && $_SESSION['isStaff']){
 		$ok = isset($resource->module);

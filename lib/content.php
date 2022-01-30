@@ -267,7 +267,7 @@ class Module {
 		$indexContent = str_replace('{base}/','',$this->root_url);
 		$indexContent = str_replace('{code}',$this->code, $indexContent);
 		$indexContent = str_replace('{year}',$this->year, $indexContent);
-		$indexContent = str_replace('{theme}',$this->selected_theme->path, $indexContent);
+		$indexContent = str_replace('{theme}',empty($this->selected_theme)?'':$this->selected_theme->path, $indexContent);
 		$indexContent .= $path;
 		return ltrim($indexContent,'/');
 	}
