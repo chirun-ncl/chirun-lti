@@ -136,7 +136,12 @@ if($ok){
 			$request->response->data[] = ['message' => 'Missing data in request.'];
 			break;
 		}
-		$request->response->data[] = $resource->getDataKVStore($session['user_id'], $request->data['key']);
+		$val = $resource->getDataKVStore($session['user_id'], $request->data['key']);
+		if(is_null($val)){
+			$request->response->data[] = json_encode(array());
+		} else {
+			$request->response->data[] = $val;
+		}
 		$ok = true;
 		break;
 		case 'get_resource_build_log':
