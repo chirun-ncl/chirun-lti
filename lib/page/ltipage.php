@@ -30,7 +30,7 @@ class LTIPage extends BasePage {
 
 		// If an LTI launch and successful, setup the resource and auth information
 		if(isset($resource)){
-			$this->setResource($resource);
+			$this->setResourceLink($resource);
 			$this->CBLTI['auth_method'] = 'LTI';
 			if (isset($_SESSION['user_id'])){
 				$this->CBLTI['user_id'] = $_SESSION['user_id'];
@@ -38,8 +38,7 @@ class LTIPage extends BasePage {
 			}
 		}
 	}
-
-	public function setResource($resource){
+	public function setResourceLink($resource){
 		$this->resource = $resource;
 		$this->CBLTI['resource_pk'] = $resource->resource_link_pk;
 
@@ -84,7 +83,7 @@ class LTIPage extends BasePage {
 				$ck_resource = new Resource($this->db, $session['resource_link_pk']);
 				if(isset($ck_resource->module)){
 					if($success = $this->requestContentForModule($contentPath, $ck_resource->module, $authLevel)){
-						$this->setResource($ck_resource);
+						$this->setResourceLink($ck_resource);
 						$this->CBLTI['auth_method'] = 'cookie';
 						$this->CBLTI['user_id'] = $session['user_id'];
 						$this->CBLTI['user_email'] = $session['user_email'];
@@ -103,7 +102,7 @@ class LTIPage extends BasePage {
 				$moduleCode = $pub_resource->module->code;
 				if(substr($contentPath, 0, strlen($moduleCode)) === $moduleCode){
 					if($success = $this->requestContentForModule($contentPath, $pub_resource->module, $authLevel)){
-						$this->setResource($pub_resource);
+						$this->setResourceLink($pub_resource);
 						$this->CBLTI['auth_method'] = 'anonymous';
 						$this->CBLTI['user_id'] = NULL;
 						$this->CBLTI['user_email'] = NULL;

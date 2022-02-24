@@ -4,3 +4,4 @@ upload/*
 process/*
 !process/process.sh
 !process/templates
+images/coursebuilder_*
