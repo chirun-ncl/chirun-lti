@@ -94,11 +94,12 @@ class DashboardPage extends LTIPage {
 	public function render(){
 		$this->js = array_merge($this->js, array(
 			"https://cdn.jsdelivr.net/npm/flatpickr",
-			"https://cdn.datatables.net/v/bs5/dt-1.11.3/datatables.min.js",
+			"https://cdn.datatables.net/v/bs5/dt-1.11.5/b-2.2.2/b-html5-2.2.2/datatables.min.js",
+
 		));
 		$this->css = array_merge($this->css, array(
 			"https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css",
-			"https://cdn.datatables.net/v/bs5/dt-1.11.3/datatables.min.css",
+			"https://cdn.datatables.net/v/bs5/dt-1.11.5/b-2.2.2/b-html5-2.2.2/datatables.min.css",
 		));
 
 		if(in_array($_SESSION['user_id'],AUTH_USER_IDS) || in_array(strtolower($_SESSION['user_email']),AUTH_USER_EMAILS)){

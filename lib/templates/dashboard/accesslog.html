@@ -32,7 +32,16 @@
 	<script>
 	window.addEventListener('load', function () {
 		$('#access-log-table').DataTable({
-			"order": [[ 0, "desc" ]]
+			"order": [[ 0, "desc" ]],
+			"buttons": {
+				"buttons": [{ extend: 'csvHtml5', text: 'Download CSV', 'className': 'btn-primary' }],
+				"dom": {
+					"button": {
+						"className": 'btn'
+					}
+				}
+			},
+			"dom": '<"float-end"B><"clearfix">lfrtip'
 		});
 	});
 	</script>
