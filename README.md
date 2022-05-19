@@ -145,7 +145,7 @@ The `UPLOADDIR` directory should be emptied periodically to avoid filling the di
 An example command that clears the upload directory of all files could be,
 
 ```
-find [INSTALLDIR]/upload/ -mindepth 1 -maxdepth 1 -exec rm -r -- {} +
+find [INSTALLDIR]/upload/ -mindepth 1 -mmin +1 -exec echo rm -f {} \;
 ```
 
 replacing `[INSTALLDIR]` with the full path to the install directory. The `find` command can be tweaked with arguments such as `-mtime` to more finely tune what files are deleted.
