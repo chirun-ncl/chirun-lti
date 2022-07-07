@@ -66,7 +66,7 @@ docker run --rm -v "${DOCKER_BIND}" -w ${PROCESS_TARGET} coursebuilder/chirun-do
 echo "Build successful. Copying output to LTI content directory..."
 rsync -a "build/" ${CONTENT_TARGET}
 cp config.yml ${CONTENT_TARGET}
-chown -R $(whoami):www-data ${CONTENT_TARGET}
+chown -R $(whoami):${WEBUSER} ${CONTENT_TARGET}
 chmod -R g+w ${CONTENT_TARGET}
 
 cleanup

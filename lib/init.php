@@ -6,7 +6,7 @@
 use IMSGlobal\LTI\ToolProvider;
 use IMSGlobal\LTI\ToolProvider\DataConnector;
 
-require_once(__DIR__.'/../config.php');
+require_once(__DIR__.'/../settings.php');
 require_once(__DIR__.'/db.php');
 require_once(__DIR__.'/resource.php');
 require_once(__DIR__.'/session.php');

@@ -3,7 +3,7 @@
 use IMSGlobal\LTI\ToolProvider;
 use IMSGlobal\LTI\ToolProvider\DataConnector;
 
-require_once(__DIR__.'/../config.php');
+require_once(__DIR__.'/../settings.php');
 require_once(__DIR__.'/vendor/autoload.php');
 
 // Return a connection to the database, return FALSE if an error occurs

@@ -46,9 +46,9 @@ The user running the web server process should be able to write to `UPLOADDIR`, 
 Directory | Mode | Owner:Group
 ----------|------|--------------
 `INSTALLDIR` | 755 | `programs:programs`
-`UPLOADDIR`  | 775 | `programs:www-data`
-`CONTENTDIR`  | 775 | `programs:www-data`
-`PROCESSDIR/logs` |775 | `programs:www-data`
+`INSTALLDIR/upload`  | 775 | `programs:www-data`
+`INSTALLDIR/content`  | 775 | `programs:www-data`
+`INSTALLDIR/process/logs` |775 | `programs:www-data`
 
 ### Sudo Permission Setup
 
@@ -68,17 +68,18 @@ replacing `[PROCESSDIR]` with the full path to the processing directory.
 ### Docker Setup
 
 Prepare the docker daemon by pulling the Chirun image on the server. For example, log into the server as the processing user and run the command:
-```
-$ docker pull chirun/chirun-docker:latest
+
+```bash
+docker pull coursebuilder/chirun-docker:latest
 ```
 
 ### Admin Directory Setup
 
 The web server's rewriting engine should be used to direct all requests of the form `lti/content/[...]` to `lti/index.php?req_content=[...]`. In addition, the following directories should be made forbidden for public access:
 
- * `UPLOADIR`
- * `PROCESSDIR`
- * `INSTALLDIR/lib`
+ * `WEBDIR/upload`
+ * `WEBDIR/process`
+ * `WEBDIR/lib`
 
 The path `WEBPATH/admin` should also be protected and allow only server administrator access. An example Apache setup using Basic Authentication is shown below.
 
