@@ -25,6 +25,7 @@ Name         | Description | Example
 `WEBDIR`     | The intended web path for accessing the tool | `/lti`
 `INSTALLDIR` | The full file system path to the tool's install directory | `/var/www/webroot/lti`
 `PROCESSUSER` | The "processing user" that will run the Chirun build tools via docker  | `programs`
+`WEBUSER` | The user that runs the web server | `www-data`
 `DB_NAME` | A database DSN specifying a database host and name  | `mysql:dbname=chirun;host=database.example.com`
 `DB_USERNAME` | Database username  |
 `DB_PASSWORD` | Database password  |
@@ -42,6 +43,8 @@ Assuming your processing user will be named `programs`, the following commands c
 ### Directory Permission Setup
 
 The user running the web server process should be able to write to `UPLOADDIR`, `CONTENTDIR` and `PROCESSDIR/logs`, but not permitted to write to anything else in `INSTALLDIR`. As such, ensure directory permissions are setup as follows, where `programs` is your processing user and `www-data` is the primary unix group for the user running the web server process.
+
+The `upload`, `content`, and `process/logs` directories under `INSTALLDIR` will need to be created.
 
 Directory | Mode | Owner:Group
 ----------|------|--------------
@@ -63,7 +66,7 @@ Defaults env_keep += "DOCKER_PROCESSING_VOLUME"
 
 ```
 
-replacing `[PROCESSDIR]` with the full path to the processing directory.
+replacing `[PROCESSDIR]` in the first line with the full path to the processing directory.
 
 ### Docker Setup
 
