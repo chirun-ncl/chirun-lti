@@ -1,0 +1,378 @@
+:root {
+    --hue-primary: 260;
+    --hue-action: 226;
+    --hue-danger: 12;
+    --hue-generic: 170;
+
+    --main-bg-hue: var(--hue-primary);
+    --main-bg-sat: 0%;
+    --main-bg-lum: 100%;
+    --main-color: black;
+    
+    --link-hue: 240;
+    --link-sat: 100%;
+    --link-lum: 45%;
+    --header-link-lum: 15%;
+    
+    --smaller-text: 0.9em;
+    
+    --text-muted-color: hsl(var(--hue-generic),50%,20%);
+    --text-muted-size: var(--smaller-text);
+
+    --header-bg-hue: var(--hue-primary);
+    --header-bg-sat: 70%;
+    --header-bg-lum: 75%;
+    --header-color: black;
+
+    --footer-bg-hue: var(--hue-primary);
+    --footer-bg-sat: 70%;
+    --footer-bg-lum: 75%;
+    --footer-color: black;
+
+    --button-bg-hue: var(--hue-generic);
+    --button-bg-sat: 20%;
+    --button-bg-lum: 85%;
+    --button-color: var(--main-color);
+    --button-radius: 0.2em;
+
+    --input-bg-hue: var(--hue-generic);
+    --input-bg-sat: 20%;
+    --input-bg-lum: 98%;
+    --input-color: var(--main-color);
+    --input-radius: 0.2em;
+
+    --highlight-lum-factor: 1.1;
+    --active-lum-factor: 0.7;
+    --border-lum-factor: 0.8;
+
+    --spacing: 0.5em;
+    
+    --header-text-size: clamp(1.2rem, 3vw, 2rem);
+    --header-padding: clamp(calc(1 * var(--spacing)), 3vw, calc(4 * var(--spacing)));
+    --footer-padding: var(--header-padding);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --main-bg-lum: 0%;
+        --main-color: white;
+        --header-bg-lum: 25%;
+        --footer-bg-lum: 25%;
+        --button-bg-lum: 20%;
+        --input-bg-lum: 10%;
+        --highlight-lum: 30%;
+        --active-lum: 40%;
+        --border-lum-factor: 2;
+        --text-muted-color: hsl(var(--hue-generic),50%,75%);
+        --link-lum: 80%;
+        --header-link-lum: 85%;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+a {
+    color: hsl(var(--link-hue), var(--link-sat), var(--link-lum));
+}
+
+body {
+    --main-bg: hsl(var(--main-bg-hue),var(--main-bg-sat),var(--main-bg-lum));
+    /*! background: var(--main-bg); */
+    color: var(--main-color);
+    margin: 0;
+    font-family: sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    margin-top: var(--spacing);
+    margin-bottom: var(--spacing);
+}
+
+:is(input, textarea, select) {
+    background: hsl(var(--input-bg-hue), var(--input-bg-sat), var(--input-bg-lum));
+    color: var(--input-color);
+    border: 0.2em solid hsl(var(--input-bg-hue), var(--input-bg-sat), calc(var(--input-bg-lum) * var(--border-lum-factor)));
+    font-size: 1em;
+    padding: calc(0.5 * var(--spacing)) calc(1 * var(--spacing));
+    border-radius: var(--input-radius);
+}
+
+button {
+    --bg-lum: var(--button-bg-lum);
+    background: hsl(var(--button-bg-hue), var(--button-bg-sat), var(--bg-lum));
+    color: var(--button-color);
+    border: 0.2em solid hsl(var(--button-bg-hue), var(--button-bg-sat), calc(var(--bg-lum) * 0.8));
+    font-size: 1em;
+    padding: calc(1 * var(--spacing)) calc(1 * var(--spacing));
+    border-radius: var(--button-radius);
+}
+button:is(:focus,:hover) {
+    --bg-lum: calc(var(--button-bg-lum) * var(--highlight-lum-factor));
+}
+button:active {
+    --bg-lum: calc(var(--button-bg-lum) * var(--active-lum-factor));
+}
+
+
+body > main {
+    padding: 0 var(--spacing);
+}
+
+body > footer {
+    background: hsl(var(--footer-bg-hue),var(--footer-bg-sat),var(--footer-bg-lum));
+    padding: var(--footer-padding);
+    margin-top: calc(10 * var(--spacing));
+}
+
+body > header {
+    background: hsl(var(--header-bg-hue),var(--header-bg-sat),var(--header-bg-lum));
+    padding: var(--header-padding);
+    margin-bottom: calc(2 * var(--spacing));
+    --link-lum: var(--header-link-lum);
+}
+body > header h1 {
+    font-size: var(--header-text-size);
+    
+    margin: 0;
+}
+
+
+
+body > header > #page-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing);
+}
+
+button.delete {
+    --button-bg-sat: 80%;
+    --button-bg-lum: 40%;
+    --highlight-lum-factor: 1.4;
+    --button-color: white;
+    --button-bg-hue: var(--hue-danger);
+}
+
+body.package-file .breadcrumbs {
+    background: var(--main-bg);
+    display: flex;
+    flex-wrap: wrap;
+    grid-gap: var(--spacing) 0;
+    list-style: none;
+    padding: 0 0 var(--spacing) 0;
+    position: sticky;
+    margin-top: 0;
+    top: 0;
+}
+body.package-file .breadcrumbs > li ~ li::before {
+    content: '/';
+    margin: var(--spacing);
+}
+body.package-file .siblings {
+    list-style: none;
+    padding-left: var(--spacing);
+}
+body.package-file .siblings li.sibling {
+    font-family: monospace;
+    margin: var(--spacing) 0;
+}
+
+body.package-file #newfile-form {
+    margin-top: calc(4 * var(--spacing));
+}
+
+body.package-file #editor {
+    grid-area: editor;
+}
+
+body.package-file #editor .controls {
+    grid-area: controls;
+    justify-self: start;
+    display: flex;
+    grid-gap: calc(2 * var(--spacing));
+    align-items: baseline;
+}
+
+body.package-file #editor #content-form {
+    height: 100%;
+    display: grid;
+    grid-gap: var(--spacing);
+    grid-template:
+        "controls" auto
+        "content" 1fr
+    ;
+}
+
+body.package-file #content-form > img {
+    max-width: 100%;
+    max-height: 100%;
+    background: repeating-conic-gradient(#eee 0% 25%, #111 0% 50%) 50% / 20px 20px;
+}
+
+body.package-file #editor textarea#id_content { 
+    grid-area: content; 
+    overflow: auto;
+    resize: none;
+    width: 100%;
+    height: 100%;
+    white-space: pre;
+    margin: 0;
+}
+
+body.configure-package form fieldset {
+    margin: var(--spacing) 0;
+    display: grid;
+    grid-template-columns: auto [inputs-start] 1fr [inputs-end];
+    grid-gap: calc(2 * var(--spacing));
+
+    align-items: center;
+    padding: calc(2 * var(--spacing));
+}
+body.configure-package form > label {
+    justify-self: end;
+}
+body.configure-package form > button {
+    grid-column: inputs;
+    justify-self: start;
+}
+body.configure-package form > input {
+    justify-self: start;
+}
+
+body > footer {
+    margin-top: 5rem;
+}
+
+
+body.two-column {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    height: 100vh;
+}
+
+body.two-column > header {
+    margin-bottom: var(--spacing);
+}
+body.two-column > main {
+    overflow-y: hidden;
+}
+
+body.two-column > footer {
+    margin-top: var(--spacing);
+    padding-top: var(--spacing);
+    padding-bottom: var(--spacing);
+}
+
+[aria-current] {
+    font-weight: bold;
+}
+    
+body.configure-package #config-form {
+    height: 100%;
+}
+
+body.two-column #app {
+    display: grid;
+    --left-column-size: 20em;
+    grid-template: 
+        "nav editor"
+        /
+        var(--left-column-size) 1fr
+    ;
+    grid-gap: calc(4 * var(--spacing));
+    height: 100%;
+}
+body.two-column #app > * {
+    overflow-y: auto;
+    height: 100%;
+}
+
+@media (max-width: 50em) {
+    body.two-column #app {
+        grid-template:
+            "nav" 20vh "editor" / 1fr;
+    }
+    body.two-column #app.no-editor {
+        grid-template:
+            "nav" / 1fr;
+    }
+}
+@media (max-height: 50em) {
+    body.two-column {
+        height: initial;
+    }
+    body.two-column #app {
+        grid-template:
+            "nav" "editor" / 1fr;
+    }
+    body.two-column #app > * {
+        overflow-y: initial;
+        height: initial;
+    }
+}
+
+
+
+body.configure-package #structure-tree {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+body.configure-package #structure-tree ul {
+    list-style: none;
+    border-left: 2px solid black;
+    padding-left: calc(1 * var(--spacing));
+    margin-bottom: calc(2 * var(--spacing));
+    margin-left: var(--spacing);
+}
+body.configure-package #structure-tree [role="tab"] {
+    margin-bottom: var(--spacing);
+    border-radius: 0;
+    border: none;
+}
+
+body.configure-package #structure-tree button {
+    text-align: start;
+    /*! word-break: break-all; */
+    hyphens: auto;
+    overflow-wrap: anywhere;
+}
+
+button.action {
+    --button-bg-sat: 80%;
+    --button-bg-hue: var(--hue-action);
+}
+
+
+body.configure-package .directory-tree ul {
+    list-style: none;
+    border-left: 2px solid var(--main-color);
+    padding-left: calc(2 * var(--spacing));
+    margin-bottom: var(--spacing);
+}
+body.configure-package .directory-tree li + li {
+    margin-top: var(--spacing);
+}
+
+.item-type {
+    font-style: italic;
+    color: var(--text-muted-color);
+    font-size: var(--text-muted-size);
+}
+
+body.build-progress:not(.build-status-built) #built-message,
+body.build-progress:not(.build-status-error) #error-message,
+body.build-progress:not(.build-status-building) #building-message,
+body.build-progress.build-status-building #time-taken-message
+{ display: none; }
+
+
+body.deep-link form.use-this {
+    display: inline;
+}
+
+body.deep-link form.use-this button {
+    padding: 0 var(--spacing);
+    margin: var(--spacing);
+}

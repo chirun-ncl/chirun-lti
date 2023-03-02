@@ -1,0 +1,41 @@
+{% load i18n %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <title>{% block title %}Chirun{% endblock title %}</title>
+        {% block head %}
+        {% endblock head %}
+    </head>
+    <body class="{% block body_class %}{% endblock %}">
+        {% block body %}
+        <header>
+            {% block header %}
+                <nav id="page-nav">
+                    {% block page_nav %}
+                    {% if back_url %}<a class="back" href="{{back_url}}">{% translate "Back" %}</a>{% endif %}
+                    {% if help_url %}<a class="help-link" target="chirun-help" href="{{help_url}}">{% translate "Help with this page" %}</a>{% endif %}
+                    {% endblock page_nav %}
+                </nav>
+
+                <h1>{% block page_title %}{% translate "Chirun" %}{% endblock page_title %}</h1>
+            {% endblock header %}
+        </header>
+
+        <main id="{% block main_id %}{% endblock %}" class="{% block main_class %}{% endblock %}">
+        {% block main %}
+        {% endblock main %}
+        </main>
+
+
+        <footer>
+            {% block footer %}
+            <p>Chirun LTI</p>
+            {% endblock footer %}
+        </footer>
+
+        {% endblock body %}
+    </body>
+</html>
+

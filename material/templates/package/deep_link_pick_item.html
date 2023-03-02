@@ -1,0 +1,24 @@
+{% extends "package/base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Pick an item" %} - {{block.super}}{% endblock title %}
+
+{% block body_class %}deep-link{% endblock body_class %}
+
+{% block main %}
+    {% if package.build_status == 'built' %}
+        <p>{% translate "Pick the item that this link will open." %}</p>
+
+        <ul>
+        {% for item in package.structure %}
+            {% include "package/deep_link_structure_item.html" %}
+        {% endfor %}
+        </ul>
+
+    {% elif package.build_status == 'building' %}
+        <p>{% translate "This package is being built." %}</p>
+        <a href="{% url 'material:deep_link' message_launch.get_launch_id %}">{% translate "Reload" %}</a>
+    {% elif package.build_status == 'error' %}
+        <p>{% translate "There was an error building this package." %}</p>
+    {% endif %}
+{% endblock main %}

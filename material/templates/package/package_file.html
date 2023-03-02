@@ -1,0 +1,63 @@
+{% extends "package/base.html" %}
+{% load i18n %}
+
+{% load static %}
+
+{% block title %}{{root_relative_path}} - {{block.super}}{% endblock title %}}
+{% block page_title %}{% translate "Editing files in" %} <em>{{block.super}}</em>{% endblock page_title %}
+
+{% block body_class %}package-file two-column{{block.super}}{% endblock %}
+
+{% block main_id %}app{% endblock main_id %}
+{% block main_class %}{% if path.is_dir %}no-editor{% endif %}{% endblock main_class %}
+
+{% block main %}
+    <nav>
+        <ul class="breadcrumbs">
+            {% for bit in directory.parents reversed %}
+            <li><a href="{% url 'material:file' package.uid bit %}">{% if bit == bit.parent %}{{package.title}}{% else %}{{bit.name}}{% endif %}</a></li>
+            {% endfor %}
+            <li>{% if directory == directory.parent %}{{package.title}}{% else %}{{directory.name}}{% endif %}</li>
+        </ul>
+        <ul class="siblings">
+            {% for item in siblings %}
+            <li class="sibling" {% if item == root_relative_path %}aria-current="page"{% endif %}>
+                <a href="{% url 'material:file' package.uid item %}">{{item.name}}</a>
+            </li>
+            {% endfor %}
+            <li>
+                <form method="GET" id="newfile-form">
+                    <label for="newfile">{% translate "New file:" %}</label>
+                    <input name="newfile" id="newfile">
+                    <button type="submit">{% translate "Create" %}</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+
+    {% if path.is_dir %}
+    {% else %}
+    <div id="editor">
+
+        <form style="display:none" id="delete-form" method="POST" action="{% url 'material:delete_file' package.uid root_relative_path %}"></form>
+
+        <form method="POST" id="content-form">
+            <div class="controls">
+                <button class="action" type="submit">{% translate "Save" %}</button>
+                {% if path.exists %}
+                    <a download href="{{file_url}}">{% translate "Download this file" %}</a>
+                    <button type="button" onclick="document.getElementById('delete-form').submit()" class="delete" type="submit">{% translate "Delete this file" %}</button>
+                {% endif %}
+            </div>
+
+            {% if is_image %}
+                <img src="{{file_url}}">
+            {% elif is_binary %}
+                {% translate "This is a binary file." %}
+            {% else %}
+                {{form.content}}
+            {% endif %}
+        </form>
+    </div>
+    {% endif %}
+{% endblock main %}

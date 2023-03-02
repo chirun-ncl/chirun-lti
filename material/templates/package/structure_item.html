@@ -1,0 +1,18 @@
+{% load i18n %}
+<li>
+    <span class="item-type">{{item.type}}</span>
+    <a href="{{package.get_output_url}}/{{item.url}}">{{item.title}}</a>
+    {% if item.slides_url %}
+    <a href="{{package.get_output_url}}/{{item.slides_url}}">{% translate "Slides" %}</a>
+    {% endif %}
+    {% if item.pdf_url %}
+    <a href="{{package.get_output_url}}/{{item.pdf_url}}">{% translate "PDF" %}</a>
+    {% endif %}
+    {% if item.content %}
+    <ul>
+        {% for subitem in item.content %}
+        {% include "package/structure_item.html" with item=subitem %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+</li>

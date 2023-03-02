@@ -1,0 +1,11 @@
+{% extends "package/base.html" %}
+
+{% block title %}{{resource_link.title}}{% endblock title %}
+{% block page_title %}{{resource_link.title}}{% endblock page_title %}
+
+{% block main %}
+    <p>This link loads
+    <a href="{{package.get_absolute_url}}" target="_blank">{{package.title}}</a>
+    </p>
+    <p><a href="{{view_url}}">View the content</a></p>
+{% endblock main %}

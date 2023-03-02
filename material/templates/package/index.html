@@ -1,0 +1,14 @@
+{% extends "package/base.html" %}
+{% load i18n %}
+
+{% block title %}Manage packages - {{block.super}}{% endblock title %}
+{% block page_title %}Manage packages{% endblock page_title %}
+
+{% block main %}
+    <a href="{% url 'material:new' %}">{% translate "Create a new package" %}</a>
+    <ul>
+        {% for package in object_list %}
+        <li><a href="{{package.get_absolute_url}}">{{package.title}}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock main %}

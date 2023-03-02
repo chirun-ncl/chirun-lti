@@ -1,0 +1,48 @@
+{% extends "package/base.html" %}
+
+{% load i18n %}
+
+{% block main %}
+    {% if package.build_status == 'built' %}
+    <section id="view">
+        <h2>{% translate "View this package as a student:" %}</h2>
+
+        <ul>
+            {% for item in package.structure %}
+            {% include "package/structure_item.html" %}
+            {% endfor %}
+        </ul>
+    </section>
+
+    {% elif package.build_status == 'error' %}
+    <section id="build-error">
+        <p>{% translate "There was an error building this package." %}</p>
+    </section>
+    {% elif package.build_status == 'building' %}
+    <section id="building">
+        <p>{% translate "This package is being built." %}</p>
+    </section>
+    {% endif %}
+
+    <section id="controls">
+        <h2>{% translate "Manage this package" %}</h2>
+        <form method="POST" action="{% url 'material:build' package.uid %}">
+            <button type="submit">{% translate "Build" %}</button>
+        </form>
+        <a href="{% url 'material:configure' package.uid %}">{% translate "Configure" %}</a>
+        <a href="{% url 'material:delete' package.uid %}">{% translate "Delete" %}</a>
+        <a href="{% url 'material:upload' package.uid %}">{% translate "Upload files" %}</a>
+        <a href="{% url 'material:file_root' package.uid %}">{% translate "View or edit files in this package" %}</a>
+    </section>
+
+    <section id="builds">
+        <h2>{% translate "Builds" %}</h2>
+        <ol>
+            {% for compilation in package.compilations.all|slice:":10" %}
+            <li>
+                <a href="{{compilation.get_absolute_url}}">{{compilation.start_time|date:"Y-m-d H:i"}} - {{compilation.status}}</a>
+            </li>
+            {% endfor %}
+        </ol>
+    </section>
+{% endblock main %}

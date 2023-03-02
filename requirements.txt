@@ -1,0 +1,6 @@
+django-multiupload
+django
+huey
+pyyaml
+channels
+channels_redis

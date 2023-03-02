@@ -1,0 +1,25 @@
+{% load i18n %}
+<li>
+    <form class="use-this" method="POST">
+        <input type="hidden" name="package" value="{{package.uid}}">
+        <input type="hidden" name="item" value="{{item.url}}">
+        <input type="hidden" name="title" value="{{item.title}}">
+        <a href="{{package.get_output_url}}/{{item.url}}" target="_blank">{{item.title}}</a>
+        <button type="submit">{% translate "Use this" %}</button>
+    </form>
+    {% if item.slides_url %}
+    <form class="use-this" method="POST">
+        <input type="hidden" name="package" value="{{package.uid}}">
+        <input type="hidden" name="item" value="{{item.slides_url}}">
+        <input type="hidden" name="title" value="{{item.title}}">
+        <button type="submit">{% translate "Use slides" %}</button>
+    </form>
+    {% endif %}
+    {% if item.content %}
+    <ul>
+        {% for subitem in item.content %}
+        {% include "package/deep_link_structure_item.html" with item=subitem %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+</li>

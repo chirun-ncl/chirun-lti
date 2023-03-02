@@ -1,0 +1,13 @@
+{% extends "package/base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Upload files to" %} {{block.super}}{% endblock title %}
+{% block page_title %}{% translate "Upload files to" %} {{block.super}}{% endblock page_title %}
+
+{% block main %}
+    <form method="POST" enctype="multipart/form-data">
+        <p class="input-hint">{% blocktranslate %}Upload one or more files, either separately or in a .zip file.{% endblocktranslate %}</p>
+        {{form}}
+        <button class="action" type="submit">{% translate "Upload" %}</button>
+    </form>
+{% endblock main %}
