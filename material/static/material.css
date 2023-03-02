@@ -78,8 +78,7 @@ a {
 }
 
 body {
-    --main-bg: hsl(var(--main-bg-hue),var(--main-bg-sat),var(--main-bg-lum));
-    /*! background: var(--main-bg); */
+    background: hsl(var(--main-bg-hue),var(--main-bg-sat),var(--main-bg-lum));
     color: var(--main-color);
     margin: 0;
     font-family: sans-serif;
