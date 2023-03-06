@@ -20,6 +20,17 @@ from pylti1p3.contrib.django.lti1p3_tool_config.dynamic_registration import Djan
 PAGE_TITLE = 'Chirun'
 PAGE_DESCRIPTION = 'The Chirun tool for creating accessible online course material.'
 
+
+class IndexView(TemplateView):
+    template_name = 'lti/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['register_url'] = self.request.build_absolute_uri(reverse('lti:register'))
+
+        return context
+
 class LTIView:
     """
         A view mixin which adds a message_launch object to the view object.

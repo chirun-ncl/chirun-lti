@@ -2,7 +2,6 @@ from   .models import Compilation
 from   asgiref.sync import async_to_sync
 import asyncio
 from   channels.layers import get_channel_layer
-from   chirun.cli import Chirun, arg_parser
 from   chirun_lti.cache import get_cache
 from   django.utils.timezone import now
 from   huey.contrib.djhuey import task
