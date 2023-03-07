@@ -249,7 +249,7 @@ def register(request):
     return HttpResponse(registration.complete_html())
 
 class TeacherLaunchView(CachedLTIView, TemplateView):
-    template_name = 'teacher_launch.html'
+    template_name = 'lti/teacher_launch.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
