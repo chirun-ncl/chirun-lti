@@ -4,3 +4,4 @@ huey
 pyyaml
 channels
 channels_redis
+git+https://github.com/christianp/pylti1.3@dynamic-registration
