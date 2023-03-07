@@ -37,6 +37,7 @@ def build_package(compilation):
         use_docker = hasattr(settings,'CHIRUN_DOCKER_IMAGE')
 
         chirun_output_path = '/opt/chirun-output' if use_docker else output_path
+        final_output_path = package.absolute_output_path
         working_directory = source_path
 
         cmd = [ 
@@ -101,9 +102,25 @@ def build_package(compilation):
             read(process.stderr, 'stderr')
         )
 
-        from pathlib import Path
+        if use_docker:
+            subprocess.run([
+                'docker',
+                'run',
+                '--rm',
+                '-v',
+                output_path+':/opt/chirun-output',
+                '-v',
+                '/etc/passwd:/etc/passwd:ro',
+                'coursebuilder/chirun-docker:dev',
+                'chown',
+                '-R',
+                final_output_path.parent.owner() + ':' + final_output_path.parent.group(),
+                '/opt/chirun-output'
+            ])
 
-        shutil.copytree(output_path, package.absolute_output_path, dirs_exist_ok=True)
+        shutil.copytree(output_path, final_output_path, dirs_exist_ok=True)
+
+        final_output_path.chmod(0o755)
 
         await process.communicate()
 
