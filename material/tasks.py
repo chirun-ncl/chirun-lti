@@ -37,7 +37,7 @@ def build_package(compilation):
         use_docker = hasattr(settings,'CHIRUN_DOCKER_IMAGE')
 
         chirun_output_path = '/opt/chirun-output' if use_docker else output_path
-        working_directory = '/opt/chirun-source' if use_docker else source_path
+        working_directory = source_path
 
         cmd = [ 
             'chirun',
