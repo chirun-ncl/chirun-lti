@@ -11,8 +11,10 @@
     
     --link-hue: 240;
     --link-sat: 100%;
+    --link-hover-sat: 40%;
+    --link-active-sat: 70%;
     --link-lum: 45%;
-    --header-link-lum: 15%;
+    --header-link-lum: 100%;
     
     --smaller-text: 0.9em;
     
@@ -76,6 +78,16 @@
 a {
     color: hsl(var(--link-hue), var(--link-sat), var(--link-lum));
 }
+a:visited {
+    --link-sat: var(--link-active-sat);
+}
+a:is(:focus,:hover) {
+    --link-sat: var(--link-hover-sat);
+}
+
+nav a {
+    text-decoration: none;
+}
 
 body {
     background: hsl(var(--main-bg-hue),var(--main-bg-sat),var(--main-bg-lum));
@@ -109,6 +121,7 @@ button {
     font-size: 1em;
     padding: calc(1 * var(--spacing)) calc(1 * var(--spacing));
     border-radius: var(--button-radius);
+    margin: var(--spacing);
 }
 button:is(:focus,:hover) {
     --bg-lum: calc(var(--button-bg-lum) * var(--highlight-lum-factor));
@@ -377,4 +390,23 @@ body.deep-link form.use-this {
 body.deep-link form.use-this button {
     padding: 0 var(--spacing);
     margin: var(--spacing);
+}
+
+body.package-details #controls nav {
+    display: flex;
+    grid-gap: 1em;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+body.package-details #controls form {
+    display: inline;
+}
+
+.package-structure li {
+    margin: var(--spacing) 0;
+}
+
+.package-structure .item-type {
+    margin-right: var(--spacing);
 }

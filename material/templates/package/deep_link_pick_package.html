@@ -8,11 +8,38 @@
 {% block body_class %}deep-link{% endblock body_class %}
 
 {% block main %}
-    <ul>
-        {% for package in packages %}
-        <li><a href="?package={{package.uid}}">{{package.title}}</a> - {{package.build_status}}</li>
-        {% endfor %}
-    </ul>
+    {% if same_context.exists %}
+    <section id="same-context">
+        <h2>{% translate "Packages in this context" %}</h2>
+        <ul>
+            {% for package in same_context %}
+            <li><a href="?package={{package.uid}}">{{package.title}}</a> - {{package.build_status}}</li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    {% if same_tool.exists %}
+    <section id="same-tool">
+        <h2>{% translate "Packages in other contexts on this platform" %}</h2>
+        <ul>
+            {% for package in same_tool %}
+            <li><a href="?package={{package.uid}}">{{package.title}}</a> - {{package.build_status}}</li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
+
+    {% if other_built.exists %}
+    <section id="other-built">
+        <h2>{% translate "Other packages" %}</h2>
+        <ul>
+            {% for package in other_built %}
+            <li><a href="?package={{package.uid}}">{{package.title}}</a> - {{package.build_status}}</li>
+            {% endfor %}
+        </ul>
+    </section>
+    {% endif %}
 
     <p>{% translate "Or" %} <a href="{% url 'material:new' %}?launch_id={{message_launch.get_launch_id}}">{% translate "upload a new package" %}</a>.</p>
 {% endblock main %}

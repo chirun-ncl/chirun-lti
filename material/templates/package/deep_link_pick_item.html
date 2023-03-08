@@ -9,7 +9,7 @@
     {% if package.build_status == 'built' %}
         <p>{% translate "Pick the item that this link will open." %}</p>
 
-        <ul>
+        <ul class="package-structure">
         {% for item in package.structure %}
             {% include "package/deep_link_structure_item.html" %}
         {% endfor %}
@@ -17,7 +17,7 @@
 
     {% elif package.build_status == 'building' %}
         <p>{% translate "This package is being built." %}</p>
-        <a href="{% url 'material:deep_link' message_launch.get_launch_id %}">{% translate "Reload" %}</a>
+        <a href="{% url 'material:deep_link' message_launch.get_launch_id %}?package={{package.uid}}">{% translate "Reload" %}</a>
     {% elif package.build_status == 'error' %}
         <p>{% translate "There was an error building this package." %}</p>
     {% endif %}

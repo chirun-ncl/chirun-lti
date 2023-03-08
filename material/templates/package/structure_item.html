@@ -1,12 +1,13 @@
 {% load i18n %}
+{% load material %}
 <li>
     <span class="item-type">{{item.type}}</span>
-    <a href="{{package.get_output_url}}/{{item.url}}">{{item.title}}</a>
+    <a href="{{item.url|urljoin:package.get_output_url}}">{{item.title}}</a>
     {% if item.slides_url %}
-    <a href="{{package.get_output_url}}/{{item.slides_url}}">{% translate "Slides" %}</a>
+    <a href="{{item.slides_url|urljoin:package.get_output_url}}">{% translate "Slides" %}</a>
     {% endif %}
     {% if item.pdf_url %}
-    <a href="{{package.get_output_url}}/{{item.pdf_url}}">{% translate "PDF" %}</a>
+    <a href="{{item.pdf_url|urljoin:package.get_output_url}}">{% translate "PDF" %}</a>
     {% endif %}
     {% if item.content %}
     <ul>

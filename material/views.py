@@ -41,8 +41,31 @@ class DeepLinkPickPackageView(DeepLinkView, CachedLTIView, generic.ListView):
     template_name = 'package/deep_link_pick_package.html'
     context_object_name = 'packages'
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+
+        queryset = ChirunPackage.objects.all()
+
+        same_context = queryset.filter(lti_context=self.get_lti_context())
+
+        context['same_context'] = same_context
+
+        queryset = queryset.exclude(uid__in=same_context)
+
+        same_tool = queryset.filter(lti_tool = self.get_lti_tool())
+        
+        context['same_tool'] = same_tool
+
+        queryset = queryset.exclude(uid__in=same_tool)
+
+        other_built = queryset.filter(compilations__status='built').distinct()
+
+        context['other_built'] = other_built
+
+        return context
+
     def get_queryset(self):
-        return ChirunPackage.objects.filter(Q(compilations__status='built') | Q(lti_tool=self.get_lti_tool()) | Q(lti_context=self.get_lti_context())).distinct()
+        return ChirunPackage.objects.all()
 
 class DeepLinkPickItemView(DeepLinkView, BackPageMixin, CachedLTIView, generic.FormView):
     """
@@ -222,10 +245,17 @@ class FileView(PackageView, BackPageMixin, generic.UpdateView):
         else:
             raise PermissionDenied
 
+    def get_relative_path(self):
+        root = self.object.absolute_extracted_path
+        return self.get_path().relative_to(root)
+
     def get_initial(self):
         initial = super().get_initial()
 
         path = self.get_path()
+
+        initial['path'] = self.get_relative_path()
+
         try:
             initial['content'] = path.read_text()
         except UnicodeDecodeError:
@@ -262,14 +292,30 @@ class FileView(PackageView, BackPageMixin, generic.UpdateView):
 
     def form_valid(self, form):
         package = form.instance
-        content = form.cleaned_data.get('content')
-        path = self.get_path()
-        path.write_text(content)
+
+        existing_path = self.get_path()
+        path = form.cleaned_data.get('path', self.get_relative_path())
+        self.saved_path = path
+
+        path = package.absolute_extracted_path / path
+
+        if path != existing_path:
+            if existing_path.exists():
+                existing_path.unlink()
+
+        path.parent.mkdir(exist_ok=True,parents=True)
+
+        replace_file = form.cleaned_data.get('replace_file')
+        if replace_file:
+            path.write_bytes(replace_file.read())
+        else:
+            content = form.cleaned_data.get('content')
+            path.write_text(content)
         return redirect(self.get_success_url())
 
     def get_success_url(self):
         package = self.object
-        path = self.get_path().relative_to(package.absolute_extracted_path)
+        path = self.saved_path
 
         return reverse('material:file', args=(package.uid, path))
 

@@ -41,13 +41,18 @@
 
         <form style="display:none" id="delete-form" method="POST" action="{% url 'material:delete_file' package.uid root_relative_path %}"></form>
 
-        <form method="POST" id="content-form">
+        <form method="POST" id="content-form" enctype="multipart/form-data">
+            {{form.errors}}
             <div class="controls">
+                <label for="id_path">{% translate "Editing" %}</label>
+                {{form.path}}
                 <button class="action" type="submit">{% translate "Save" %}</button>
                 {% if path.exists %}
                     <a download href="{{file_url}}">{% translate "Download this file" %}</a>
                     <button type="button" onclick="document.getElementById('delete-form').submit()" class="delete" type="submit">{% translate "Delete this file" %}</button>
                 {% endif %}
+                <label for="id_replace_file">{% translate "Replace this file" %}
+                {{form.replace_file}}
             </div>
 
             {% if is_image %}

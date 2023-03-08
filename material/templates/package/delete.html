@@ -10,5 +10,6 @@
     <form method="POST">
         {{form}}
         <button type="submit" class="delete">{% translate "Yes, delete it" %}</button>
+        <a href="{% url 'material:view' package.uid %}">{% translate "No, keep it" %}</a>
     </form>
 {% endblock main %}

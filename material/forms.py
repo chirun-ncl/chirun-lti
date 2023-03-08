@@ -16,7 +16,9 @@ class DeepLinkForm(forms.Form):
     title = forms.CharField()
 
 class PackageFileForm(forms.ModelForm):
-    content = forms.CharField(widget=forms.Textarea)
+    content = forms.CharField(widget=forms.Textarea, required=False)
+    replace_file = forms.FileField(required = False)
+    path = forms.CharField()
 
     class Meta:
         model = ChirunPackage

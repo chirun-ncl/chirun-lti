@@ -2,12 +2,14 @@
 
 {% load i18n %}
 
+{% block body_class %}package-details{% endblock body_class %}
+
 {% block main %}
     {% if package.build_status == 'built' %}
     <section id="view">
         <h2>{% translate "View this package as a student:" %}</h2>
 
-        <ul>
+        <ul class="package-structure">
             {% for item in package.structure %}
             {% include "package/structure_item.html" %}
             {% endfor %}
@@ -26,13 +28,16 @@
 
     <section id="controls">
         <h2>{% translate "Manage this package" %}</h2>
-        <form method="POST" action="{% url 'material:build' package.uid %}">
-            <button type="submit">{% translate "Build" %}</button>
-        </form>
-        <a href="{% url 'material:configure' package.uid %}">{% translate "Configure" %}</a>
-        <a href="{% url 'material:delete' package.uid %}">{% translate "Delete" %}</a>
-        <a href="{% url 'material:upload' package.uid %}">{% translate "Upload files" %}</a>
-        <a href="{% url 'material:file_root' package.uid %}">{% translate "View or edit files in this package" %}</a>
+
+        <nav>
+            <form method="POST" action="{% url 'material:build' package.uid %}">
+                <button type="submit">{% translate "Build" %}</button>
+            </form>
+            <a href="{% url 'material:configure' package.uid %}">{% translate "Configure" %}</a>
+            <a href="{% url 'material:delete' package.uid %}">{% translate "Delete" %}</a>
+            <a href="{% url 'material:upload' package.uid %}">{% translate "Upload files" %}</a>
+            <a href="{% url 'material:file_root' package.uid %}">{% translate "View or edit files in this package" %}</a>
+        </nav>
     </section>
 
     <section id="builds">
