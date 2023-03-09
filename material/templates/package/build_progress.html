@@ -11,8 +11,8 @@
 {% endblock head %}
 
 {% block main %}
-    <p id="built-message">{% blocktranslate with time=compilation.end_time.isoformat %}This build process finished at <time id="end-time">{{time}}</time>.{% endblocktranslate %}</[p>
-    <p id="error-message">{% blocktranslate with time=compilation.end_time.isoformat %}This build process finished with an error at <time id="end-time">{{time}}.</time>{% endblocktranslate %}</[p>
+    <p id="built-message">{% blocktranslate with time=compilation.end_time.isoformat %}This build process finished at <time class="end-time">{{time}}</time>.{% endblocktranslate %}</[p>
+    <p id="error-message">{% blocktranslate with time=compilation.end_time.isoformat %}This build process finished with an error at <time class="end-time">{{time}}</time>.{% endblocktranslate %}</[p>
     <p id="building-message">{% translate "Waiting for the build process to start..." %}</p>
 
     <p id="time-taken-message">{% blocktranslate with time_taken=time_taken.total_seconds %}Took <time id="time-taken">{{time_taken}}</time> seconds.{% endblocktranslate %}</p>

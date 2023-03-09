@@ -1,13 +1,13 @@
+import {websocket} from '../chirun_lti.mjs';
+
 const status_json = JSON.parse(document.getElementById('status_json').textContent);
 
 const output = window.output = {stdout: '', stderr: ''};
 
-const messages = window.messages = [];
-
 function progress_websocket() {
-    const ws_url = `ws://${window.location.host}/ws${window.location.pathname}/progress`
+    const ws_url = `${window.location.pathname}/progress`
 
-    const ws = new WebSocket(ws_url);
+    const ws = websocket(ws_url);
 
     const stdout_display = document.getElementById('stdout');
     const stderr_display = document.getElementById('stderr');
@@ -34,17 +34,18 @@ function progress_websocket() {
             output.stderr += str;
             stderr_display.textContent = output.stderr;
         },
-        'finished': ({status, end_time, time_taken}) => {
+        'status_change': ({status, end_time, time_taken}) => {
             document.body.classList.remove('build-status-building');
             document.body.classList.add(`build-status-${status}`);
-            document.getElementById('end-time').textContent = end_time;
+            for(let e of document.querySelectorAll('.end-time')) {
+                e.textContent = end_time;
+            }
             document.getElementById('time-taken').textContent = time_taken;
         },
     };
 
     ws.onmessage = ({data}) => {
         data = JSON.parse(data);
-        messages.push(data);
         console.log(data);
         const {type} = data;
         if(type in message_handlers) {

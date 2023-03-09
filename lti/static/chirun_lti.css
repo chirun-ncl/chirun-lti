@@ -410,3 +410,6 @@ body.package-details #controls form {
 .package-structure .item-type {
     margin-right: var(--spacing);
 }
+
+body.deep-link.pick-package .package:not([data-build-status="building"]) .building-message { display: none; }
+body.deep-link.pick-package .package:not([data-build-status="error"]) .error-message { display: none; }

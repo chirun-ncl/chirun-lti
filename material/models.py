@@ -1,3 +1,4 @@
+from   channels.layers import get_channel_layer
 from   django.conf import settings
 from   django.db import models
 from   django.urls import reverse
@@ -23,6 +24,13 @@ class ChirunPackage(models.Model):
 
     class Meta:
         ordering = (models.functions.Lower('name'), '-created', 'uid')
+
+    @staticmethod
+    def channel_group_name_for_package(uid):
+        return f'package_{uid}'
+
+    def get_channel_group_name(self):
+        return ChirunPackage.channel_group_name_for_package(self.uid)
 
     @property
     def title(self):
@@ -161,4 +169,28 @@ class Compilation(models.Model):
         return f'chirun_lti:build:{self.pk}'
 
     def get_channel_group_name(self):
-        return f'build_{self.pk}'
+        return Compilation.channel_group_name_for_compilation(self.pk)
+
+    @staticmethod
+    def channel_group_name_for_compilation(pk):
+        return f'build_{pk}'
+
+    async def send_status_change(self):
+        channel_layer = get_channel_layer()
+
+        package = self.package
+
+        message = {
+            "type": "status_change",
+            'compilation': self.pk,
+            "status": self.status,
+            'start_time': self.start_time.isoformat(),
+        }
+        if self.end_time is not None:
+            message.update({
+                'end_time': self.end_time.isoformat(),
+                'time_taken': (self.end_time - self.start_time).total_seconds(),
+            })
+
+        await channel_layer.group_send(self.get_channel_group_name(), message)
+        await channel_layer.group_send(package.get_channel_group_name(), {'type': 'build_status', 'package': str(package.uid), 'message': message})

@@ -1,17 +1,40 @@
 from   .models import Compilation
-from   asgiref.sync import async_to_sync
+from   asgiref.sync import async_to_sync, sync_to_async
 import asyncio
 from   channels.layers import get_channel_layer
 from   chirun_lti.cache import get_cache
 from   django.conf import settings
 from   django.utils.timezone import now
+import functools
 from   huey.contrib.djhuey import task
 import shutil
 import subprocess
 import tempfile
 
-@task()
-def build_package(compilation):
+def async_task(*args, **kwargs):
+    """
+        Decorator for async tasks.
+        Applies huey.task, and then decorates an async function.
+    """
+
+    def decorator(fn):
+        @task(*args,**kwargs)
+        @functools.wraps(fn)
+        def wrapper(*args, **kwargs):
+            try:
+                loop = asyncio.get_event_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+
+            loop.run_until_complete(fn(*args,**kwargs))
+
+        return wrapper
+
+    return decorator
+
+@async_task()
+async def build_package(compilation):
     """
         Build a package, and record the results in the given Compilation object.
 
@@ -27,8 +50,10 @@ def build_package(compilation):
 
     print(f"Task to build {package}")
 
-    async def do_build(source_path, output_path):
+    with tempfile.TemporaryDirectory() as source_path, tempfile.TemporaryDirectory() as output_path:
         cache = get_cache()
+
+        await compilation.send_status_change()
 
         channel_layer = get_channel_layer()
 
@@ -124,32 +149,24 @@ def build_package(compilation):
 
         await process.communicate()
 
-        stdout = stdout_bytes.decode('utf-8')
-        stderr = stderr_bytes.decode('utf-8')
+    stdout = stdout_bytes.decode('utf-8')
+    stderr = stderr_bytes.decode('utf-8')
 
-        await cache.delete(stdout_cache_key)
-        await cache.delete(stderr_cache_key)
+    await cache.delete(stdout_cache_key)
+    await cache.delete(stderr_cache_key)
 
-        compilation.output = stdout+'\n\n'+stderr
-        if process.returncode == 0:
-            compilation.status = 'built'
-        else:
-            compilation.status = 'error'
+    compilation.output = stdout+'\n\n'+stderr
+    if process.returncode == 0:
+        compilation.status = 'built'
+    else:
+        compilation.status = 'error'
 
-        compilation.end_time = now()
+    compilation.end_time = now()
 
-        time_taken = compilation.end_time - compilation.start_time
-
-        await channel_layer.group_send(
-                channel_group_name, {"type": "finished", "status": compilation.status, 'end_time': compilation.end_time.isoformat(), 'time_taken': time_taken.total_seconds()}
-        )
-
-    with tempfile.TemporaryDirectory() as source_path, tempfile.TemporaryDirectory() as output_path:
-        async_to_sync(do_build)(source_path, output_path)
-
+    await compilation.send_status_change()
 
     print(f"Finished building {package}: {compilation}")
-    compilation.save()
+    await sync_to_async(compilation.save)()
 
 @task()
 def delete_package_files(package):

@@ -16,7 +16,7 @@
             {% block header %}
                 <nav id="page-nav">
                     {% block page_nav %}
-                    {% if back_url %}<a class="back" href="{{back_url}}">{% translate "Back" %}</a>{% endif %}
+                    {% if back_url %}<a class="back" href="{{back_url}}">← {% translate "Back" %}</a>{% endif %}
                     {% if help_url %}<a class="help-link" target="chirun-help" href="{{help_url}}">{% translate "Help with this page" %}</a>{% endif %}
                     {% endblock page_nav %}
                 </nav>

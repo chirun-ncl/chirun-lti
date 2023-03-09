@@ -21,4 +21,6 @@
     {% elif package.build_status == 'error' %}
         <p>{% translate "There was an error building this package." %}</p>
     {% endif %}
+
+    <p><a target="_blank" href="{% url 'material:view' package.uid %}">{% translate "Edit this package" %}</a></p>
 {% endblock main %}

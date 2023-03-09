@@ -1,43 +1,37 @@
 {% extends "package/base.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block title %}{% translate "Pick a package to use" %}{% endblock title %}
 
 {% block page_title %}{% translate "Pick a package to use" %}{% endblock page_title %}
 
-{% block body_class %}deep-link{% endblock body_class %}
+{% block body_class %}deep-link pick-package{% endblock body_class %}
+
+{% block head %}
+    {{block.super}}
+    <script type="module" src="{% static 'package/deep_link_pick_package.mjs' %}"></script>
+{% endblock head %}
 
 {% block main %}
     {% if same_context.exists %}
     <section id="same-context">
         <h2>{% translate "Packages in this context" %}</h2>
-        <ul>
-            {% for package in same_context %}
-            <li><a href="?package={{package.uid}}">{{package.title}}</a> - {{package.build_status}}</li>
-            {% endfor %}
-        </ul>
+        {% with packages=same_context %}{% include "package/deep_link_packages.html" %}{% endwith %}
     </section>
     {% endif %}
 
     {% if same_tool.exists %}
     <section id="same-tool">
         <h2>{% translate "Packages in other contexts on this platform" %}</h2>
-        <ul>
-            {% for package in same_tool %}
-            <li><a href="?package={{package.uid}}">{{package.title}}</a> - {{package.build_status}}</li>
-            {% endfor %}
-        </ul>
+        {% with packages=same_tool %}{% include "package/deep_link_packages.html" %}{% endwith %}
     </section>
     {% endif %}
 
     {% if other_built.exists %}
     <section id="other-built">
         <h2>{% translate "Other packages" %}</h2>
-        <ul>
-            {% for package in other_built %}
-            <li><a href="?package={{package.uid}}">{{package.title}}</a> - {{package.build_status}}</li>
-            {% endfor %}
-        </ul>
+        {% with packages=other_built %}{% include "package/deep_link_packages.html" %}{% endwith %}
     </section>
     {% endif %}
 

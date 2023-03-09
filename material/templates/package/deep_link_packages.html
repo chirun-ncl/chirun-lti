@@ -1,0 +1,10 @@
+{% load i18n %}
+<ul>
+    {% for package in packages %}
+    <li class="package" data-build-status="{{package.build_status}}" data-package-uid="{{package.uid}}">
+        <a href="?package={{package.uid}}">{{package.title}}</a>
+        <span class="building-message">{% translate "Building" %}</span>
+        <span class="error-message">{% translate "Compilation error" %}</span>
+    </li>
+    {% endfor %}
+</ul>
