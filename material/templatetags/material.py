@@ -3,9 +3,7 @@ import urllib.parse
 
 register = template.Library()
 
-def urljoin(url, prefix):
-    print(prefix)
-    print(url)
+def urljoin(prefix, url):
     return urllib.parse.urljoin(str(prefix)+'/', str(url))
 
 register.filter('urljoin', urljoin)

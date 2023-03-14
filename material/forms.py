@@ -13,7 +13,12 @@ class UploadPackageForm(forms.ModelForm):
 class DeepLinkForm(forms.Form):
     package = forms.ModelChoiceField(queryset=ChirunPackage.objects.all())
     item = forms.CharField(required=False)
-    title = forms.CharField()
+    theme = forms.ChoiceField(required=False)
+
+    def __init__(self, themes, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['theme'] = forms.ChoiceField(choices = [(theme['path'], theme['title']) for theme in themes])
 
 class PackageFileForm(forms.ModelForm):
     content = forms.CharField(widget=forms.Textarea, required=False)

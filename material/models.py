@@ -118,6 +118,27 @@ class ChirunPackage(models.Model):
     def structure(self):
         return self.manifest.get('structure')
 
+    def all_items(self):
+        """
+            A generator for all items in the package's structure, in depth-first order.
+        """
+
+        def visit(item):
+            yield item
+            for subitem in item.get('content',[]):
+                yield from visit(subitem)
+
+        for item in self.structure:
+            yield from visit(item)
+
+    def get_item_by_url(self, item_url):
+        for item in self.all_items():
+            if item.get('url') == item_url:
+                return item
+
+    def themes(self):
+        return self.manifest.get('themes', [])
+
     def all_source_files(self):
         root = self.absolute_extracted_path
 

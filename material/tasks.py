@@ -3,6 +3,7 @@ from   asgiref.sync import async_to_sync, sync_to_async
 import asyncio
 from   channels.layers import get_channel_layer
 from   chirun_lti.cache import get_cache
+from   datetime import datetime, timedelta
 from   django.conf import settings
 from   django.utils.timezone import now
 import functools
@@ -96,7 +97,13 @@ async def build_package(compilation):
             part = b''
             count = 0
             while True:
-                buf = await pipe.read(10)
+                t = datetime.now()
+                buf = b''
+                while datetime.now() - t < timedelta(seconds=0.2):
+                    bit = await pipe.read(100)
+                    if not bit:
+                        break
+                    buf += bit
                 if not buf:
                     break
 
@@ -142,6 +149,9 @@ async def build_package(compilation):
                 final_output_path.parent.owner() + ':' + final_output_path.parent.group(),
                 '/opt/chirun-output'
             ])
+
+        if final_output_path.exists():
+            shutil.rmtree(final_output_path)
 
         shutil.copytree(output_path, final_output_path, dirs_exist_ok=True)
 

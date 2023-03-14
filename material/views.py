@@ -13,6 +13,7 @@ from   lti.views import CachedLTIView
 import mimetypes
 from   pathlib import Path
 from   pylti1p3.deep_link_resource import DeepLinkResource
+import shutil
 import zipfile
 
 class IndexView(generic.ListView):
@@ -38,7 +39,7 @@ class DeepLinkPickPackageView(DeepLinkView, CachedLTIView, generic.ListView):
     """
         Change the configuration of the tool, completing a deep link launch.
     """
-    template_name = 'package/deep_link_pick_package.html'
+    template_name = 'package/deep_link/pick_package.html'
     context_object_name = 'packages'
 
     def get_context_data(self, *args, **kwargs):
@@ -72,7 +73,7 @@ class DeepLinkPickItemView(DeepLinkView, BackPageMixin, CachedLTIView, generic.F
         Change the configuration of the tool, completing a deep link launch.
     """
     form_class = forms.DeepLinkForm
-    template_name = 'package/deep_link_pick_item.html'
+    template_name = 'package/deep_link/pick_item.html'
 
     def get_back_url(self):
         return reverse_lazy('material:deep_link', kwargs=self.kwargs)
@@ -81,6 +82,14 @@ class DeepLinkPickItemView(DeepLinkView, BackPageMixin, CachedLTIView, generic.F
         self.package = ChirunPackage.objects.get(uid=self.request.GET['package'])
 
         return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        if self.package:
+            kwargs['themes'] = self.package.themes()
+
+        return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -92,16 +101,19 @@ class DeepLinkPickItemView(DeepLinkView, BackPageMixin, CachedLTIView, generic.F
         launch_url = self.request.build_absolute_uri(reverse('lti:launch'))
 
         package = form.cleaned_data.get('package')
-        title = form.cleaned_data.get('title')
-        item = form.cleaned_data.get('item')
+        item_url = form.cleaned_data.get('item')
+        theme = form.cleaned_data.get('theme')
+
+        item = package.get_item_by_url(item_url)
 
         resource = DeepLinkResource()\
             .set_url(launch_url)\
             .set_custom_params({
                 'package': str(package.uid),
-                'item': item,
+                'item': item_url,
+                'theme': theme,
             })\
-            .set_title(title)
+            .set_title(item.get('title','Untitled item'))
 
         html = self.message_launch.get_deep_link().output_response_form([resource])
         return HttpResponse(html)
@@ -132,6 +144,14 @@ class PackageUploadView(PackageView):
                 print(f"Extracting {file.name} to {package.absolute_extracted_path}")
                 z = zipfile.ZipFile(file,'r')
                 z.extractall(package.absolute_extracted_path)
+
+                root = package.absolute_extracted_path
+                root_items = list(root.iterdir())
+                if len(root_items) == 1:
+                    root_dir = root_items[0]
+                    for f in root_dir.iterdir():
+                        shutil.move(f,root)
+                    root_dir.rmdir()
             else:
                 print(f"writing {path}")
                 with open(path, 'wb+') as destination:

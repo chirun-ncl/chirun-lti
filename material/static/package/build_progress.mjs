@@ -4,6 +4,10 @@ const status_json = JSON.parse(document.getElementById('status_json').textConten
 
 const output = window.output = {stdout: '', stderr: ''};
 
+function scroll_to_end(element) {
+    element.scrollTo({top: element.scrollHeight});
+}
+
 function progress_websocket() {
     const ws_url = `${window.location.pathname}/progress`
 
@@ -25,6 +29,7 @@ function progress_websocket() {
             const str = atob(bytes);
             output.stdout += str;
             stdout_display.textContent = output.stdout;
+            scroll_to_end(stdout_display);
         },
         'stderr_bytes': ({bytes}) => {
             if(!received_anything) {
@@ -33,6 +38,7 @@ function progress_websocket() {
             const str = atob(bytes);
             output.stderr += str;
             stderr_display.textContent = output.stderr;
+            scroll_to_end(stderr_display);
         },
         'status_change': ({status, end_time, time_taken}) => {
             document.body.classList.remove('build-status-building');

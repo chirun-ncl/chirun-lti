@@ -133,6 +133,7 @@ button:active {
 
 body > main {
     padding: 0 var(--spacing);
+    max-width: 100vw;
 }
 
 body > footer {
@@ -383,6 +384,18 @@ body.build-progress.build-status-building #time-taken-message
 { display: none; }
 
 
+body.build-progress :is(#stdout, #stderr) {
+    height: 30vh;
+    overflow-y: scroll;
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--main-color);
+    padding: var(--spacing);
+}
+body.build-progress.build-status-built :is(#stdout, #stderr) {
+    height: initial;
+}
+
 body.deep-link form.use-this {
     display: inline;
 }
@@ -390,6 +403,14 @@ body.deep-link form.use-this {
 body.deep-link form.use-this button {
     padding: 0 var(--spacing);
     margin: var(--spacing);
+}
+
+body.package-details .package-built-themes {
+    display: flex;
+    flex-wrap: wrap;
+    grid-gap: var(--spacing);
+    list-style: none;
+    padding: 0;
 }
 
 body.package-details #controls nav {

@@ -1,0 +1,23 @@
+{% load i18n %}
+<li>
+    <label>
+        {{item.title}}
+        <input type="radio" name="item" value="{{item.url}}">
+    </label>
+    {% if item.slides_url %}
+        <label>
+            {% translate "Slides" %}
+            <input type="radio" name="item" value="{{item.slides_url}}">
+        </label>
+    {% endif %}
+
+    <a href="{{package.get_output_url}}/{{item.url}}" target="_blank">{% translate "Preview" %}</a>
+
+    {% if item.content %}
+    <ul>
+        {% for subitem in item.content %}
+        {% include "package/deep_link/structure_item.html" with item=subitem %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+</li>

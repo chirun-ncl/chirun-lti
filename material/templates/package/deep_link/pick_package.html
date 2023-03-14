@@ -17,21 +17,21 @@
     {% if same_context.exists %}
     <section id="same-context">
         <h2>{% translate "Packages in this context" %}</h2>
-        {% with packages=same_context %}{% include "package/deep_link_packages.html" %}{% endwith %}
+        {% with packages=same_context %}{% include "package/deep_link/packages.html" %}{% endwith %}
     </section>
     {% endif %}
 
     {% if same_tool.exists %}
     <section id="same-tool">
         <h2>{% translate "Packages in other contexts on this platform" %}</h2>
-        {% with packages=same_tool %}{% include "package/deep_link_packages.html" %}{% endwith %}
+        {% with packages=same_tool %}{% include "package/deep_link/packages.html" %}{% endwith %}
     </section>
     {% endif %}
 
     {% if other_built.exists %}
     <section id="other-built">
         <h2>{% translate "Other packages" %}</h2>
-        {% with packages=other_built %}{% include "package/deep_link_packages.html" %}{% endwith %}
+        {% with packages=other_built %}{% include "package/deep_link/packages.html" %}{% endwith %}
     </section>
     {% endif %}
 

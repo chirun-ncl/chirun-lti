@@ -256,12 +256,14 @@ class TeacherLaunchView(CachedLTIView, TemplateView):
 
         package_uid = self.get_custom_param('package')
         item = self.get_custom_param('item')
+        theme = self.get_custom_param('theme')
         package = ChirunPackage.objects.get(uid = package_uid)
 
         context['package'] = package
         context['item'] = item
+        context['theme'] = theme
         context['resource_link'] = self.get_lti_resource_link()
 
-        context['view_url'] = PurePath(package.get_output_url()) / item
+        context['view_url'] = PurePath(package.get_output_url()) / theme / item
 
         return context

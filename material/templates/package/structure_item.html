@@ -1,13 +1,15 @@
 {% load i18n %}
 {% load material %}
 <li>
+    {% with root=package.get_output_url|urljoin:theme.path %}
+
     <span class="item-type">{{item.type}}</span>
-    <a href="{{item.url|urljoin:package.get_output_url}}">{{item.title}}</a>
+    <a href="{{root|urljoin:item.url}}">{{item.title}}</a>
     {% if item.slides_url %}
-    <a href="{{item.slides_url|urljoin:package.get_output_url}}">{% translate "Slides" %}</a>
+    <a href="{{root|urljoin:item.slides_url}}">{% translate "Slides" %}</a>
     {% endif %}
     {% if item.pdf_url %}
-    <a href="{{item.pdf_url|urljoin:package.get_output_url}}">{% translate "PDF" %}</a>
+    <a href="{{root|urljoin:item.pdf_url}}">{% translate "PDF" %}</a>
     {% endif %}
     {% if item.content %}
     <ul>
@@ -16,4 +18,6 @@
         {% endfor %}
     </ul>
     {% endif %}
+
+    {% endwith %}
 </li>
