@@ -177,7 +177,7 @@ const StructureItemEditor = {
             <input id="item-is_hidden" type="checkbox" v-model="item.is_hidden">
 
             <label for="item-build_pdf">Build PDF?</label>
-            <input id="item-build_pdf" type="checkbox" v-model="item.build_pdf">
+            <input id="item-build_pdf" type="checkbox" :checked="item.build_pdf ?? true" @change="item.build_pdf = $event.target.value">
 
             <label for="item-pdf_url">PDF URL</label>
             <input id="item-pdf_url" v-model="item.pdf_url">
@@ -186,13 +186,13 @@ const StructureItemEditor = {
             <DirectoryTree id="item-thumbnail" :tree="file_tree" v-model="item.thumbnail"/>
 
             <label for="item-sidebar">Show the sidebar?</label>
-            <input id="item-sidebar" type="checkbox" v-model="item.sidebar">
+            <input id="item-sidebar" type="checkbox" :checked="item.sidebar ?? true" @change="item.sidebar = $event.target.value">
 
             <label for="item-topbar">Show the top bar?</label>
-            <input id="item-topbar" type="checkbox" v-model="item.topbar">
+            <input id="item-topbar" type="checkbox" :checked="item.topbar ?? true" @change="item.topbar = $event.target.value">
 
             <label for="item-footer">Show the footer?</label>
-            <input id="item-footer" type="checkbox" v-model="item.footer">
+            <input id="item-footer" type="checkbox" :checked="item.footer ?? true" @change="item.footer = $event.target.value">
         </fieldset>
     `
 }

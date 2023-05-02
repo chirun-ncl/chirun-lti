@@ -9,6 +9,8 @@ function scroll_to_end(element) {
 }
 
 function progress_websocket() {
+    const document_title = document.title;
+
     const ws_url = `${window.location.pathname}/progress`
 
     const ws = websocket(ws_url);
@@ -26,6 +28,7 @@ function progress_websocket() {
             if(!received_anything) {
                 stdout_display.innerHTML = '';
             }
+            stdout_display.classList.add('non-empty');
             const str = atob(bytes);
             output.stdout += str;
             stdout_display.textContent = output.stdout;
@@ -41,6 +44,7 @@ function progress_websocket() {
             scroll_to_end(stderr_display);
         },
         'status_change': ({status, end_time, time_taken}) => {
+            document.title = `${status} - ${document_title}`;
             document.body.classList.remove('build-status-building');
             document.body.classList.add(`build-status-${status}`);
             for(let e of document.querySelectorAll('.end-time')) {

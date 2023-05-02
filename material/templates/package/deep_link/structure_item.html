@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load material %}
 <li>
     <label>
         {{item.title}}
@@ -11,7 +12,9 @@
         </label>
     {% endif %}
 
-    <a href="{{package.get_output_url}}/{{item.url}}" target="_blank">{% translate "Preview" %}</a>
+    {% for theme in package.themes %}
+        <a data-path="{{theme.path}}" href="{{package.get_output_url|urljoin:theme.path|urljoin:item.url}}" target="_blank">{% translate "Preview" %}</a>
+    {% endfor %}
 
     {% if item.content %}
     <ul>

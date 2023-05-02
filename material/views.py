@@ -3,6 +3,7 @@ from   .models import ChirunPackage, Compilation
 from   chirun_lti.mixins import BackPageMixin, HelpPageMixin
 from   dataclasses import dataclass
 from   django.conf import settings
+from   django.contrib.auth.mixins import UserPassesTestMixin
 from   django.core.exceptions import PermissionDenied
 from   django.db.models import Q
 from   django.http import HttpResponse, HttpResponseRedirect
@@ -118,9 +119,15 @@ class DeepLinkPickItemView(DeepLinkView, BackPageMixin, CachedLTIView, generic.F
         html = self.message_launch.get_deep_link().output_response_form([resource])
         return HttpResponse(html)
 
-class PackageView:
+class PackageView(UserPassesTestMixin):
     model = ChirunPackage
     context_object_name = 'package'
+    
+    def test_func(self):
+        if self.request.user.is_superuser:
+            return True
+
+        return True
 
     def get_back_url(self):
         return reverse_lazy('material:view', args=(str(self.get_object().uid),))
