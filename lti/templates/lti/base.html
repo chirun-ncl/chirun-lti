@@ -33,7 +33,7 @@
 
         <footer>
             {% block footer %}
-            <p>Chirun LTI</p>
+            <p>{% blocktranslate with version=CHIRUN_LTI_VERSION %}Chirun LTI v{{version}}{% endblocktranslate %}. <a href="{{HELP_URL}}">{% translate "Documentation" %}</a>.</p>
             {% endblock footer %}
         </footer>
 

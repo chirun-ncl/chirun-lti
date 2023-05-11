@@ -405,6 +405,10 @@ body.deep-link form.use-this button {
     margin: var(--spacing);
 }
 
+body.package-details main > section ~ section {
+    margin-top: calc(4 * var(--spacing));
+}
+
 body.package-details .package-built-themes {
     display: flex;
     flex-wrap: wrap;

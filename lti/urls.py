@@ -1,12 +1,13 @@
-from .views import LoginView, LaunchView, JWKSView, register, TeacherLaunchView
+from . import views
 from django.urls import path, include
 
 app_name = 'lti'
 
 urlpatterns = [
-    path(r'login/', LoginView.as_view(), name='login'),
-    path(r'register/', register, name='register'),
-    path(r'launch/', LaunchView.as_view(), name='launch'),
-    path(r'jwks/', JWKSView.as_view(), name='jwks'),
-    path(r'launch/teacher/<str:launch_id>', TeacherLaunchView.as_view(), name='teacher_launch'),
+    path(r'login/', views.LoginView.as_view(), name='login'),
+    path(r'register', views.RegisterView.as_view(), name='register'),
+    path(r'register/dynamic', views.register, name='dynamic_registration'),
+    path(r'launch/', views.LaunchView.as_view(), name='launch'),
+    path(r'jwks/', views.JWKSView.as_view(), name='jwks'),
+    path(r'launch/teacher/<str:launch_id>', views.TeacherLaunchView.as_view(), name='teacher_launch'),
 ]

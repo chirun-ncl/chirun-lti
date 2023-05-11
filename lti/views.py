@@ -24,10 +24,13 @@ PAGE_DESCRIPTION = 'The Chirun tool for creating accessible online course materi
 class IndexView(TemplateView):
     template_name = 'lti/index.html'
 
+class RegisterView(TemplateView):
+    template_name = 'registration/begin.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['register_url'] = self.request.build_absolute_uri(reverse('lti:register'))
+        context['register_url'] = self.request.build_absolute_uri(reverse('lti:dynamic_registration'))
 
         return context
 

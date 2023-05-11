@@ -8,14 +8,17 @@
     <section id="controls">
         <h2>{% translate "Manage this package" %}</h2>
 
+        <p>{% translate "The following URL allows you to edit this package at a later date." %}</p>
+        <pre>{{request.build_absolute_uri}}</pre>
+
         <nav>
-            <form method="POST" action="{% url 'material:build' package.uid %}">
+            <form method="POST" action="{% url 'material:build' package.edit_uid %}">
                 <button type="submit">{% translate "Build" %}</button>
             </form>
-            <a href="{% url 'material:configure' package.uid %}">{% translate "Configure" %}</a>
-            <a href="{% url 'material:delete' package.uid %}">{% translate "Delete" %}</a>
-            <a href="{% url 'material:upload' package.uid %}">{% translate "Upload files" %}</a>
-            <a href="{% url 'material:file_root' package.uid %}">{% translate "View or edit files in this package" %}</a>
+            <a href="{% url 'material:configure' package.edit_uid %}">{% translate "Configure" %}</a>
+            <a href="{% url 'material:delete' package.edit_uid %}">{% translate "Delete" %}</a>
+            <a href="{% url 'material:upload' package.edit_uid %}">{% translate "Upload files" %}</a>
+            <a href="{% url 'material:file_root' package.edit_uid %}">{% translate "View or edit files in this package" %}</a>
         </nav>
     </section>
 

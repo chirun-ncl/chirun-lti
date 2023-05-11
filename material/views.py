@@ -6,10 +6,11 @@ from   django.conf import settings
 from   django.contrib.auth.mixins import UserPassesTestMixin
 from   django.core.exceptions import PermissionDenied
 from   django.db.models import Q
-from   django.http import HttpResponse, HttpResponseRedirect
+from   django.http import HttpResponse, HttpResponseRedirect, Http404
 from   django.views import generic
 from   django.shortcuts import render, redirect
 from   django.urls import reverse, reverse_lazy
+from   django.utils.translation import gettext as _
 from   lti.views import CachedLTIView
 import mimetypes
 from   pathlib import Path
@@ -17,9 +18,10 @@ from   pylti1p3.deep_link_resource import DeepLinkResource
 import shutil
 import zipfile
 
-class IndexView(generic.ListView):
+class IndexView(BackPageMixin, generic.ListView):
     model = ChirunPackage
     template_name = 'package/index.html'
+    back_url = reverse_lazy('index')
 
 def deep_link(request, *args, **kwargs):
     if 'package' in request.GET:
@@ -119,9 +121,27 @@ class DeepLinkPickItemView(DeepLinkView, BackPageMixin, CachedLTIView, generic.F
         html = self.message_launch.get_deep_link().output_response_form([resource])
         return HttpResponse(html)
 
-class PackageView(UserPassesTestMixin):
+class PackageEditView(UserPassesTestMixin):
+    """
+        A mixin for any view whose object is a ChirunPackage and which requires edit access.
+    """
     model = ChirunPackage
     context_object_name = 'package'
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        queryset = queryset.filter(edit_uid = self.kwargs.get(self.pk_url_kwarg))
+
+        try:
+            obj = queryset.get()
+        except queryset.model.DoesNotExist:
+            raise Http404(
+                _("No %(verbose_name)s found matching the query")
+                % {"verbose_name": queryset.model._meta.verbose_name}
+            )
+        return obj
     
     def test_func(self):
         if self.request.user.is_superuser:
@@ -130,16 +150,16 @@ class PackageView(UserPassesTestMixin):
         return True
 
     def get_back_url(self):
-        return reverse_lazy('material:view', args=(str(self.get_object().uid),))
+        return reverse_lazy('material:view', args=(str(self.get_object().edit_uid),))
 
-class DeleteView(PackageView, generic.DeleteView):
+class DeleteView(PackageEditView, generic.DeleteView):
     model = ChirunPackage
     template_name = 'package/delete.html'
 
     def get_success_url(self):
         return reverse('material:index')
 
-class PackageUploadView(PackageView):
+class PackageUploadView(PackageEditView):
     form_class = forms.UploadPackageForm
 
     def form_valid(self, form):
@@ -165,7 +185,6 @@ class PackageUploadView(PackageView):
                     for chunk in file.chunks():
                         destination.write(chunk)
 
-        package.build()
         return redirect(self.get_success_url())
 
     def get_success_url(self):
@@ -204,17 +223,17 @@ class CreatePackageView(BackPageMixin, CachedLTIView, PackageUploadView, generic
 
                 return reverse('material:deep_link', args=(launch_id,))
 
-        return super().get_success_url()
+        return reverse('material:configure', args=(self.object.edit_uid,))
         
 
 class UploadFilesView(PackageUploadView, BackPageMixin, generic.UpdateView):
     template_name = 'package/upload.html'
 
-class ViewPackageView(BackPageMixin, PackageView, generic.DetailView):
+class ViewPackageView(BackPageMixin, PackageEditView, generic.DetailView):
     template_name = 'package/detail.html'
     back_url = reverse_lazy('material:index')
 
-class BuildView(PackageView, generic.UpdateView):
+class BuildView(PackageEditView, generic.UpdateView):
     template_name = 'package/detail.html'
 
     def post(self, request, *args, **kwargs):
@@ -227,6 +246,24 @@ class BuildProgressView(BackPageMixin, generic.DetailView):
     template_name = 'package/build_progress.html'
     context_object_name = 'compilation'
     model = Compilation
+    
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        package_edit_uid = self.kwargs.get('package_pk')
+        compilation_pk = self.kwargs.get('pk')
+        queryset = queryset.filter(package__edit_uid = package_edit_uid, pk = compilation_pk)
+
+        try:
+            obj = queryset.get()
+        except queryset.model.DoesNotExist:
+            raise Http404(
+                _("No %(verbose_name)s found matching the query")
+                % {"verbose_name": queryset.model._meta.verbose_name}
+            )
+        return obj
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -246,9 +283,9 @@ class BuildProgressView(BackPageMixin, generic.DetailView):
 
     def get_back_url(self):
         compilation = self.get_object()
-        return reverse_lazy('material:view', args=(compilation.package.uid,))
+        return reverse_lazy('material:view', args=(compilation.package.edit_uid,))
 
-class FileView(PackageView, BackPageMixin, generic.UpdateView):
+class FileView(PackageEditView, BackPageMixin, generic.UpdateView):
     form_class = forms.PackageFileForm
     template_name = 'package/package_file.html'
 
@@ -344,7 +381,7 @@ class FileView(PackageView, BackPageMixin, generic.UpdateView):
         package = self.object
         path = self.saved_path
 
-        return reverse('material:file', args=(package.uid, path))
+        return reverse('material:file', args=(package.edit_uid, path))
 
 class DeleteFileView(FileView):
     form_class = forms.DeleteFileForm
@@ -367,9 +404,9 @@ class DeleteFileView(FileView):
     def get_success_url(self):
         package = self.object
         path = self.get_path()
-        return reverse('material:file', args=(package.uid, path.relative_to(self.get_object().absolute_extracted_path).parent))
+        return reverse('material:file', args=(package.edit_uid, path.relative_to(self.get_object().absolute_extracted_path).parent))
 
-class ConfigView(BackPageMixin, HelpPageMixin, PackageView, CachedLTIView, generic.UpdateView):
+class ConfigView(BackPageMixin, HelpPageMixin, PackageEditView, CachedLTIView, generic.UpdateView):
     form_class = forms.ConfigForm
     help_url = 'package/configure.html'
     get_message_launch_on_dispatch = False
@@ -381,7 +418,7 @@ class ConfigView(BackPageMixin, HelpPageMixin, PackageView, CachedLTIView, gener
         if self.is_deep_link_launch():
             return reverse_lazy('material:deep_link', args=(self.get_launch_id(),))
 
-        return reverse_lazy('material:view', args=(str(self.get_object().uid),))
+        return reverse_lazy('material:view', args=(str(self.get_object().edit_uid),))
 
     template_name = 'package/config.html'
 
@@ -415,7 +452,7 @@ class ConfigView(BackPageMixin, HelpPageMixin, PackageView, CachedLTIView, gener
 
         package.save_config(config)
 
-        package.build()
+        self.compilation = package.build()
 
         return HttpResponseRedirect(self.get_success_url())
 
@@ -423,4 +460,4 @@ class ConfigView(BackPageMixin, HelpPageMixin, PackageView, CachedLTIView, gener
         if self.is_deep_link_launch():
             return reverse_lazy('material:deep_link', args=(self.get_launch_id(),))
         else:
-            return super().get_success_url()
+            return self.compilation.get_absolute_url()

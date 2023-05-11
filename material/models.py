@@ -13,6 +13,7 @@ import yaml
 class ChirunPackage(models.Model):
     name = models.CharField(max_length=500)
     uid = models.UUIDField(default = uuid.uuid4, primary_key = True)
+    edit_uid = models.UUIDField(default = uuid.uuid4, unique = True)
 
     created = models.DateTimeField(auto_now_add = True)
 
@@ -72,7 +73,7 @@ class ChirunPackage(models.Model):
         return compilation
 
     def get_absolute_url(self):
-        return reverse('material:view', args=(self.uid,))
+        return reverse('material:view', args=(self.edit_uid,))
 
     def get_output_url(self):
         return PurePath(settings.MEDIA_URL) / self.relative_output_path
@@ -182,7 +183,7 @@ class Compilation(models.Model):
 
     def get_absolute_url(self):
         return reverse('material:build_progress', kwargs = {
-            'package_pk': self.package.pk,
+            'package_pk': self.package.edit_uid,
             'pk': self.pk,
         })
 
