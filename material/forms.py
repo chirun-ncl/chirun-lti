@@ -34,13 +34,8 @@ class DeleteFileForm(forms.ModelForm):
         model = ChirunPackage
         fields = []
 
-class What(forms.JSONField):
-    def to_python(self, value):
-        print(value)
-        return super().to_python(value)
-
 class ConfigForm(forms.ModelForm):
-    config = What(widget=forms.HiddenInput)
+    config = forms.JSONField(widget=forms.HiddenInput)
 
     class Meta:
 
