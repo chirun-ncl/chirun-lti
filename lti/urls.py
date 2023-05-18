@@ -10,4 +10,5 @@ urlpatterns = [
     path(r'launch/', views.LaunchView.as_view(), name='launch'),
     path(r'jwks/', views.JWKSView.as_view(), name='jwks'),
     path(r'launch/teacher/<str:launch_id>', views.TeacherLaunchView.as_view(), name='teacher_launch'),
+    path(r'launch/student/<str:launch_id>', views.StudentLaunchView.as_view(), name='student_launch'),
 ]

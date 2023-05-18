@@ -8,7 +8,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
-from django.views.generic import TemplateView, FormView
+from django.views.generic import TemplateView, FormView, RedirectView
 from django.views.decorators.http import require_POST
 from django.urls import reverse, reverse_lazy
 from material.models import ChirunPackage
@@ -270,3 +270,13 @@ class TeacherLaunchView(CachedLTIView, TemplateView):
         context['view_url'] = PurePath(package.get_output_url()) / theme / item
 
         return context
+
+class StudentLaunchView(CachedLTIView, RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        package_uid = self.get_custom_param('package')
+        item = self.get_custom_param('item')
+        theme = self.get_custom_param('theme')
+        package = ChirunPackage.objects.get(uid = package_uid)
+
+        url = PurePath(package.get_output_url()) / theme / item
+        return str(url)
