@@ -26,6 +26,8 @@
     <section id="view">
         <h2>{% translate "View this package's content" %}</h2>
 
+        <p><a href="{% url 'material:download' package.edit_uid %}">{% translate "Download the generated content as a .zip file" %}</a></p>
+
         {% if package.themes|length > 1 %}
         <ul class="package-built-themes">
             {% for theme in package.themes %}

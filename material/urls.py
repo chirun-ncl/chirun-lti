@@ -19,6 +19,11 @@ urlpatterns = [
         name='view'
     ),
 
+    path(r'package/<uuid:pk>.zip',
+        views.DownloadView.as_view(),
+        name='download'
+    ),
+
     path(r'package/<uuid:pk>/delete',
         views.DeleteView.as_view(),
         name='delete'

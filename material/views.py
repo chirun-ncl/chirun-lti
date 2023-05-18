@@ -461,3 +461,13 @@ class ConfigView(BackPageMixin, HelpPageMixin, PackageEditView, CachedLTIView, g
             return reverse_lazy('material:deep_link', args=(self.get_launch_id(),))
         else:
             return self.compilation.get_absolute_url()
+
+class DownloadView(PackageEditView, generic.DetailView):
+    def get(self, request, *args, **kwargs):
+        package = self.get_object()
+        response = HttpResponse(content_type='application/zip')
+        response['Content-Disposition'] = f'attachment; filename="{package.edit_uid}.zip"'
+        zf = zipfile.ZipFile(response,'w')
+        for fname in package.all_output_files():
+            zf.write(str(Path(package.absolute_output_path) / fname), fname)
+        return response

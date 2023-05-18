@@ -5,6 +5,7 @@ from   django.urls import reverse
 import functools
 import json
 from   lti.models import Context
+import os
 from   pathlib import Path, PurePath
 from   pylti1p3.contrib.django.lti1p3_tool_config.models import LtiTool
 import uuid
@@ -160,6 +161,13 @@ class ChirunPackage(models.Model):
             }
 
         return visit(root)
+
+    def all_output_files(self):
+        top = Path(self.absolute_output_path)
+        for d,dirs,files in os.walk(str(top)):
+            rd = Path(d).relative_to(top)
+            for f in sorted(files, key=str):
+                yield str(rd / f)
 
 BUILD_STATUSES = [
     ("building", "Building"),
