@@ -205,6 +205,9 @@ class Compilation(models.Model):
     def channel_group_name_for_compilation(pk):
         return f'build_{pk}'
 
+    def is_latest_compilation(self):
+        return self.pk == self.package.compilations.first().pk
+
     async def send_status_change(self):
         channel_layer = get_channel_layer()
 

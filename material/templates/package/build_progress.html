@@ -12,7 +12,14 @@
 {% endblock head %}
 
 {% block main %}
-<p id="built-message">{% blocktranslate with time=compilation.end_time.isoformat %}This build process finished at <time class="end-time">{{time}}</time>.{% endblocktranslate %} <a href="{{compilation.package.get_absolute_url}}">{% translate "View the generated content" %}</a>.</[p>
+    <p id="built-message">
+        {% blocktranslate with time=compilation.end_time.isoformat %}This build process finished at <time class="end-time">{{time}}</time>.{% endblocktranslate %}
+        {% if compilation.is_latest_compilation %}
+            <a href="{{compilation.package.get_absolute_url}}">{% translate "View the generated content" %}</a>.
+        {% else %}
+        <em>The package has since been rebuilt.</em>
+        {% endif %}
+        </p>
     <p id="error-message">{% blocktranslate with time=compilation.end_time.isoformat %}This build process finished with an error at <time class="end-time">{{time}}</time>.{% endblocktranslate %}</[p>
     <p id="building-message">{% translate "The package is being built. Please wait." %}</p>
 
