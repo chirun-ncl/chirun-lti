@@ -35,7 +35,7 @@
     --button-bg-sat: 20%;
     --button-bg-lum: 85%;
     --button-color: var(--main-color);
-    --button-radius: 0.2em;
+    --button-radius: 1em;
 
     --input-bg-hue: var(--hue-generic);
     --input-bg-sat: 20%;
@@ -128,6 +128,10 @@ button:is(:focus,:hover) {
 }
 button:active {
     --bg-lum: calc(var(--button-bg-lum) * var(--active-lum-factor));
+}
+
+details > summary {
+    cursor: pointer;
 }
 
 
@@ -245,14 +249,15 @@ body.configure-package form fieldset {
     align-items: center;
     padding: calc(2 * var(--spacing));
 }
-body.configure-package form > label {
+body.configure-package form fieldset > label {
     justify-self: end;
+    align-self: start;
 }
-body.configure-package form > button {
+body.configure-package form fieldset > button {
     grid-column: inputs;
     justify-self: start;
 }
-body.configure-package form > input {
+body.configure-package form fieldset > input {
     justify-self: start;
 }
 
@@ -335,17 +340,25 @@ body.configure-package #structure-tree {
     padding-left: 0;
     margin-left: 0;
 }
-body.configure-package #structure-tree ul {
+[role="tree"] ul {
     list-style: none;
-    border-left: 2px solid black;
+    border-left: 2px dashed var(--main-color);
     padding-left: calc(1 * var(--spacing));
     margin-bottom: calc(2 * var(--spacing));
     margin-left: var(--spacing);
 }
-body.configure-package #structure-tree [role="tab"] {
+body.configure-package #structure-tree ul {
+    border-bottom: 2px dashed var(--main-color);
+}
+
+ul[role="tree"] [role="tab"] {
     margin-bottom: var(--spacing);
     border-radius: 0;
     border: none;
+}
+
+body.configure-package #structure-tree [role="tab"][aria-expanded] {
+    margin-bottom: 0;
 }
 
 body.configure-package #structure-tree button {
@@ -360,14 +373,11 @@ button.action {
     --button-bg-hue: var(--hue-action);
 }
 
-
-body.configure-package .directory-tree ul {
-    list-style: none;
-    border-left: 2px solid var(--main-color);
-    padding-left: calc(2 * var(--spacing));
-    margin-bottom: var(--spacing);
+.tree ul {
 }
-body.configure-package .directory-tree li + li {
+
+
+body.configure-package .directory-tree li + li :is(details,ul) {
     margin-top: var(--spacing);
 }
 

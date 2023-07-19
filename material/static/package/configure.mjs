@@ -30,7 +30,7 @@ const DirectoryTree = {
         }
     },
     template: `
-        <details class="directory-tree" :class="{selected: in_selected}" :open="in_selected || null">
+        <details class="directory-tree" :class="{selected: in_selected}" :open="in_selected || null" role="tree">
             <summary><span v-if="tree.path">{{tree.path}}</span><code class="file-path" v-else-if="selected_path">{{selected_path}}</code><span v-else>Select a file</span></summary>
             <ul>
                 <li v-for="dir in tree.dirs"><DirectoryTree :tree="dir" :parents="parents_path" :modelValue="selected.slice(2).join('/')" @update:modelValue="$emit('update:modelValue',$event)"/></li>
@@ -54,13 +54,17 @@ const StructureItemTree = {
         }
     },
     template: `
-        <button type="button" class="item" role="tab" :aria-expanded="children.length || null" :aria-current="is_selected || null" @click="$emit('select-item',{item:modelValue, parent_list})">{{modelValue.title || 'Unnamed item'}} - <span class="item-type"><ItemTypeName :type="modelValue.type"/></span></button>
+        <button type="button" class="item" role="tab" :aria-expanded="children.length>0 || null" :aria-current="is_selected || null" @click="$emit('select-item',{item:modelValue, parent_list})">
+            <span class="item-type"><ItemTypeName :type="modelValue.type"/></span>
+            <br>
+            {{modelValue.title || 'Unnamed item'}}
+        </button>
         <ul class="content" v-if="children.length>0 || modelValue.type=='part'">
             <li role="none" v-for="item in children">
                 <Structure-Item-Tree :current_tab="current_tab" :parent_list="children" v-model="item" @select-item="$emit('select-item',$event)"/>
             </li>
             <li v-if="modelValue.type == 'part'">
-                <button class="action add-item" type="button" @click="$emit('add-item',modelValue)">Add an item</button>
+                <button class="action add-item" type="button" @click="$emit('add-item',modelValue)">+ Add an item</button>
             </li>
         </ul>
     `
@@ -149,6 +153,7 @@ const StructureItemEditor = {
         <button class="delete" type="button" @click="$emit('delete-item', modelValue)">Delete this item</button>
 
         <fieldset>
+            <legend>Metadata</legend>
             <label for="item-type">Type</label>
             <select id="item-type" v-model="item.type">
                 <option v-for="type in item_types" :value="type"><ItemTypeName :type="type"/></option>
@@ -159,9 +164,16 @@ const StructureItemEditor = {
 
             <label for="item-slug" v-if="has_custom_slug">Slug</label>
             <input id="item-slug" v-if="has_custom_slug" v-model="item.slug">
+            <label for="item-author">Author</label>
+            <input id="item-author" v-model="item.author">
+        </fieldset>
+
+        <fieldset>
+            <legend>Source</legend>
 
             <label for="item-source" v-if="source_kind != 'none'">Source</label>
             <DirectoryTree id="item-source" v-if="source_kind == 'file'" :tree="file_tree" v-model="item.source"/>
+
             <div v-if="source_kind == 'string'">
                 <input id="item-source" v-model="item.source">
                 <p class="input-hint">A URL</p>
@@ -170,29 +182,33 @@ const StructureItemEditor = {
             <label for="item-html" v-if="item?.type=='html'">HTML content</label>
             <textarea v-if="item?.type=='html'" id="item-html" v-model="item.html"></textarea>
 
-            <label for="item-author">Author</label>
-            <input id="item-author" v-model="item.author">
+            <label for="item-thumbnail">Thumbnail file</label>
+            <DirectoryTree id="item-thumbnail" :tree="file_tree" v-model="item.thumbnail"/>
 
+        </fieldset>
+
+        <fieldset>
+            <legend>Display options</legend>
             <label for="item-is_hidden">Hidden?</label>
             <input id="item-is_hidden" type="checkbox" v-model="item.is_hidden">
 
             <label for="item-build_pdf">Build PDF?</label>
-            <input id="item-build_pdf" type="checkbox" :checked="item.build_pdf ?? true" @change="item.build_pdf = $event.target.value">
+            <input id="item-build_pdf" type="checkbox" :checked="item.build_pdf ?? true" @change="item.build_pdf = $event.target.checked">
 
-            <label for="item-pdf_url">PDF URL</label>
-            <input id="item-pdf_url" v-model="item.pdf_url">
+            <template v-if="item.build_pdf ?? true">
+                <label for="item-pdf_url">PDF URL</label>
+                <input id="item-pdf_url" v-model="item.pdf_url">
+            </template>
 
-            <label for="item-thumbnail">Thumbnail file</label>
-            <DirectoryTree id="item-thumbnail" :tree="file_tree" v-model="item.thumbnail"/>
 
             <label for="item-sidebar">Show the sidebar?</label>
-            <input id="item-sidebar" type="checkbox" :checked="item.sidebar ?? true" @change="item.sidebar = $event.target.value">
+            <input id="item-sidebar" type="checkbox" :checked="item.sidebar ?? true" @change="item.sidebar = $event.target.checked">
 
             <label for="item-topbar">Show the top bar?</label>
-            <input id="item-topbar" type="checkbox" :checked="item.topbar ?? true" @change="item.topbar = $event.target.value">
+            <input id="item-topbar" type="checkbox" :checked="item.topbar ?? true" @change="item.topbar = $event.target.checked">
 
             <label for="item-footer">Show the footer?</label>
-            <input id="item-footer" type="checkbox" :checked="item.footer ?? true" @change="item.footer = $event.target.value">
+            <input id="item-footer" type="checkbox" :checked="item.footer ?? true" @change="item.footer = $event.target.checked">
         </fieldset>
     `
 }
