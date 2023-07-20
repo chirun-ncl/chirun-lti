@@ -1,0 +1,10 @@
+{% extends "package/base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "There was an error building this package" %} - {{block.super}}{% endblock title %}
+
+{% block body_class %}deep-link package-error{% endblock body_class %}
+
+{% block main %}
+    <p>{% translate "There was an error building this package." %}</p>
+{% endblock %}

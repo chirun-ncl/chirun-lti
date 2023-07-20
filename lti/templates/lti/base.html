@@ -26,6 +26,15 @@
         </header>
 
         <main id="{% block main_id %}{% endblock %}" class="{% block main_class %}{% endblock %}">
+            {% block messages %}
+            {% if messages %}
+                <ul id="flash-messages">
+                    {% for message in messages %}
+                    <li{% if message.tags %} class="{{message.tags}}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% endblock messages %}
         {% block main %}
         {% endblock main %}
         </main>
@@ -40,4 +49,3 @@
         {% endblock body %}
     </body>
 </html>
-

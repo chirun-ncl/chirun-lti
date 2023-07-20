@@ -28,12 +28,5 @@
     </section>
     {% endif %}
 
-    {% if other_built.exists %}
-    <section id="other-built">
-        <h2>{% translate "Other packages" %}</h2>
-        {% with packages=other_built %}{% include "package/deep_link/packages.html" %}{% endwith %}
-    </section>
-    {% endif %}
-
     <p>{% translate "Or" %} <a href="{% url 'material:new' %}?launch_id={{message_launch.get_launch_id}}">{% translate "upload a new package" %}</a>.</p>
 {% endblock main %}

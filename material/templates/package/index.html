@@ -5,5 +5,11 @@
 {% block page_title %}Manage packages{% endblock page_title %}
 
 {% block main %}
-    <a href="{% url 'material:new' %}">{% translate "Create a new package" %}</a>
+    <a class="action" href="{% url 'material:new' %}">{% translate "Create a new package" %}</a>
+
+    <ul>
+    {% for package in object_list %}
+    <li><a href="{% url 'material:view' package.edit_uid %}">{{package.title}}</a></li>
+    {% endfor %}
+    </ul>
 {% endblock main %}

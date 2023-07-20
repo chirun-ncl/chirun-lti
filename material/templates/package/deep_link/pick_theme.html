@@ -1,0 +1,21 @@
+{% extends "package/base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Pick a theme" %} - {{block.super}}{% endblock title %}
+
+{% block body_class %}deep-link{% endblock body_class %}
+
+{% block main %}
+{{form.errors}}
+    <p>{% blocktranslate %}This package offers more than one theme. Pick a theme to use for this link.{% endblocktranslate %}</p>
+
+    <ul>
+        {% for theme in package.themes %}
+        <li>
+            <a href="?package={{package.uid}}&theme={{theme.path}}">{{theme.title}}</a>
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% include "package/deep_link/edit_package.html" %}
+{% endblock main %}

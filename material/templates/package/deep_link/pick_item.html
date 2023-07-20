@@ -6,30 +6,15 @@
 {% block body_class %}deep-link{% endblock body_class %}
 
 {% block main %}
-{{form.errors}}
-    {% if package.build_status == 'built' %}
-        <form method="POST">
-            <input type="hidden" name="package" value="{{package.uid}}">
+    <p>{% blocktranslate with theme=theme.title %}Using the theme <strong>{{theme}}</strong>.{% endblocktranslate %}</p>
 
-            <label for="id_theme">{% translate "Pick the theme that this link will use:" %}</label>
-            {{form.theme}}
+    <p>{% translate "Pick the item that this link will open." %}</p>
 
-            <p>{% translate "Pick the item that this link will open." %}</p>
+    <ul class="package-structure">
+    {% for item in package.structure %}
+        {% include "package/deep_link/structure_item.html" %}
+    {% endfor %}
+    </ul>
 
-            <ul class="package-structure">
-            {% for item in package.structure %}
-                {% include "package/deep_link/structure_item.html" %}
-            {% endfor %}
-            </ul>
-
-            <button type="Submit">{% translate "Use these choices" %}</button>
-        </form>
-    {% elif package.build_status == 'building' %}
-        <p>{% translate "This package is being built." %}</p>
-        <a href="{% url 'material:deep_link' message_launch.get_launch_id %}?package={{package.uid}}">{% translate "Reload" %}</a>
-    {% elif package.build_status == 'error' %}
-        <p>{% translate "There was an error building this package." %}</p>
-    {% endif %}
-
-    <p><a target="_blank" href="{% url 'material:view' package.edit_uid %}">{% translate "Edit this package" %}</a></p>
+    {% include "package/deep_link/edit_package.html" %}
 {% endblock main %}

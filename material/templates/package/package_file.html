@@ -20,19 +20,33 @@
             <li>{% if directory == directory.parent %}{{package.title}}{% else %}{{directory.name}}{% endif %}</li>
         </ul>
         <ul class="siblings">
-            {% for item in siblings %}
-            <li class="sibling" {% if item == root_relative_path %}aria-current="page"{% endif %}>
-                <a href="{% url 'material:file' package.edit_uid item %}">{{item.name}}</a>
-            </li>
+            {% if directory.parent != directory %}
+            <li class="sibling parent directory"><a href="{% url 'material:file' package.edit_uid directory.parent %}">{% if directory.parent.name %}{{directory.parent.name}}{% else %}{% translate "Top level" %}{% endif %}</a></li>
+            {% endif %}
+
+            {% for item,is_dir in siblings %}
+                <li class="sibling{% if is_dir %} directory{% endif %}" {% if item == root_relative_path %}aria-current="page"{% endif %}>
+                    <a href="{% url 'material:file' package.edit_uid item %}">{{item.name}}</a>
+                </li>
             {% endfor %}
-            <li>
-                <form method="GET" id="newfile-form">
-                    <label for="newfile">{% translate "New file:" %}</label>
-                    <input name="newfile" id="newfile">
-                    <button type="submit">{% translate "Create" %}</button>
-                </form>
-            </li>
         </ul>
+
+        <hr>
+
+        <form method="GET" id="newfile-form">
+            <label for="newfile">{% translate "New file:" %}</label>
+            <input name="newfile" id="newfile">
+            <button type="submit">{% translate "Create" %}</button>
+        </form>
+
+        <hr>
+
+        <form method="POST" enctype="multipart/form-data" action="{% url 'material:upload' package.edit_uid %}">
+            <input type="hidden" name="editing_file" value="{{root_relative_path}}">
+            <p class="input-hint">{% blocktranslate %}Upload one or more files, either separately or in a .zip file.{% endblocktranslate %}</p>
+            {{upload_form}}
+            <button class="action" type="submit">{% translate "Upload" %}</button>
+        </form>
     </nav>
 
     {% if path.is_dir %}

@@ -1,20 +1,7 @@
 {% load i18n %}
 {% load material %}
 <li>
-    <label>
-        {{item.title}}
-        <input type="radio" name="item" value="{{item.url}}">
-    </label>
-    {% if item.slides_url %}
-        <label>
-            {% translate "Slides" %}
-            <input type="radio" name="item" value="{{item.slides_url}}">
-        </label>
-    {% endif %}
-
-    {% for theme in package.themes %}
-        <a data-path="{{theme.path}}" href="{{package.get_output_url|urljoin:theme.path|urljoin:item.url}}" target="_blank">{% translate "Preview" %}</a>
-    {% endfor %}
+    <a href="?package={{package.uid}}&theme={{theme.path}}&item={{item.url}}">{{item.title}}</a>
 
     {% if item.content %}
     <ul>

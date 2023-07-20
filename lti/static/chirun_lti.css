@@ -15,6 +15,7 @@
     --link-active-sat: 70%;
     --link-lum: 45%;
     --header-link-lum: 100%;
+    --footer-link-lum: 0%;
     
     --smaller-text: 0.9em;
     
@@ -36,6 +37,9 @@
     --button-bg-lum: 85%;
     --button-color: var(--main-color);
     --button-radius: 1em;
+    
+    --current-button-bg-sat: 100%;
+    --current-button-bg-lum: 70%;
 
     --input-bg-hue: var(--hue-generic);
     --input-bg-sat: 20%;
@@ -68,6 +72,8 @@
         --text-muted-color: hsl(var(--hue-generic),50%,75%);
         --link-lum: 80%;
         --header-link-lum: 85%;
+        --current-button-bg-lum: 10%;
+
     }
 }
 
@@ -130,6 +136,17 @@ button:active {
     --bg-lum: calc(var(--button-bg-lum) * var(--active-lum-factor));
 }
 
+hr {
+    margin: calc(4*var(--spacing)) 0;
+    border: 1px solid var(--main-color);
+}
+
+a.action {
+    display: inline-block;
+    font-weight: bold;
+    margin: var(--spacing);
+}
+
 details > summary {
     cursor: pointer;
 }
@@ -144,6 +161,10 @@ body > footer {
     background: hsl(var(--footer-bg-hue),var(--footer-bg-sat),var(--footer-bg-lum));
     padding: var(--footer-padding);
     margin-top: calc(10 * var(--spacing));
+    --link-lum: var(--footer-link-lum);
+}
+
+body > :is(footer,header) a {
 }
 
 body > header {
@@ -197,9 +218,22 @@ body.package-file .siblings li.sibling {
     font-family: monospace;
     margin: var(--spacing) 0;
 }
+body.package-file .siblings li.sibling.directory {
+    font-style: italic;
+}
+body.package-file .siblings li.sibling.directory::before {
+    content: '→';
+    margin-right: var(--spacing);
+}
+body.package-file .siblings li.sibling.directory.parent::before {
+    content: '←';
+}
 
 body.package-file #newfile-form {
     margin-top: calc(4 * var(--spacing));
+}
+body.package-file #newfile-form label {
+    display: block;
 }
 
 body.package-file #editor {
@@ -287,6 +321,8 @@ body.two-column > footer {
 
 [aria-current] {
     font-weight: bold;
+    --button-bg-sat: var(--current-button-bg-sat);
+    --button-bg-lum: var(--current-button-bg-lum);
 }
     
 body.configure-package #config-form {
@@ -333,6 +369,12 @@ body.two-column #app > * {
     }
 }
 
+#flash-messages {
+    list-style: none;
+    text-align: center;
+    margin: calc(8 * var(--spacing)) calc(var(--spacing));
+    padding: 0;
+}
 
 
 body.configure-package #structure-tree {
@@ -366,6 +408,9 @@ body.configure-package #structure-tree button {
     /*! word-break: break-all; */
     hyphens: auto;
     overflow-wrap: anywhere;
+}
+body.configure-package #structure-tree button[aria-current] {
+    padding-right: calc(4 * var(--spacing));
 }
 
 button.action {
@@ -448,3 +493,19 @@ body.package-details #controls form {
 
 body.deep-link.pick-package .package:not([data-build-status="building"]) .building-message { display: none; }
 body.deep-link.pick-package .package:not([data-build-status="error"]) .error-message { display: none; }
+
+body.deep-link.confirm-deep-link > main {
+    display: grid;
+    grid-template: "form preview" / auto minmax(35em,1fr);
+    grid-gap: calc(2 * var(--spacing));
+}
+
+body.deep-link.confirm-deep-link #preview {
+    display: grid;
+    grid-template-rows: min-content 1fr;
+}
+body.deep-link.confirm-deep-link #preview iframe {
+    width: 100%;
+    height: 100%;
+    border: 1px solid var(--main-color);
+}

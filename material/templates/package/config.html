@@ -27,7 +27,7 @@
                 <button class="action" type="submit">{% translate "Save" %}</button>
                 <ul role="tree" id="structure-tree">
                     <li role="presentation">
-                        <button role="tab" type="button" :aria-expanded="config.structure.length>0 || null" :aria-current="tab == 'package-settings' || null" @click="tab = 'package-settings'">Package settings</button>
+                        <button role="tab" type="button" :aria-expanded="(config.structure || []).length>0 || null" :aria-current="tab == 'package-settings' || null" @click="tab = 'package-settings'">Package settings</button>
                         <ul role="tree">
                             <li role="presentation" v-for="item in config.structure">
                                 <Structure-Item-Tree :current_tab="tab" :parent_list="config.structure" @select-item="select_item($event)" @add-item="add_item($event)" v-model="item"></Structure-Item-Tree>

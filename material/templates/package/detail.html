@@ -16,9 +16,8 @@
                 <button type="submit">{% translate "Build" %}</button>
             </form>
             <a href="{% url 'material:configure' package.edit_uid %}">{% translate "Configure" %}</a>
-            <a href="{% url 'material:delete' package.edit_uid %}">{% translate "Delete" %}</a>
-            <a href="{% url 'material:upload' package.edit_uid %}">{% translate "Upload files" %}</a>
             <a href="{% url 'material:file_root' package.edit_uid %}">{% translate "View or edit files in this package" %}</a>
+            <a class="danger" href="{% url 'material:delete' package.edit_uid %}">{% translate "Delete" %}</a>
         </nav>
     </section>
 
@@ -68,7 +67,7 @@
         <ol>
             {% for compilation in package.compilations.all|slice:":10" %}
             <li>
-                <a href="{{compilation.get_absolute_url}}">{{compilation.start_time|date:"Y-m-d H:i"}} - {{compilation.status}}</a>
+                <a href="{{compilation.get_absolute_url}}"><time>{{compilation.start_time|date:"Y-m-d H:i"}}</time> - {{compilation.status}}</a>
             </li>
             {% endfor %}
         </ol>

@@ -218,7 +218,7 @@ const app = createApp({
         return {
             tab: 'package-settings',
             file_tree,
-            config: initial_config || {}
+            config: initial_config || {structure: []}
         }
     },
     methods: {

@@ -3,6 +3,7 @@ from   .models import ChirunPackage, Compilation
 from   chirun_lti.mixins import BackPageMixin, HelpPageMixin
 from   dataclasses import dataclass
 from   django.conf import settings
+from   django.contrib import messages
 from   django.contrib.auth.mixins import UserPassesTestMixin
 from   django.core.exceptions import PermissionDenied
 from   django.db.models import Q
@@ -23,24 +24,40 @@ class IndexView(BackPageMixin, generic.ListView):
     template_name = 'package/index.html'
     back_url = reverse_lazy('index')
 
-def deep_link(request, *args, **kwargs):
-    if 'package' in request.GET:
-        view = DeepLinkPickItemView.as_view()
-    else:
-        view = DeepLinkPickPackageView.as_view()
+class DeepLinkView(generic.View):
+    def dispatch(self, request, *args, **kwargs):
+        def respond(view):
+            return view(request, *args, **kwargs)
 
-    return view(request, *args, **kwargs)
+        if request.method.lower() == 'post':
+            return respond(DeepLinkConfirmView.as_view())
 
-class DeepLinkView:
+        if 'package' not in self.request.GET:
+            return respond(DeepLinkPickPackageView.as_view())
+        if 'theme' not in self.request.GET:
+            package = ChirunPackage.objects.get(uid=self.request.GET['package'])
+            themes = package.themes()
+            if len(themes) == 1:
+                return redirect(reverse('material:deep_link', args=(kwargs['launch_id'],))+f'''?package={package.uid}&theme={themes[0]['path']}''')
+            else:
+                return respond(DeepLinkPickThemeView.as_view())
+        if 'item' not in self.request.GET:
+            return respond(DeepLinkPickItemView.as_view())
+
+        return respond(DeepLinkConfirmView.as_view())
+
+
+class AbstractDeepLinkView:
     def dispatch(self, request, *args, **kwargs):
         if not self.get_message_launch().is_deep_link_launch():
             return HttpResponseForbidden('Must be a deep link!')
 
         return super().dispatch(request, *args, **kwargs)
 
-class DeepLinkPickPackageView(DeepLinkView, CachedLTIView, generic.ListView):
+class DeepLinkPickPackageView(AbstractDeepLinkView, CachedLTIView, generic.ListView):
     """
-        Change the configuration of the tool, completing a deep link launch.
+        During a deep link launch, pick the package to use.
+        The next step is to pick a theme, if there's more than one, or to pick an item in the package.
     """
     template_name = 'package/deep_link/pick_package.html'
     context_object_name = 'packages'
@@ -62,21 +79,16 @@ class DeepLinkPickPackageView(DeepLinkView, CachedLTIView, generic.ListView):
 
         queryset = queryset.exclude(uid__in=same_tool)
 
-        other_built = queryset.filter(compilations__status='built').distinct()
-
-        context['other_built'] = other_built
-
         return context
 
     def get_queryset(self):
         return ChirunPackage.objects.all()
 
-class DeepLinkPickItemView(DeepLinkView, BackPageMixin, CachedLTIView, generic.FormView):
+class DeepLinkPickThemeView(AbstractDeepLinkView, BackPageMixin, CachedLTIView, generic.TemplateView):
     """
-        Change the configuration of the tool, completing a deep link launch.
+        During a deep link launch, pick the theme to use in the chosen package.
     """
-    form_class = forms.DeepLinkForm
-    template_name = 'package/deep_link/pick_item.html'
+    template_name = 'package/deep_link/pick_theme.html'
 
     def get_back_url(self):
         return reverse_lazy('material:deep_link', kwargs=self.kwargs)
@@ -86,18 +98,60 @@ class DeepLinkPickItemView(DeepLinkView, BackPageMixin, CachedLTIView, generic.F
 
         return super().dispatch(request, *args, **kwargs)
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-        if self.package:
-            kwargs['themes'] = self.package.themes()
+        context['package'] = self.package
 
-        return kwargs
+        return context
+
+class DeepLinkPickItemView(DeepLinkPickThemeView):
+    """
+        During a deep link launch, pick the item within the previously-chosen package to use.
+    """
+    template_name = 'package/deep_link/pick_item.html'
+
+    def get_back_url(self):
+        url = reverse_lazy('material:deep_link', kwargs=self.kwargs)
+
+        if len(self.package.themes()) > 1:
+            url += f'''?package={self.package.uid}'''
+        
+        return url
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        theme_path = self.request.GET['theme']
+        context['theme'] = next(t for t in self.package.themes() if t['path'] == theme_path)
+
+        return context
+
+class DeepLinkConfirmView(AbstractDeepLinkView, BackPageMixin, CachedLTIView, generic.FormView):
+    form_class = forms.DeepLinkForm
+    template_name = 'package/deep_link/confirm.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.package = ChirunPackage.objects.get(uid=self.request.GET['package'])
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_back_url(self):
+        theme = self.request.GET['theme']
+        return reverse_lazy('material:deep_link', kwargs=self.kwargs)+f'''?package={self.package.uid}&theme={theme}'''
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         context['package'] = self.package
+        theme_path = self.request.GET['theme']
+        context['theme'] = next(t for t in self.package.themes() if t['path'] == theme_path)
+
+        item_url = context['item_url'] = self.request.GET['item']
+        item = context['item'] = self.package.get_item_by_url(item_url)
+
+        context['formats'] = [f for f in item.get('formats',[]) if f['filetype'] == 'html']
+
         return context
 
     def form_valid(self, form):
@@ -105,9 +159,14 @@ class DeepLinkPickItemView(DeepLinkView, BackPageMixin, CachedLTIView, generic.F
 
         package = form.cleaned_data.get('package')
         item_url = form.cleaned_data.get('item')
-        theme = form.cleaned_data.get('theme')
+        theme = self.request.GET.get('theme')
+        item_format = form.cleaned_data.get('item_format')
 
         item = package.get_item_by_url(item_url)
+
+        if item_format is not None:
+            format_manifest = next(f for f in item['formats'] if f['format'] == item_format)
+            item_url = format_manifest['url']
 
         resource = DeepLinkResource()\
             .set_url(launch_url)\
@@ -115,8 +174,9 @@ class DeepLinkPickItemView(DeepLinkView, BackPageMixin, CachedLTIView, generic.F
                 'package': str(package.uid),
                 'item': item_url,
                 'theme': theme,
+                'item_format': item_format,
             })\
-            .set_title(item.get('title','Untitled item'))
+            .set_title(item.get('title',_('Untitled item')))
 
         html = self.message_launch.get_deep_link().output_response_form([resource])
         return HttpResponse(html)
@@ -164,11 +224,16 @@ class PackageUploadView(PackageEditView):
 
     def form_valid(self, form):
         package = self.object = form.save()
+        self.uploaded_files = []
+
+        editing_file = self.request.POST.get('editing_file')
+        editing_path = Path(editing_file).parent if editing_file is not None else Path()
+
         for file in form.cleaned_data.get('files'):
-            path = package.absolute_extracted_path / file.name
+            root_relative_path = editing_path / file.name
+            path = package.absolute_extracted_path / root_relative_path
 
             if zipfile.is_zipfile(file):
-                print(f"Extracting {file.name} to {package.absolute_extracted_path}")
                 z = zipfile.ZipFile(file,'r')
                 z.extractall(package.absolute_extracted_path)
 
@@ -180,10 +245,11 @@ class PackageUploadView(PackageEditView):
                         shutil.move(f,root)
                     root_dir.rmdir()
             else:
-                print(f"writing {path}")
+                path.parent.mkdir(exist_ok=True,parents=True)
                 with open(path, 'wb+') as destination:
                     for chunk in file.chunks():
                         destination.write(chunk)
+                self.uploaded_files.append(root_relative_path)
 
         return redirect(self.get_success_url())
 
@@ -202,36 +268,62 @@ class CreatePackageView(BackPageMixin, CachedLTIView, PackageUploadView, generic
 
         return context
 
+    def form_valid(self, form):
+        super().form_valid(form)
+        
+        package = self.object
+
+        if package.get_config() is None:
+            messages.info(self.request, _("Your package didn't contain a config file, so we've created one. Please review the configuration."))
+            package.create_initial_config()
+            return redirect(reverse('material:configure', args=(self.object.edit_uid,)))
+
+        return redirect(self.get_success_url())
+
     def get_success_url(self):
         if 'launch_id' in self.request.GET:
-            self.get_lti_data()
-            if self.message_launch.is_deep_link_launch():
-                self.object.lti_tool = self.lti_tool
-                self.object.lti_context = self.lti_context
-                self.object.save(update_fields=('lti_tool', 'lti_context',))
+            return self.get_deep_link_success_url()
+        else:
+            return reverse('material:configure', args=(self.object.edit_uid,))
+  
+    def get_deep_link_success_url(self):
+        self.get_lti_data()
+        if self.message_launch.is_deep_link_launch():
+            self.object.lti_tool = self.lti_tool
+            self.object.lti_context = self.lti_context
+            self.object.save(update_fields=('lti_tool', 'lti_context',))
 
-                launch_id = self.message_launch.get_launch_id()
+            launch_id = self.message_launch.get_launch_id()
 
-                if self.object.get_config() is None:
-                    return reverse(
-                        'material:deep_link_configure', 
-                        kwargs = {
-                            'pk': self.object.uid,
-                            'launch_id': launch_id,
-                        }
-                    )
+            if self.object.get_config() is None:
+                return reverse(
+                    'material:deep_link_configure', 
+                    kwargs = {
+                        'pk': self.object.uid,
+                        'launch_id': launch_id,
+                    }
+                )
 
-                return reverse('material:deep_link', args=(launch_id,))
-
-        return reverse('material:configure', args=(self.object.edit_uid,))
-        
+            return reverse('material:deep_link', args=(launch_id,))
 
 class UploadFilesView(PackageUploadView, BackPageMixin, generic.UpdateView):
     template_name = 'package/upload.html'
 
+    def get_success_url(self):
+        editing_file = self.request.POST.get('editing_file')
+
+        if editing_file is not None:
+            if len(self.uploaded_files) == 1:
+                path = self.uploaded_files[0]
+                return reverse('material:file', args=(self.object.edit_uid, path))
+            else:
+                return reverse('material:file', args=(self.object.edit_uid, editing_file))
+
+        return super().get_success_url()
+
 class ViewPackageView(BackPageMixin, PackageEditView, generic.DetailView):
     template_name = 'package/detail.html'
-    back_url = reverse_lazy('material:index')
+    back_url = reverse_lazy('index')
 
 class BuildView(PackageEditView, generic.UpdateView):
     template_name = 'package/detail.html'
@@ -342,16 +434,18 @@ class FileView(PackageEditView, BackPageMixin, generic.UpdateView):
         context['is_image'] = self.is_image
         context['file_url'] = settings.MEDIA_URL + str(self.object.relative_extracted_path / root_relative_path)
         try:
-            siblings = [p.relative_to(root) for p in directory.iterdir() if not p.name.startswith('.')]
+            siblings = [(p.relative_to(root), p.is_dir()) for p in directory.iterdir() if not p.name.startswith('.')]
         except FileNotFoundError:
             siblings = []
 
         if not path.exists():
-            siblings.append(path.relative_to(root))
+            siblings.append((path.relative_to(root), False))
 
-        context['siblings'] = sorted(siblings, key=lambda x: x.name)
+        context['siblings'] = sorted(siblings, key=lambda x: x[0].name)
 
         context['package'] = self.object
+
+        context['upload_form'] = forms.UploadPackageForm()
         return context
 
     def form_valid(self, form):
@@ -363,18 +457,22 @@ class FileView(PackageEditView, BackPageMixin, generic.UpdateView):
 
         path = package.absolute_extracted_path / path
 
-        if path != existing_path:
-            if existing_path.exists():
-                existing_path.unlink()
-
         path.parent.mkdir(exist_ok=True,parents=True)
 
+        if path != existing_path:
+            if existing_path.exists():
+                if self.is_binary or self.is_image:
+                    existing_path.rename(path)
+                else:
+                    existing_path.unlink()
+
         replace_file = form.cleaned_data.get('replace_file')
+        content = form.cleaned_data.get('content')
         if replace_file:
             path.write_bytes(replace_file.read())
-        else:
-            content = form.cleaned_data.get('content')
+        elif content is not None and not (self.is_binary or self.is_image):
             path.write_text(content)
+
         return redirect(self.get_success_url())
 
     def get_success_url(self):
@@ -386,13 +484,8 @@ class FileView(PackageEditView, BackPageMixin, generic.UpdateView):
 class DeleteFileView(FileView):
     form_class = forms.DeleteFileForm
 
-    def form_invalid(self, form):
-        print(form.errors)
-
     def form_valid(self, form):
         path = self.get_path()
-
-        print("Deleting",path)
 
         if path.is_dir():
             path.rmdir()
@@ -448,7 +541,8 @@ class ConfigView(BackPageMixin, HelpPageMixin, PackageEditView, CachedLTIView, g
         package = self.get_object()
 
         config = form.cleaned_data.get('config')
-        print(config)
+
+        messages.info(self.request, _("The package configuration has been saved and the package is being rebuilt."))
 
         package.save_config(config)
 
@@ -460,7 +554,7 @@ class ConfigView(BackPageMixin, HelpPageMixin, PackageEditView, CachedLTIView, g
         if self.is_deep_link_launch():
             return reverse_lazy('material:deep_link', args=(self.get_launch_id(),))
         else:
-            return self.compilation.get_absolute_url()
+            return reverse_lazy('material:view', args=(str(self.get_object().edit_uid),))
 
 class DownloadView(PackageEditView, generic.DetailView):
     def get(self, request, *args, **kwargs):

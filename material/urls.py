@@ -65,7 +65,7 @@ urlpatterns = [
     ),
 
     path(r'deep-link/<str:launch_id>/',
-        views.deep_link,
+        views.DeepLinkView.as_view(),
         name='deep_link'
     ),
 

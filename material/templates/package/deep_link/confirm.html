@@ -1,0 +1,52 @@
+{% extends "package/base.html" %}
+{% load i18n %}
+{% load material %}
+{% load static %}
+
+{% block head %}
+    {{block.super}}
+
+    {{package.get_output_url|urljoin:theme.path|json_script:"output_root_url"}}
+
+    <script src="{% static 'package/deep_link_confirm.mjs' %}" type="module"></script>
+{% endblock head %}
+
+{% block title %}{% translate "Pick an item" %} - {{block.super}}{% endblock title %}
+
+{% block body_class %}deep-link confirm-deep-link two-column{% endblock body_class %}
+
+{% block main %}
+    <div id="form">
+        {{form.errors}}
+        <form method="POST">
+            <input type="hidden" name="package" value="{{package.uid}}">
+            <input type="hidden" name="theme" value="{{theme.path}}">
+            <input type="hidden" name="item" value="{{item_url}}">
+
+            <p>{% blocktranslate with theme=theme.title %}Using the theme <strong>{{theme}}</strong>.{% endblocktranslate %}</p>
+
+            <p>{% blocktranslate with item=item.title %}Using the item <strong>{{item}}</strong>.{% endblocktranslate %}</p>
+
+            {% if formats|length > 1 %}
+                <label for="id_item_format">{% translate "Format" %}</label>
+                <select name="item_format" id="id_item_format">
+                    {% for format in formats %}
+                    <option value="{{format.format}}" data-url="{{format.url}}">{{format.format|title}}</option>
+                    {% endfor %}
+                </select>
+            {% endif %}
+
+            <p><button type="Submit">{% translate "Use this choice" %}</button></p>
+
+            <p><a href="{{back_url}}">{% translate "Choose something else" %}</a></p>
+        </form>
+
+        {% include "package/deep_link/edit_package.html" %}
+    </div>
+
+    <div id="preview">
+        <h2>{% translate "Preview" %}</h2>
+        <iframe src="{{package.get_output_url|urljoin:theme.path|urljoin:item.url}}"></iframe>
+    </div>
+{% endblock main %}
+

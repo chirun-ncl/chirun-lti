@@ -89,13 +89,6 @@ class ChirunPackage(models.Model):
         else:
             return 'error'
 
-    def config_yaml(self):
-        try:
-            with open(self.absolute_extracted_path / 'config.yml') as f:
-                return f.read()
-        except FileNotFoundError:
-            return ''
-
     def get_config(self):
         try: 
             with open(self.absolute_extracted_path / 'config.yml') as f:
@@ -106,6 +99,28 @@ class ChirunPackage(models.Model):
     def save_config(self, config):
         with open(self.absolute_extracted_path / 'config.yml', 'w') as f:
             f.write(yaml.dump(config))
+
+    def create_initial_config(self):
+        structure = []
+
+        config = {
+            'structure': structure
+        }
+
+        root = self.absolute_extracted_path
+
+        for p in root.rglob('*'):
+            if p.suffix not in ('.tex','.md'):
+                continue
+
+            structure.append({
+                'source': str(p.relative_to(root)),
+                'title': p.name,
+                'type': 'chapter',
+            })
+
+        self.save_config(config)
+        return config
 
     @property
     def manifest(self):
@@ -135,7 +150,7 @@ class ChirunPackage(models.Model):
 
     def get_item_by_url(self, item_url):
         for item in self.all_items():
-            if item.get('url') == item_url:
+            if item.get('url') == item_url or item.get('slides_url') == item_url:
                 return item
 
     def themes(self):
