@@ -521,6 +521,7 @@ class ConfigView(BackPageMixin, HelpPageMixin, PackageEditView, CachedLTIView, g
 
         context['config'] = package.get_config()
         context['files'] = package.all_source_files()
+        context['media_root'] = settings.MEDIA_URL + str(package.relative_extracted_path) + '/'
 
         return context
 

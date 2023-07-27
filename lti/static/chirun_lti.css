@@ -37,6 +37,8 @@
     --button-bg-lum: 85%;
     --button-color: var(--main-color);
     --button-radius: 1em;
+    --button-disabled-color: hsl(var(--button-bg-hue), var(--button-bg-sat), 70%);
+    --button-disabled-bg-lum: 95%;
     
     --current-button-bg-sat: 100%;
     --current-button-bg-lum: 70%;
@@ -65,6 +67,8 @@
         --header-bg-lum: 25%;
         --footer-bg-lum: 25%;
         --button-bg-lum: 20%;
+        --button-disabled-color: hsl(var(--button-bg-hue), var(--button-bg-sat), 40%);
+        --button-disabled-bg-lum: 15%;
         --input-bg-lum: 10%;
         --highlight-lum: 30%;
         --active-lum: 40%;
@@ -135,6 +139,12 @@ button:is(:focus,:hover) {
 button:active {
     --bg-lum: calc(var(--button-bg-lum) * var(--active-lum-factor));
 }
+button:disabled {
+    --bg-lum: var(--button-disabled-bg-lum);
+    color: var(--button-disabled-color);
+    --button-radius: 0.5em;
+    border-color: hsl(var(--button-bg-hue), var(--button-bg-sat), calc(var(--bg-lum) * 0.95))
+}
 
 hr {
     margin: calc(4*var(--spacing)) 0;
@@ -149,6 +159,7 @@ a.action {
 
 details > summary {
     cursor: pointer;
+    padding: var(--spacing);
 }
 
 
@@ -283,6 +294,12 @@ body.configure-package form fieldset {
     align-items: center;
     padding: calc(2 * var(--spacing));
 }
+
+body.configure-package #item-nav {
+    display: flex;
+    justify-content: space-between;
+}
+
 body.configure-package form fieldset > label {
     justify-self: end;
     align-self: start;
@@ -291,8 +308,16 @@ body.configure-package form fieldset > button {
     grid-column: inputs;
     justify-self: start;
 }
-body.configure-package form fieldset > input {
+body.configure-package form fieldset > :is(input,textarea,select) {
     justify-self: start;
+}
+
+body.configure-package form .thumbnail {
+    width: 10em;
+}
+
+.directory-tree li.file {
+    display: inline-block;
 }
 
 body > footer {
@@ -382,14 +407,14 @@ body.configure-package #structure-tree {
     padding-left: 0;
     margin-left: 0;
 }
-[role="tree"] ul {
+[role="tree"] :is(ul,ol) {
     list-style: none;
     border-left: 2px dashed var(--main-color);
     padding-left: calc(1 * var(--spacing));
     margin-bottom: calc(2 * var(--spacing));
     margin-left: var(--spacing);
 }
-body.configure-package #structure-tree ul {
+body.configure-package #structure-tree :is(ul.ol) {
     border-bottom: 2px dashed var(--main-color);
 }
 
