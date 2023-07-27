@@ -14,8 +14,6 @@
     --link-hover-sat: 40%;
     --link-active-sat: 70%;
     --link-lum: 45%;
-    --header-link-lum: 100%;
-    --footer-link-lum: 0%;
     
     --smaller-text: 0.9em;
     
@@ -26,11 +24,6 @@
     --header-bg-sat: 70%;
     --header-bg-lum: 75%;
     --header-color: black;
-
-    --footer-bg-hue: var(--hue-primary);
-    --footer-bg-sat: 70%;
-    --footer-bg-lum: 75%;
-    --footer-color: black;
 
     --button-bg-hue: var(--hue-generic);
     --button-bg-sat: 20%;
@@ -57,7 +50,6 @@
     
     --header-text-size: clamp(1.2rem, 3vw, 2rem);
     --header-padding: clamp(calc(1 * var(--spacing)), 3vw, calc(4 * var(--spacing)));
-    --footer-padding: var(--header-padding);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -65,7 +57,6 @@
         --main-bg-lum: 0%;
         --main-color: white;
         --header-bg-lum: 25%;
-        --footer-bg-lum: 25%;
         --button-bg-lum: 20%;
         --button-disabled-color: hsl(var(--button-bg-hue), var(--button-bg-sat), 40%);
         --button-disabled-bg-lum: 15%;
@@ -75,7 +66,6 @@
         --border-lum-factor: 2;
         --text-muted-color: hsl(var(--hue-generic),50%,75%);
         --link-lum: 80%;
-        --header-link-lum: 85%;
         --current-button-bg-lum: 10%;
 
     }
@@ -97,6 +87,8 @@ a:is(:focus,:hover) {
 
 nav a {
     text-decoration: none;
+    background: hsl(var(--main-bg-hue),var(--main-bg-sat),var(--main-bg-lum));
+    padding: var(--spacing) calc(2 * var(--spacing));
 }
 
 body {
@@ -169,20 +161,19 @@ body > main {
 }
 
 body > footer {
-    background: hsl(var(--footer-bg-hue),var(--footer-bg-sat),var(--footer-bg-lum));
-    padding: var(--footer-padding);
     margin-top: calc(10 * var(--spacing));
-    --link-lum: var(--footer-link-lum);
 }
 
 body > :is(footer,header) a {
+    color: inherit;
 }
 
-body > header {
+body > :is(header, footer) {
     background: hsl(var(--header-bg-hue),var(--header-bg-sat),var(--header-bg-lum));
     padding: var(--header-padding);
+}
+body > header {
     margin-bottom: calc(2 * var(--spacing));
-    --link-lum: var(--header-link-lum);
 }
 body > header h1 {
     font-size: var(--header-text-size);
@@ -319,11 +310,6 @@ body.configure-package form .thumbnail {
 .directory-tree li.file {
     display: inline-block;
 }
-
-body > footer {
-    margin-top: 5rem;
-}
-
 
 body.two-column {
     display: grid;
