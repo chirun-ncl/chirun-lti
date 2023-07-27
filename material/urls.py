@@ -4,11 +4,6 @@ from django.urls import path, include
 app_name = 'material'
 
 urlpatterns = [
-    path(r'', 
-        views.IndexView.as_view(), 
-        name='index'
-    ),
-
     path(r'new/',
         views.CreatePackageView.as_view(),
         name='new'

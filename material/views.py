@@ -19,11 +19,6 @@ from   pylti1p3.deep_link_resource import DeepLinkResource
 import shutil
 import zipfile
 
-class IndexView(BackPageMixin, generic.ListView):
-    model = ChirunPackage
-    template_name = 'package/index.html'
-    back_url = reverse_lazy('index')
-
 class DeepLinkView(generic.View):
     def dispatch(self, request, *args, **kwargs):
         def respond(view):
@@ -217,7 +212,7 @@ class DeleteView(PackageEditView, generic.DeleteView):
     template_name = 'package/delete.html'
 
     def get_success_url(self):
-        return reverse('material:index')
+        return reverse('index')
 
 class PackageUploadView(PackageEditView):
     form_class = forms.UploadPackageForm
@@ -259,7 +254,7 @@ class PackageUploadView(PackageEditView):
 class CreatePackageView(BackPageMixin, CachedLTIView, PackageUploadView, generic.CreateView):
     get_message_launch_on_dispatch = False
     template_name = 'package/create.html'
-    back_url = reverse_lazy('material:index')
+    back_url = reverse_lazy('index')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
