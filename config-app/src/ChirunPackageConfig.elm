@@ -115,8 +115,7 @@ type ListDirection
 
 {- Messages that modify content items. -}
 type ItemMsg
-    = Add
-    | Delete
+    = Delete
     | SetSetting String Setting
     | SetType ContentItemType
     | Move ListDirection String
@@ -126,7 +125,7 @@ type Msg
     = SetTab Tab
     | ItemMsg ItemMsg ItemPath
     | SetPackageSetting String Setting
-    | AddTopItem
+    | AddItem (Maybe ItemPath) ContentItemType
     | FocusButton (Result Browser.Dom.Error ())
 
 {- A reference to an item in the content structure: a path in the forest of content items. -}
@@ -136,6 +135,7 @@ type alias ItemPath = ForestPath
 type Tab
     = PackageSettingsTab
     | ContentItemTab ItemPath
+    | CreateItemTab (Maybe ItemPath)
 
 {- The main app model. -}
 type alias Model =
@@ -201,7 +201,7 @@ blank_model =
 load_model : JD.Value -> Model
 load_model flags = case JD.decodeValue decode_flags flags of
     Ok m -> m
-    Err err -> { blank_model | err = Just <| Debug.toString err }
+    Err err -> { blank_model | err = Just <| JD.errorToString err }
 
 decode_flags : JD.Decoder Model
 decode_flags =
@@ -236,14 +236,6 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = case msg of
     FocusButton _ -> model |> nocmd
 
-    ItemMsg Add path ->
-        let
-            npackage = add_item path model.package
-            npath = FN.to path npackage.content |> Maybe.map (Tree.children >> last_index >> (\i -> FP.toChild i path) >> ContentItemTab)
-            tab = Maybe.withDefault model.tab npath
-        in
-            { model | package = npackage, tab = tab } |> nocmd
-
     ItemMsg (Move direction button_id) path ->
         let
             package = model.package
@@ -263,11 +255,21 @@ update msg model = case msg of
 
     ItemMsg item_msg path -> { model | package = update_item path (apply_item_msg item_msg) model.package  } |> nocmd
 
-    AddTopItem -> 
-        let
-            npackage = add_top_item model.package
-        in
-            { model | package = npackage, tab = ContentItemTab (FP.fromIndex (last_index npackage.content) TP.atTrunk) } |> nocmd
+    AddItem mpath type_ -> 
+        case mpath of
+            Just path -> 
+                let
+                    npackage = add_item path type_ model.package
+                    npath = FN.to path npackage.content |> Maybe.map (Tree.children >> last_index >> (\i -> FP.toChild i path) >> ContentItemTab)
+                    tab = Maybe.withDefault model.tab npath
+                in
+                    { model | package = npackage, tab = tab } |> nocmd
+
+            Nothing ->
+                let
+                    npackage = add_top_item type_ model.package
+                in
+                    { model | package = npackage, tab = ContentItemTab (FP.fromIndex (last_index npackage.content) TP.atTrunk) } |> nocmd
 
     SetTab tab -> { model | tab = tab } |> nocmd
 
@@ -287,21 +289,20 @@ apply_item_msg msg tree = case msg of
     SetSetting key setting -> tree |> Tree.mapLabel (\item -> { item | settings = Dict.insert key setting item.settings })
 
     {- These messages are handled by the top-level update function -}
-    Add -> tree
     Move _ _ -> tree
     Delete -> tree
 
 
 {- Add a blank item somewhere inside the package structure. -}
-add_item : ItemPath -> Package -> Package
-add_item path package = { package | content = FN.alter path (Tree.appendChild (Tree.singleton blank_contentitem)) package.content }
+add_item : ItemPath -> ContentItemType -> Package -> Package
+add_item path type_ package = { package | content = FN.alter path (Tree.appendChild (Tree.singleton { blank_contentitem | type_ = type_ })) package.content }
 
 {- Delete an item from the package structure. -}
 delete_item path package = { package | content = FN.remove path package.content }
 
 {- Add an item to the top level of the package structure. -}
-add_top_item : Package -> Package
-add_top_item package = { package | content = package.content ++ [Tree.singleton blank_contentitem] }
+add_top_item : ContentItemType ->Package -> Package
+add_top_item type_ package = { package | content = package.content ++ [Tree.singleton { blank_contentitem | type_ = type_ }] }
 
 {- Get a setting from a settings dictionary, returning the default value, or as a final fallback the empty string. -}
 get_setting : SettingsDict -> SettingsDict -> String -> Setting
@@ -444,6 +445,7 @@ form model =
                 ContentItemTab path -> case FN.to path model.package.content of
                     Just t -> item_settings_tab model path t
                     Nothing -> div [] [ text "Oh no!" ]
+                CreateItemTab path -> create_item_tab path
             ]
 
         , H.input
@@ -515,6 +517,12 @@ file_extension_filter valid_extensions i = i.type_ == FS.Directory || List.membe
 {- Filter out files which aren't images. -}
 is_image_file = file_extension_filter [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".jxl"]
 
+{- Valid file extensions for source files for this item's type. -}
+source_extensions : ContentItem -> List String
+source_extensions item = case item.type_ of
+    HTML -> [".html", ".htm"]
+    _ -> [".tex", ".md"]
+
 {- The editor tab for a content item. -}
 item_settings_tab : Model -> ItemPath -> Tree ContentItem -> Html Msg
 item_settings_tab model path tree =
@@ -562,14 +570,8 @@ item_settings_tab model path tree =
                 "type"
                 "Type"
 
-        {- Valid file extensions for source files for this item's type. -}
-        source_extensions : List String
-        source_extensions = case item.type_ of
-            HTML -> [".html", ".htm"]
-            _ -> [".tex", ".md"]
-
         is_source_file : FS.FileFilter
-        is_source_file = file_extension_filter source_extensions
+        is_source_file = file_extension_filter <| source_extensions item
 
         source_input : List (Html Msg)
         source_input = case item.type_ of
@@ -693,18 +695,63 @@ item_settings_tab model path tree =
                 )
             ]
 
+ {- The editor tab for creating a new item. -}
+create_item_tab : Maybe ItemPath -> Html Msg
+create_item_tab path =
+    let
+        type_selector type_ description =
+            H.li
+                [ HA.class "item-type" ]
+                [ H.button
+                    [ HE.onClick <| AddItem path type_
+                    , HA.type_ "button"
+                    ]
+                    [ text <| item_type_name type_ ]
+                , H.span
+                    [ HA.class "input-hint" ]
+                    [ text description ]
+                ]
+    in
+        H.section
+            [ HA.id "create-item"
+            , role "tabpanel"
+            ]
+            [ H.h2 [] [ text "Adding a new item" ]
+            , H.p 
+                [ HA.class "input-hint" ]
+                [ text "Select a type for this item." ]
+            , H.ul
+                []
+                [ type_selector Introduction "The index page for the course."
+                , type_selector Part "A group of items."
+                , type_selector Chapter "A single document, or a chapter from a longer document."
+                , type_selector Document "A single document, automatically split into separate pages."
+                , type_selector Standalone "A single document with no links to other items."
+                , type_selector Slides "Slides for presentation."
+                , type_selector Notebook "A code notebook, with an automatically-created Jupyter notebook version."
+                , type_selector URL "A link to a given address."
+                , type_selector HTML "A single passage of HTML code."
+                ]
+            ]
+    
+
 {- A button to add an item. The position is determined by the `msg`. -}
-add_item_button : Msg -> Html Msg
-add_item_button msg = 
+add_item_button : Model -> Maybe ItemPath -> Html Msg
+add_item_button model path = 
     H.li
         []
-        [ H.button
-            [ HA.class "action add-item"
-            , HA.type_ "button"
-            , HE.onClick msg
-            ]
-            [ text "+ Add an item"
-            ]
+        [ if model.tab == CreateItemTab path then
+            H.span
+                [ HA.class "adding-item" ]
+                [ text "Adding an item" ]
+          else
+            H.button
+                [ HA.class "action add-item"
+                , HA.type_ "button"
+                , HE.onClick (SetTab (CreateItemTab path))
+                ]
+                [ text "+ Add an item"
+                ]
         ]
 
 {-  The `id` attribute for the button corresponding to the given item in the structure navigation.
@@ -770,7 +817,7 @@ structure_tree model =
                                 [ HA.class "content"
                                 ]
                                 (  sub.children 
-                                ++ [ H.li [] [ add_item_button (ItemMsg Add path) ] ]
+                                ++ [ H.li [] [ add_item_button model (Just path) ] ]
                                 )
                             ]
                         else
@@ -808,7 +855,7 @@ structure_tree model =
 
                     (((List.indexedMap structure_item_tree model.package.content)
                     )++
-                    [ add_item_button AddTopItem
+                    [ add_item_button model Nothing
                     ])
                 ]
             ]

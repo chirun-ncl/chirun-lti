@@ -9,5 +9,5 @@ dist/configure-package.mjs: dist/app.js embed-app.js
 	@awk 1 $^ > $@
 
 dist/app.js: src/ChirunPackageConfig.elm $(ELMS)
-	-elm make $< --output=$@
+	-elm make --optimize $< --output=$@
 	@sed -i 's/(this));$$/(window));/' $@	# Make the compiled Elm script work as an ES6 module

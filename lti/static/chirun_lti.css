@@ -276,6 +276,13 @@ body.package-file #editor textarea#id_content {
     margin: 0;
 }
 
+
+body.configure-package #structure-tree .adding-item {
+    font-style: italic;
+    padding: var(--spacing);
+    display: block;
+}
+
 body.configure-package form fieldset {
     margin: var(--spacing) 0;
     display: grid;
@@ -305,6 +312,21 @@ body.configure-package form fieldset > :is(input,textarea,select) {
 
 body.configure-package form .thumbnail {
     width: 10em;
+}
+
+body.configure-package #create-item ul {
+    list-style: none;
+    padding-left: 0;
+}
+body.configure-package #create-item li {
+    margin: var(--spacing) 0;
+}
+body.configure-package #create-item li > button {
+    width: 10em;
+}
+body.configure-package #create-item li > .input-hint {
+    display: block;
+    margin-left: 5em;
 }
 
 .directory-tree li.file {

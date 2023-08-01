@@ -77,7 +77,7 @@ function A9(fun, a, b, c, d, e, f, g, h, i) {
   return fun.a === 9 ? fun.f(a, b, c, d, e, f, g, h, i) : fun(a)(b)(c)(d)(e)(f)(g)(h)(i);
 }
 
-console.warn('Compiled in DEV mode. Follow the advice at https://elm-lang.org/0.19.1/optimize for better performance and smaller assets.');
+
 
 
 // EQUALITY
@@ -113,7 +113,7 @@ function _Utils_eqHelp(x, y, depth, stack)
 		return true;
 	}
 
-	/**/
+	/**_UNUSED/
 	if (x.$ === 'Set_elm_builtin')
 	{
 		x = $elm$core$Set$toList(x);
@@ -126,7 +126,7 @@ function _Utils_eqHelp(x, y, depth, stack)
 	}
 	//*/
 
-	/**_UNUSED/
+	/**/
 	if (x.$ < 0)
 	{
 		x = $elm$core$Dict$toList(x);
@@ -161,7 +161,7 @@ function _Utils_cmp(x, y, ord)
 		return x === y ? /*EQ*/ 0 : x < y ? /*LT*/ -1 : /*GT*/ 1;
 	}
 
-	/**/
+	/**_UNUSED/
 	if (x instanceof String)
 	{
 		var a = x.valueOf();
@@ -170,10 +170,10 @@ function _Utils_cmp(x, y, ord)
 	}
 	//*/
 
-	/**_UNUSED/
+	/**/
 	if (typeof x.$ === 'undefined')
 	//*/
-	/**/
+	/**_UNUSED/
 	if (x.$[0] === '#')
 	//*/
 	{
@@ -203,17 +203,17 @@ var _Utils_compare = F2(function(x, y)
 
 // COMMON VALUES
 
-var _Utils_Tuple0_UNUSED = 0;
-var _Utils_Tuple0 = { $: '#0' };
+var _Utils_Tuple0 = 0;
+var _Utils_Tuple0_UNUSED = { $: '#0' };
 
-function _Utils_Tuple2_UNUSED(a, b) { return { a: a, b: b }; }
-function _Utils_Tuple2(a, b) { return { $: '#2', a: a, b: b }; }
+function _Utils_Tuple2(a, b) { return { a: a, b: b }; }
+function _Utils_Tuple2_UNUSED(a, b) { return { $: '#2', a: a, b: b }; }
 
-function _Utils_Tuple3_UNUSED(a, b, c) { return { a: a, b: b, c: c }; }
-function _Utils_Tuple3(a, b, c) { return { $: '#3', a: a, b: b, c: c }; }
+function _Utils_Tuple3(a, b, c) { return { a: a, b: b, c: c }; }
+function _Utils_Tuple3_UNUSED(a, b, c) { return { $: '#3', a: a, b: b, c: c }; }
 
-function _Utils_chr_UNUSED(c) { return c; }
-function _Utils_chr(c) { return new String(c); }
+function _Utils_chr(c) { return c; }
+function _Utils_chr_UNUSED(c) { return new String(c); }
 
 
 // RECORDS
@@ -264,11 +264,11 @@ function _Utils_ap(xs, ys)
 
 
 
-var _List_Nil_UNUSED = { $: 0 };
-var _List_Nil = { $: '[]' };
+var _List_Nil = { $: 0 };
+var _List_Nil_UNUSED = { $: '[]' };
 
-function _List_Cons_UNUSED(hd, tl) { return { $: 1, a: hd, b: tl }; }
-function _List_Cons(hd, tl) { return { $: '::', a: hd, b: tl }; }
+function _List_Cons(hd, tl) { return { $: 1, a: hd, b: tl }; }
+function _List_Cons_UNUSED(hd, tl) { return { $: '::', a: hd, b: tl }; }
 
 
 var _List_cons = F2(_List_Cons);
@@ -499,12 +499,12 @@ var _JsArray_appendN = F3(function(n, dest, source)
 
 // LOG
 
-var _Debug_log_UNUSED = F2(function(tag, value)
+var _Debug_log = F2(function(tag, value)
 {
 	return value;
 });
 
-var _Debug_log = F2(function(tag, value)
+var _Debug_log_UNUSED = F2(function(tag, value)
 {
 	console.log(tag + ': ' + _Debug_toString(value));
 	return value;
@@ -530,12 +530,12 @@ function _Debug_todoCase(moduleName, region, value)
 
 // TO STRING
 
-function _Debug_toString_UNUSED(value)
+function _Debug_toString(value)
 {
 	return '<internals>';
 }
 
-function _Debug_toString(value)
+function _Debug_toString_UNUSED(value)
 {
 	return _Debug_toAnsiString(false, value);
 }
@@ -720,13 +720,13 @@ function _Debug_toHexDigit(n)
 // CRASH
 
 
-function _Debug_crash_UNUSED(identifier)
+function _Debug_crash(identifier)
 {
 	throw new Error('https://github.com/elm/core/blob/1.0.0/hints/' + identifier + '.md');
 }
 
 
-function _Debug_crash(identifier, fact1, fact2, fact3, fact4)
+function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 {
 	switch(identifier)
 	{
@@ -784,11 +784,11 @@ function _Debug_crash(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.start.line === region.end.line)
+	if (region.aj.R === region.aq.R)
 	{
-		return 'on line ' + region.start.line;
+		return 'on line ' + region.aj.R;
 	}
-	return 'on lines ' + region.start.line + ' through ' + region.end.line;
+	return 'on lines ' + region.aj.R + ' through ' + region.aq.R;
 }
 
 
@@ -1212,7 +1212,7 @@ function _Char_toLocaleLower(char)
 
 
 
-/**/
+/**_UNUSED/
 function _Json_errorToString(error)
 {
 	return $elm$json$Json$Decode$errorToString(error);
@@ -1616,11 +1616,11 @@ var _Json_encode = F2(function(indentLevel, value)
 	return JSON.stringify(_Json_unwrap(value), null, indentLevel) + '';
 });
 
-function _Json_wrap(value) { return { $: 0, a: value }; }
-function _Json_unwrap(value) { return value.a; }
+function _Json_wrap_UNUSED(value) { return { $: 0, a: value }; }
+function _Json_unwrap_UNUSED(value) { return value.a; }
 
-function _Json_wrap_UNUSED(value) { return value; }
-function _Json_unwrap_UNUSED(value) { return value; }
+function _Json_wrap(value) { return value; }
+function _Json_unwrap(value) { return value; }
 
 function _Json_emptyArray() { return []; }
 function _Json_emptyObject() { return {}; }
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.init,
-		impl.update,
-		impl.subscriptions,
+		impl.aZ,
+		impl.a9,
+		impl.a7,
 		function() { return function() {} }
 	);
 });
@@ -1872,7 +1872,7 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 function _Platform_initialize(flagDecoder, args, init, update, subscriptions, stepperBuilder)
 {
 	var result = A2(_Json_run, flagDecoder, _Json_wrap(args ? args['flags'] : undefined));
-	$elm$core$Result$isOk(result) || _Debug_crash(2 /**/, _Json_errorToString(result.a) /**/);
+	$elm$core$Result$isOk(result) || _Debug_crash(2 /**_UNUSED/, _Json_errorToString(result.a) /**/);
 	var managers = {};
 	var initPair = init(result.a);
 	var model = initPair.a;
@@ -2316,7 +2316,7 @@ function _Platform_setupIncomingPort(name, sendToApp)
 //
 
 
-function _Platform_export_UNUSED(exports)
+function _Platform_export(exports)
 {
 	scope['Elm']
 		? _Platform_mergeExportsProd(scope['Elm'], exports)
@@ -2337,7 +2337,7 @@ function _Platform_mergeExportsProd(obj, exports)
 }
 
 
-function _Platform_export(exports)
+function _Platform_export_UNUSED(exports)
 {
 	scope['Elm']
 		? _Platform_mergeExportsDebug('Elm', scope['Elm'], exports)
@@ -2377,10 +2377,10 @@ var _VirtualDom_init = F4(function(virtualNode, flagDecoder, debugMetadata, args
 {
 	// NOTE: this function needs _Platform_export available to work
 
-	/**_UNUSED/
+	/**/
 	var node = args['node'];
 	//*/
-	/**/
+	/**_UNUSED/
 	var node = args && args['node'] ? args['node'] : _Debug_crash(0);
 	//*/
 
@@ -2655,14 +2655,14 @@ function _VirtualDom_noInnerHtmlOrFormAction(key)
 function _VirtualDom_noJavaScriptUri(value)
 {
 	return _VirtualDom_RE_js.test(value)
-		? /**_UNUSED/''//*//**/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
+		? /**/''//*//**_UNUSED/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
 		: value;
 }
 
 function _VirtualDom_noJavaScriptOrHtmlUri(value)
 {
 	return _VirtualDom_RE_js_html.test(value)
-		? /**_UNUSED/''//*//**/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
+		? /**/''//*//**_UNUSED/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
 		: value;
 }
 
@@ -2670,7 +2670,7 @@ function _VirtualDom_noJavaScriptOrHtmlJson(value)
 {
 	return (typeof _Json_unwrap(value) === 'string' && _VirtualDom_RE_js_html.test(_Json_unwrap(value)))
 		? _Json_wrap(
-			/**_UNUSED/''//*//**/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
+			/**/''//*//**_UNUSED/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
 		) : value;
 }
 
@@ -2719,9 +2719,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		message: func(record.message),
-		stopPropagation: record.stopPropagation,
-		preventDefault: record.preventDefault
+		a_: func(record.a_),
+		a6: record.a6,
+		a3: record.a3
 	}
 });
 
@@ -2989,11 +2989,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.message;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.stopPropagation;
+		var message = !tag ? value : tag < 3 ? value.a : value.a_;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.a6;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.preventDefault) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.a3) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3943,15 +3943,15 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.init,
-		impl.update,
-		impl.subscriptions,
+		impl.aZ,
+		impl.a9,
+		impl.a7,
 		function(sendToApp, initialModel) {
-			var view = impl.view;
-			/**_UNUSED/
+			var view = impl.ba;
+			/**/
 			var domNode = args['node'];
 			//*/
-			/**/
+			/**_UNUSED/
 			var domNode = args && args['node'] ? args['node'] : _Debug_crash(0);
 			//*/
 			var currNode = _VirtualDom_virtualize(domNode);
@@ -3979,12 +3979,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.init,
-		impl.update,
-		impl.subscriptions,
+		impl.aZ,
+		impl.a9,
+		impl.a7,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.setup && impl.setup(sendToApp)
-			var view = impl.view;
+			var divertHrefToApp = impl.ai && impl.ai(sendToApp)
+			var view = impl.ba;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3992,12 +3992,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.body);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.aS);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.title) && (_VirtualDom_doc.title = title = doc.title);
+				(title !== doc.a8) && (_VirtualDom_doc.title = title = doc.a8);
 			});
 		}
 	);
@@ -4053,12 +4053,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.onUrlChange;
-	var onUrlRequest = impl.onUrlRequest;
+	var onUrlChange = impl.a0;
+	var onUrlRequest = impl.a1;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		setup: function(sendToApp)
+		ai: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4074,9 +4074,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.protocol === next.protocol
-							&& curr.host === next.host
-							&& curr.port_.a === next.port_.a
+							&& curr.aF === next.aF
+							&& curr.au === next.au
+							&& curr.aC.a === next.aC.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4084,13 +4084,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		init: function(flags)
+		aZ: function(flags)
 		{
-			return A3(impl.init, flags, _Browser_getUrl(), key);
+			return A3(impl.aZ, flags, _Browser_getUrl(), key);
 		},
-		view: impl.view,
-		update: impl.update,
-		subscriptions: impl.subscriptions
+		ba: impl.ba,
+		a9: impl.a9,
+		a7: impl.a7
 	});
 }
 
@@ -4156,17 +4156,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { hidden: 'hidden', change: 'visibilitychange' }
+		? { aX: 'hidden', aT: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { hidden: 'mozHidden', change: 'mozvisibilitychange' }
+		? { aX: 'mozHidden', aT: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { hidden: 'msHidden', change: 'msvisibilitychange' }
+		? { aX: 'msHidden', aT: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { hidden: 'webkitHidden', change: 'webkitvisibilitychange' }
-		: { hidden: 'hidden', change: 'visibilitychange' };
+		? { aX: 'webkitHidden', aT: 'webkitvisibilitychange' }
+		: { aX: 'hidden', aT: 'visibilitychange' };
 }
 
 
@@ -4247,12 +4247,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		scene: _Browser_getScene(),
-		viewport: {
-			x: _Browser_window.pageXOffset,
-			y: _Browser_window.pageYOffset,
-			width: _Browser_doc.documentElement.clientWidth,
-			height: _Browser_doc.documentElement.clientHeight
+		aJ: _Browser_getScene(),
+		aM: {
+			aO: _Browser_window.pageXOffset,
+			aP: _Browser_window.pageYOffset,
+			aN: _Browser_doc.documentElement.clientWidth,
+			at: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4262,8 +4262,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		width: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		height: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		aN: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		at: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4286,15 +4286,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			scene: {
-				width: node.scrollWidth,
-				height: node.scrollHeight
+			aJ: {
+				aN: node.scrollWidth,
+				at: node.scrollHeight
 			},
-			viewport: {
-				x: node.scrollLeft,
-				y: node.scrollTop,
-				width: node.clientWidth,
-				height: node.clientHeight
+			aM: {
+				aO: node.scrollLeft,
+				aP: node.scrollTop,
+				aN: node.clientWidth,
+				at: node.clientHeight
 			}
 		};
 	});
@@ -4324,18 +4324,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			scene: _Browser_getScene(),
-			viewport: {
-				x: x,
-				y: y,
-				width: _Browser_doc.documentElement.clientWidth,
-				height: _Browser_doc.documentElement.clientHeight
+			aJ: _Browser_getScene(),
+			aM: {
+				aO: x,
+				aP: y,
+				aN: _Browser_doc.documentElement.clientWidth,
+				at: _Browser_doc.documentElement.clientHeight
 			},
-			element: {
-				x: x + rect.left,
-				y: y + rect.top,
-				width: rect.width,
-				height: rect.height
+			aV: {
+				aO: x + rect.left,
+				aP: y + rect.top,
+				aN: rect.width,
+				at: rect.height
 			}
 		};
 	});
@@ -4370,15 +4370,15 @@ function _Browser_load(url)
 		}
 	}));
 }
-var $elm$core$Basics$EQ = {$: 'EQ'};
-var $elm$core$Basics$GT = {$: 'GT'};
-var $elm$core$Basics$LT = {$: 'LT'};
+var $elm$core$Basics$EQ = 1;
+var $elm$core$Basics$GT = 2;
+var $elm$core$Basics$LT = 0;
 var $elm$core$List$cons = _List_cons;
 var $elm$core$Dict$foldr = F3(
 	function (func, acc, t) {
 		foldr:
 		while (true) {
-			if (t.$ === 'RBEmpty_elm_builtin') {
+			if (t.$ === -2) {
 				return acc;
 			} else {
 				var key = t.b;
@@ -4423,7 +4423,7 @@ var $elm$core$Dict$keys = function (dict) {
 		dict);
 };
 var $elm$core$Set$toList = function (_v0) {
-	var dict = _v0.a;
+	var dict = _v0;
 	return $elm$core$Dict$keys(dict);
 };
 var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
@@ -4433,7 +4433,7 @@ var $elm$core$Array$foldr = F3(
 		var tail = _v0.d;
 		var helper = F2(
 			function (node, acc) {
-				if (node.$ === 'SubTree') {
+				if (!node.$) {
 					var subTree = node.a;
 					return A3($elm$core$Elm$JsArray$foldr, helper, acc, subTree);
 				} else {
@@ -4451,32 +4451,32 @@ var $elm$core$Array$toList = function (array) {
 	return A3($elm$core$Array$foldr, $elm$core$List$cons, _List_Nil, array);
 };
 var $elm$core$Result$Err = function (a) {
-	return {$: 'Err', a: a};
+	return {$: 1, a: a};
 };
 var $elm$json$Json$Decode$Failure = F2(
 	function (a, b) {
-		return {$: 'Failure', a: a, b: b};
+		return {$: 3, a: a, b: b};
 	});
 var $elm$json$Json$Decode$Field = F2(
 	function (a, b) {
-		return {$: 'Field', a: a, b: b};
+		return {$: 0, a: a, b: b};
 	});
 var $elm$json$Json$Decode$Index = F2(
 	function (a, b) {
-		return {$: 'Index', a: a, b: b};
+		return {$: 1, a: a, b: b};
 	});
 var $elm$core$Result$Ok = function (a) {
-	return {$: 'Ok', a: a};
+	return {$: 0, a: a};
 };
 var $elm$json$Json$Decode$OneOf = function (a) {
-	return {$: 'OneOf', a: a};
+	return {$: 2, a: a};
 };
-var $elm$core$Basics$False = {$: 'False'};
+var $elm$core$Basics$False = 1;
 var $elm$core$Basics$add = _Basics_add;
 var $elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
+	return {$: 0, a: a};
 };
-var $elm$core$Maybe$Nothing = {$: 'Nothing'};
+var $elm$core$Maybe$Nothing = {$: 1};
 var $elm$core$String$all = _String_all;
 var $elm$core$Basics$and = _Basics_and;
 var $elm$core$Basics$append = _Utils_append;
@@ -4601,12 +4601,12 @@ var $elm$json$Json$Decode$errorToStringHelp = F2(
 		errorToStringHelp:
 		while (true) {
 			switch (error.$) {
-				case 'Field':
+				case 0:
 					var f = error.a;
 					var err = error.b;
 					var isSimple = function () {
 						var _v1 = $elm$core$String$uncons(f);
-						if (_v1.$ === 'Nothing') {
+						if (_v1.$ === 1) {
 							return false;
 						} else {
 							var _v2 = _v1.a;
@@ -4621,7 +4621,7 @@ var $elm$json$Json$Decode$errorToStringHelp = F2(
 					error = $temp$error;
 					context = $temp$context;
 					continue errorToStringHelp;
-				case 'Index':
+				case 1:
 					var i = error.a;
 					var err = error.b;
 					var indexName = '[' + ($elm$core$String$fromInt(i) + ']');
@@ -4630,7 +4630,7 @@ var $elm$json$Json$Decode$errorToStringHelp = F2(
 					error = $temp$error;
 					context = $temp$context;
 					continue errorToStringHelp;
-				case 'OneOf':
+				case 2:
 					var errors = error.a;
 					if (!errors.b) {
 						return 'Ran into a Json.Decode.oneOf with no possibilities' + function () {
@@ -4694,7 +4694,7 @@ var $elm$json$Json$Decode$errorToStringHelp = F2(
 var $elm$core$Array$branchFactor = 32;
 var $elm$core$Array$Array_elm_builtin = F4(
 	function (a, b, c, d) {
-		return {$: 'Array_elm_builtin', a: a, b: b, c: c, d: d};
+		return {$: 0, a: a, b: b, c: c, d: d};
 	});
 var $elm$core$Elm$JsArray$empty = _JsArray_empty;
 var $elm$core$Basics$ceiling = _Basics_ceiling;
@@ -4709,7 +4709,7 @@ var $elm$core$Array$shiftStep = $elm$core$Basics$ceiling(
 var $elm$core$Array$empty = A4($elm$core$Array$Array_elm_builtin, 0, $elm$core$Array$shiftStep, $elm$core$Elm$JsArray$empty, $elm$core$Elm$JsArray$empty);
 var $elm$core$Elm$JsArray$initialize = _JsArray_initialize;
 var $elm$core$Array$Leaf = function (a) {
-	return {$: 'Leaf', a: a};
+	return {$: 1, a: a};
 };
 var $elm$core$Basics$apL = F2(
 	function (f, x) {
@@ -4729,7 +4729,7 @@ var $elm$core$Basics$max = F2(
 	});
 var $elm$core$Basics$mul = _Basics_mul;
 var $elm$core$Array$SubTree = function (a) {
-	return {$: 'SubTree', a: a};
+	return {$: 0, a: a};
 };
 var $elm$core$Elm$JsArray$initializeFromList = _JsArray_initializeFromList;
 var $elm$core$Array$compressNodes = F2(
@@ -4776,25 +4776,25 @@ var $elm$core$Array$treeFromBuilder = F2(
 	});
 var $elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
-		if (!builder.nodeListSize) {
+		if (!builder.g) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.tail),
+				$elm$core$Elm$JsArray$length(builder.i),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.tail);
+				builder.i);
 		} else {
-			var treeLen = builder.nodeListSize * $elm$core$Array$branchFactor;
+			var treeLen = builder.g * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.nodeList) : builder.nodeList;
-			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.nodeListSize);
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.m) : builder.m;
+			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.g);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.tail) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.i) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.tail);
+				builder.i);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -4807,7 +4807,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{nodeList: nodeList, nodeListSize: (len / $elm$core$Array$branchFactor) | 0, tail: tail});
+					{m: nodeList, g: (len / $elm$core$Array$branchFactor) | 0, i: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -4837,9 +4837,9 @@ var $elm$core$Array$initialize = F2(
 			return A5($elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
 		}
 	});
-var $elm$core$Basics$True = {$: 'True'};
+var $elm$core$Basics$True = 0;
 var $elm$core$Result$isOk = function (result) {
-	if (result.$ === 'Ok') {
+	if (!result.$) {
 		return true;
 	} else {
 		return false;
@@ -4850,33 +4850,31 @@ var $elm$json$Json$Decode$map2 = _Json_map2;
 var $elm$json$Json$Decode$succeed = _Json_succeed;
 var $elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
-		case 'Normal':
+		case 0:
 			return 0;
-		case 'MayStopPropagation':
+		case 1:
 			return 1;
-		case 'MayPreventDefault':
+		case 2:
 			return 2;
 		default:
 			return 3;
 	}
 };
 var $elm$browser$Browser$External = function (a) {
-	return {$: 'External', a: a};
+	return {$: 1, a: a};
 };
 var $elm$browser$Browser$Internal = function (a) {
-	return {$: 'Internal', a: a};
+	return {$: 0, a: a};
 };
 var $elm$core$Basics$identity = function (x) {
 	return x;
 };
-var $elm$browser$Browser$Dom$NotFound = function (a) {
-	return {$: 'NotFound', a: a};
-};
-var $elm$url$Url$Http = {$: 'Http'};
-var $elm$url$Url$Https = {$: 'Https'};
+var $elm$browser$Browser$Dom$NotFound = $elm$core$Basics$identity;
+var $elm$url$Url$Http = 0;
+var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {fragment: fragment, host: host, path: path, port_: port_, protocol: protocol, query: query};
+		return {as: fragment, au: host, aA: path, aC: port_, aF: protocol, aG: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -4912,7 +4910,7 @@ var $elm$url$Url$chompBeforePath = F5(
 					var i = _v0.a;
 					var _v1 = $elm$core$String$toInt(
 						A2($elm$core$String$dropLeft, i + 1, str));
-					if (_v1.$ === 'Nothing') {
+					if (_v1.$ === 1) {
 						return $elm$core$Maybe$Nothing;
 					} else {
 						var port_ = _v1;
@@ -4995,26 +4993,24 @@ var $elm$core$String$startsWith = _String_startsWith;
 var $elm$url$Url$fromString = function (str) {
 	return A2($elm$core$String$startsWith, 'http://', str) ? A2(
 		$elm$url$Url$chompAfterProtocol,
-		$elm$url$Url$Http,
+		0,
 		A2($elm$core$String$dropLeft, 7, str)) : (A2($elm$core$String$startsWith, 'https://', str) ? A2(
 		$elm$url$Url$chompAfterProtocol,
-		$elm$url$Url$Https,
+		1,
 		A2($elm$core$String$dropLeft, 8, str)) : $elm$core$Maybe$Nothing);
 };
 var $elm$core$Basics$never = function (_v0) {
 	never:
 	while (true) {
-		var nvr = _v0.a;
+		var nvr = _v0;
 		var $temp$_v0 = nvr;
 		_v0 = $temp$_v0;
 		continue never;
 	}
 };
-var $elm$core$Task$Perform = function (a) {
-	return {$: 'Perform', a: a};
-};
+var $elm$core$Task$Perform = $elm$core$Basics$identity;
 var $elm$core$Task$succeed = _Scheduler_succeed;
-var $elm$core$Task$init = $elm$core$Task$succeed(_Utils_Tuple0);
+var $elm$core$Task$init = $elm$core$Task$succeed(0);
 var $elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
 		if (!ls.b) {
@@ -5120,7 +5116,7 @@ var $elm$core$Task$sequence = function (tasks) {
 var $elm$core$Platform$sendToApp = _Platform_sendToApp;
 var $elm$core$Task$spawnCmd = F2(
 	function (router, _v0) {
-		var task = _v0.a;
+		var task = _v0;
 		return _Scheduler_spawn(
 			A2(
 				$elm$core$Task$andThen,
@@ -5132,7 +5128,7 @@ var $elm$core$Task$onEffects = F3(
 		return A2(
 			$elm$core$Task$map,
 			function (_v0) {
-				return _Utils_Tuple0;
+				return 0;
 			},
 			$elm$core$Task$sequence(
 				A2(
@@ -5142,53 +5138,51 @@ var $elm$core$Task$onEffects = F3(
 	});
 var $elm$core$Task$onSelfMsg = F3(
 	function (_v0, _v1, _v2) {
-		return $elm$core$Task$succeed(_Utils_Tuple0);
+		return $elm$core$Task$succeed(0);
 	});
 var $elm$core$Task$cmdMap = F2(
 	function (tagger, _v0) {
-		var task = _v0.a;
-		return $elm$core$Task$Perform(
-			A2($elm$core$Task$map, tagger, task));
+		var task = _v0;
+		return A2($elm$core$Task$map, tagger, task);
 	});
 _Platform_effectManagers['Task'] = _Platform_createManager($elm$core$Task$init, $elm$core$Task$onEffects, $elm$core$Task$onSelfMsg, $elm$core$Task$cmdMap);
 var $elm$core$Task$command = _Platform_leaf('Task');
 var $elm$core$Task$perform = F2(
 	function (toMessage, task) {
 		return $elm$core$Task$command(
-			$elm$core$Task$Perform(
-				A2($elm$core$Task$map, toMessage, task)));
+			A2($elm$core$Task$map, toMessage, task));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$FS$Directory = {$: 'Directory'};
-var $author$project$ChirunPackageConfig$PackageSettingsTab = {$: 'PackageSettingsTab'};
-var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
+var $author$project$FS$Directory = 0;
+var $author$project$ChirunPackageConfig$PackageSettingsTab = {$: 0};
+var $elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
 var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
-var $author$project$ChirunPackageConfig$blank_package = {content: _List_Nil, settings: $elm$core$Dict$empty, themes: _List_Nil};
+var $author$project$ChirunPackageConfig$blank_package = {f: _List_Nil, p: $elm$core$Dict$empty, ak: _List_Nil};
 var $zwilias$elm_rosetree$Tree$Tree = F2(
 	function (a, b) {
-		return {$: 'Tree', a: a, b: b};
+		return {$: 0, a: a, b: b};
 	});
 var $zwilias$elm_rosetree$Tree$singleton = function (v) {
 	return A2($zwilias$elm_rosetree$Tree$Tree, v, _List_Nil);
 };
 var $author$project$ChirunPackageConfig$blank_model = {
-	err: $elm$core$Maybe$Nothing,
-	files: $zwilias$elm_rosetree$Tree$singleton(
-		{name: '', type_: $author$project$FS$Directory}),
-	localisations: $elm$core$Dict$empty,
-	media_root: '',
-	_package: $author$project$ChirunPackageConfig$blank_package,
-	tab: $author$project$ChirunPackageConfig$PackageSettingsTab
+	aa: $elm$core$Maybe$Nothing,
+	ab: $zwilias$elm_rosetree$Tree$singleton(
+		{a$: '', n: 0}),
+	ax: $elm$core$Dict$empty,
+	ad: '',
+	e: $author$project$ChirunPackageConfig$blank_package,
+	q: $author$project$ChirunPackageConfig$PackageSettingsTab
 };
 var $elm$json$Json$Decode$decodeValue = _Json_run;
-var $author$project$FS$File = {$: 'File'};
+var $author$project$FS$File = 1;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$lazy = function (thunk) {
 	return A2(
 		$elm$json$Json$Decode$andThen,
 		thunk,
-		$elm$json$Json$Decode$succeed(_Utils_Tuple0));
+		$elm$json$Json$Decode$succeed(0));
 };
 var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$json$Json$Decode$map3 = _Json_map3;
@@ -5202,7 +5196,7 @@ function $author$project$FS$cyclic$decode() {
 				return function (files) {
 					return A2(
 						$zwilias$elm_rosetree$Tree$tree,
-						{name: path, type_: $author$project$FS$Directory},
+						{a$: path, n: 0},
 						_Utils_ap(dirs, files));
 				};
 			};
@@ -5224,29 +5218,26 @@ function $author$project$FS$cyclic$decode() {
 					$elm$json$Json$Decode$map,
 					function (n) {
 						return $zwilias$elm_rosetree$Tree$singleton(
-							{name: n, type_: $author$project$FS$File});
+							{a$: n, n: 1});
 					},
 					$elm$json$Json$Decode$string))));
 }
-try {
-	var $author$project$FS$decode = $author$project$FS$cyclic$decode();
-	$author$project$FS$cyclic$decode = function () {
-		return $author$project$FS$decode;
-	};
-} catch ($) {
-	throw 'Some top-level definitions from `FS` are causing infinite recursion:\n\n  ┌─────┐\n  │    decode\n  └─────┘\n\nThese errors are very tricky, so read https://elm-lang.org/0.19.1/bad-recursion to learn how to fix it!';}
-var $author$project$ChirunPackageConfig$Chapter = {$: 'Chapter'};
-var $author$project$ChirunPackageConfig$Document = {$: 'Document'};
-var $author$project$ChirunPackageConfig$Exam = {$: 'Exam'};
-var $author$project$ChirunPackageConfig$HTML = {$: 'HTML'};
-var $author$project$ChirunPackageConfig$Introduction = {$: 'Introduction'};
-var $author$project$ChirunPackageConfig$Notebook = {$: 'Notebook'};
-var $author$project$ChirunPackageConfig$Part = {$: 'Part'};
-var $author$project$ChirunPackageConfig$Slides = {$: 'Slides'};
-var $author$project$ChirunPackageConfig$Standalone = {$: 'Standalone'};
-var $author$project$ChirunPackageConfig$URL = {$: 'URL'};
+var $author$project$FS$decode = $author$project$FS$cyclic$decode();
+$author$project$FS$cyclic$decode = function () {
+	return $author$project$FS$decode;
+};
+var $author$project$ChirunPackageConfig$Chapter = 2;
+var $author$project$ChirunPackageConfig$Document = 3;
+var $author$project$ChirunPackageConfig$Exam = 9;
+var $author$project$ChirunPackageConfig$HTML = 8;
+var $author$project$ChirunPackageConfig$Introduction = 0;
+var $author$project$ChirunPackageConfig$Notebook = 6;
+var $author$project$ChirunPackageConfig$Part = 1;
+var $author$project$ChirunPackageConfig$Slides = 5;
+var $author$project$ChirunPackageConfig$Standalone = 4;
+var $author$project$ChirunPackageConfig$URL = 7;
 var $author$project$ChirunPackageConfig$content_item_types = _List_fromArray(
-	[$author$project$ChirunPackageConfig$Introduction, $author$project$ChirunPackageConfig$Part, $author$project$ChirunPackageConfig$Chapter, $author$project$ChirunPackageConfig$Document, $author$project$ChirunPackageConfig$Standalone, $author$project$ChirunPackageConfig$Slides, $author$project$ChirunPackageConfig$Notebook, $author$project$ChirunPackageConfig$URL, $author$project$ChirunPackageConfig$HTML, $author$project$ChirunPackageConfig$Exam]);
+	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -5268,24 +5259,24 @@ var $elm$core$List$head = function (list) {
 	}
 };
 var $author$project$ChirunPackageConfig$item_type_code = function (type_) {
-	switch (type_.$) {
-		case 'Introduction':
+	switch (type_) {
+		case 0:
 			return 'introduction';
-		case 'Part':
+		case 1:
 			return 'part';
-		case 'Document':
+		case 3:
 			return 'document';
-		case 'Chapter':
+		case 2:
 			return 'chapter';
-		case 'Standalone':
+		case 4:
 			return 'standalone';
-		case 'URL':
+		case 7:
 			return 'url';
-		case 'HTML':
+		case 8:
 			return 'html';
-		case 'Slides':
+		case 5:
 			return 'slides';
-		case 'Exam':
+		case 9:
 			return 'exam';
 		default:
 			return 'notebook';
@@ -5293,7 +5284,7 @@ var $author$project$ChirunPackageConfig$item_type_code = function (type_) {
 };
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
+		if (!maybe.$) {
 			var value = maybe.a;
 			return value;
 		} else {
@@ -5303,7 +5294,7 @@ var $elm$core$Maybe$withDefault = F2(
 var $author$project$ChirunPackageConfig$code_to_item_type = function (s) {
 	return A2(
 		$elm$core$Maybe$withDefault,
-		$author$project$ChirunPackageConfig$Chapter,
+		2,
 		$elm$core$List$head(
 			A2(
 				$elm$core$List$filter,
@@ -5315,13 +5306,13 @@ var $author$project$ChirunPackageConfig$code_to_item_type = function (s) {
 				$author$project$ChirunPackageConfig$content_item_types)));
 };
 var $author$project$ChirunPackageConfig$StringSetting = function (a) {
-	return {$: 'StringSetting', a: a};
+	return {$: 0, a: a};
 };
 var $author$project$ChirunPackageConfig$BoolSetting = function (a) {
-	return {$: 'BoolSetting', a: a};
+	return {$: 2, a: a};
 };
 var $author$project$ChirunPackageConfig$IntSetting = function (a) {
-	return {$: 'IntSetting', a: a};
+	return {$: 1, a: a};
 };
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$int = _Json_decodeInt;
@@ -5342,21 +5333,21 @@ var $author$project$ChirunPackageConfig$decode_setting = $elm$json$Json$Decode$m
 				A2($elm$json$Json$Decode$map, $author$project$ChirunPackageConfig$StringSetting, $elm$json$Json$Decode$string),
 				A2($elm$json$Json$Decode$map, $author$project$ChirunPackageConfig$BoolSetting, $elm$json$Json$Decode$bool)
 			])));
-var $elm$core$Dict$Black = {$: 'Black'};
+var $elm$core$Dict$Black = 1;
 var $elm$core$Dict$RBNode_elm_builtin = F5(
 	function (a, b, c, d, e) {
-		return {$: 'RBNode_elm_builtin', a: a, b: b, c: c, d: d, e: e};
+		return {$: -1, a: a, b: b, c: c, d: d, e: e};
 	});
-var $elm$core$Dict$Red = {$: 'Red'};
+var $elm$core$Dict$Red = 0;
 var $elm$core$Dict$balance = F5(
 	function (color, key, value, left, right) {
-		if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Red')) {
+		if ((right.$ === -1) && (!right.a)) {
 			var _v1 = right.a;
 			var rK = right.b;
 			var rV = right.c;
 			var rLeft = right.d;
 			var rRight = right.e;
-			if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
+			if ((left.$ === -1) && (!left.a)) {
 				var _v3 = left.a;
 				var lK = left.b;
 				var lV = left.c;
@@ -5364,22 +5355,22 @@ var $elm$core$Dict$balance = F5(
 				var lRight = left.e;
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Red,
+					0,
 					key,
 					value,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, rK, rV, rLeft, rRight));
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, rK, rV, rLeft, rRight));
 			} else {
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
 					color,
 					rK,
 					rV,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, left, rLeft),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, left, rLeft),
 					rRight);
 			}
 		} else {
-			if ((((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) && (left.d.$ === 'RBNode_elm_builtin')) && (left.d.a.$ === 'Red')) {
+			if ((((left.$ === -1) && (!left.a)) && (left.d.$ === -1)) && (!left.d.a)) {
 				var _v5 = left.a;
 				var lK = left.b;
 				var lV = left.c;
@@ -5392,11 +5383,11 @@ var $elm$core$Dict$balance = F5(
 				var lRight = left.e;
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Red,
+					0,
 					lK,
 					lV,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, llK, llV, llLeft, llRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, key, value, lRight, right));
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, llK, llV, llLeft, llRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, key, value, lRight, right));
 			} else {
 				return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
 			}
@@ -5405,8 +5396,8 @@ var $elm$core$Dict$balance = F5(
 var $elm$core$Basics$compare = _Utils_compare;
 var $elm$core$Dict$insertHelp = F3(
 	function (key, value, dict) {
-		if (dict.$ === 'RBEmpty_elm_builtin') {
-			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
+		if (dict.$ === -2) {
+			return A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
 		} else {
 			var nColor = dict.a;
 			var nKey = dict.b;
@@ -5414,8 +5405,8 @@ var $elm$core$Dict$insertHelp = F3(
 			var nLeft = dict.d;
 			var nRight = dict.e;
 			var _v1 = A2($elm$core$Basics$compare, key, nKey);
-			switch (_v1.$) {
-				case 'LT':
+			switch (_v1) {
+				case 0:
 					return A5(
 						$elm$core$Dict$balance,
 						nColor,
@@ -5423,7 +5414,7 @@ var $elm$core$Dict$insertHelp = F3(
 						nValue,
 						A3($elm$core$Dict$insertHelp, key, value, nLeft),
 						nRight);
-				case 'EQ':
+				case 1:
 					return A5($elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
 				default:
 					return A5(
@@ -5439,13 +5430,13 @@ var $elm$core$Dict$insertHelp = F3(
 var $elm$core$Dict$insert = F3(
 	function (key, value, dict) {
 		var _v0 = A3($elm$core$Dict$insertHelp, key, value, dict);
-		if ((_v0.$ === 'RBNode_elm_builtin') && (_v0.a.$ === 'Red')) {
+		if ((_v0.$ === -1) && (!_v0.a)) {
 			var _v1 = _v0.a;
 			var k = _v0.b;
 			var v = _v0.c;
 			var l = _v0.d;
 			var r = _v0.e;
-			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, l, r);
+			return A5($elm$core$Dict$RBNode_elm_builtin, 1, k, v, l, r);
 		} else {
 			var x = _v0;
 			return x;
@@ -5474,7 +5465,7 @@ var $elm$core$Dict$foldl = F3(
 	function (func, acc, dict) {
 		foldl:
 		while (true) {
-			if (dict.$ === 'RBEmpty_elm_builtin') {
+			if (dict.$ === -2) {
 				return acc;
 			} else {
 				var key = dict.b;
@@ -5508,7 +5499,7 @@ var $elm$core$Dict$filter = F2(
 	});
 var $elm$core$Dict$map = F2(
 	function (func, dict) {
-		if (dict.$ === 'RBEmpty_elm_builtin') {
+		if (dict.$ === -2) {
 			return $elm$core$Dict$RBEmpty_elm_builtin;
 		} else {
 			var color = dict.a;
@@ -5546,8 +5537,8 @@ function $author$project$ChirunPackageConfig$cyclic$decode_content_item() {
 		$elm$json$Json$Decode$map3,
 		F3(
 			function (type_, mcontent, settings) {
-				var item = {settings: settings, type_: type_};
-				if (mcontent.$ === 'Just') {
+				var item = {p: settings, n: type_};
+				if (!mcontent.$) {
 					var content = mcontent.a;
 					return A2($zwilias$elm_rosetree$Tree$tree, item, content);
 				} else {
@@ -5569,18 +5560,15 @@ function $author$project$ChirunPackageConfig$cyclic$decode_content_item() {
 						})))),
 		$author$project$ChirunPackageConfig$decode_settings);
 }
-try {
-	var $author$project$ChirunPackageConfig$decode_content_item = $author$project$ChirunPackageConfig$cyclic$decode_content_item();
-	$author$project$ChirunPackageConfig$cyclic$decode_content_item = function () {
-		return $author$project$ChirunPackageConfig$decode_content_item;
-	};
-} catch ($) {
-	throw 'Some top-level definitions from `ChirunPackageConfig` are causing infinite recursion:\n\n  ┌─────┐\n  │    decode_content_item\n  └─────┘\n\nThese errors are very tricky, so read https://elm-lang.org/0.19.1/bad-recursion to learn how to fix it!';}
+var $author$project$ChirunPackageConfig$decode_content_item = $author$project$ChirunPackageConfig$cyclic$decode_content_item();
+$author$project$ChirunPackageConfig$cyclic$decode_content_item = function () {
+	return $author$project$ChirunPackageConfig$decode_content_item;
+};
 var $author$project$ChirunPackageConfig$decode_package = A3(
 	$elm$json$Json$Decode$map2,
 	F2(
 		function (content, settings) {
-			return {content: content, settings: settings, themes: _List_Nil};
+			return {f: content, p: settings, ak: _List_Nil};
 		}),
 	A2(
 		$elm$json$Json$Decode$field,
@@ -5593,15 +5581,14 @@ var $author$project$ChirunPackageConfig$decode_flags = A4(
 		function (files, _package, media_root) {
 			return _Utils_update(
 				$author$project$ChirunPackageConfig$blank_model,
-				{files: files, media_root: media_root, _package: _package});
+				{ab: files, ad: media_root, e: _package});
 		}),
 	A2($elm$json$Json$Decode$field, 'files', $author$project$FS$decode),
 	A2($elm$json$Json$Decode$field, 'config', $author$project$ChirunPackageConfig$decode_package),
 	A2($elm$json$Json$Decode$field, 'media_root', $elm$json$Json$Decode$string));
-var $elm$core$Debug$toString = _Debug_toString;
 var $author$project$ChirunPackageConfig$load_model = function (flags) {
 	var _v0 = A2($elm$json$Json$Decode$decodeValue, $author$project$ChirunPackageConfig$decode_flags, flags);
-	if (_v0.$ === 'Ok') {
+	if (!_v0.$) {
 		var m = _v0.a;
 		return m;
 	} else {
@@ -5609,8 +5596,8 @@ var $author$project$ChirunPackageConfig$load_model = function (flags) {
 		return _Utils_update(
 			$author$project$ChirunPackageConfig$blank_model,
 			{
-				err: $elm$core$Maybe$Just(
-					$elm$core$Debug$toString(err))
+				aa: $elm$core$Maybe$Just(
+					$elm$json$Json$Decode$errorToString(err))
 			});
 	}
 };
@@ -5624,10 +5611,10 @@ var $author$project$ChirunPackageConfig$init = function (flags) {
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$ChirunPackageConfig$ContentItemTab = function (a) {
-	return {$: 'ContentItemTab', a: a};
+	return {$: 1, a: a};
 };
 var $author$project$ChirunPackageConfig$FocusButton = function (a) {
-	return {$: 'FocusButton', a: a};
+	return {$: 4, a: a};
 };
 var $zwilias$elm_rosetree$Tree$mapChildren = F2(
 	function (f, _v0) {
@@ -5819,7 +5806,7 @@ var $elm_community$list_extra$List$Extra$updateAt = F3(
 var $lue_bird$elm_rosetree_path$Tree$Navigate$alter = F2(
 	function (path, updateAtPath) {
 		var _v0 = $lue_bird$elm_rosetree_path$Tree$Path$step(path);
-		if (_v0.$ === 'Nothing') {
+		if (_v0.$ === 1) {
 			return updateAtPath;
 		} else {
 			var _v1 = _v0.a;
@@ -5866,32 +5853,39 @@ var $zwilias$elm_rosetree$Tree$appendChild = F2(
 				_List_fromArray(
 					[c])));
 	});
-var $author$project$ChirunPackageConfig$blank_contentitem = {settings: $elm$core$Dict$empty, type_: $author$project$ChirunPackageConfig$Chapter};
-var $author$project$ChirunPackageConfig$add_item = F2(
-	function (path, _package) {
+var $author$project$ChirunPackageConfig$blank_contentitem = {p: $elm$core$Dict$empty, n: 2};
+var $author$project$ChirunPackageConfig$add_item = F3(
+	function (path, type_, _package) {
 		return _Utils_update(
 			_package,
 			{
-				content: A3(
+				f: A3(
 					$lue_bird$elm_rosetree_path$Forest$Navigate$alter,
 					path,
 					$zwilias$elm_rosetree$Tree$appendChild(
-						$zwilias$elm_rosetree$Tree$singleton($author$project$ChirunPackageConfig$blank_contentitem)),
-					_package.content)
+						$zwilias$elm_rosetree$Tree$singleton(
+							_Utils_update(
+								$author$project$ChirunPackageConfig$blank_contentitem,
+								{n: type_}))),
+					_package.f)
 			});
 	});
-var $author$project$ChirunPackageConfig$add_top_item = function (_package) {
-	return _Utils_update(
-		_package,
-		{
-			content: _Utils_ap(
-				_package.content,
-				_List_fromArray(
-					[
-						$zwilias$elm_rosetree$Tree$singleton($author$project$ChirunPackageConfig$blank_contentitem)
-					]))
-		});
-};
+var $author$project$ChirunPackageConfig$add_top_item = F2(
+	function (type_, _package) {
+		return _Utils_update(
+			_package,
+			{
+				f: _Utils_ap(
+					_package.f,
+					_List_fromArray(
+						[
+							$zwilias$elm_rosetree$Tree$singleton(
+							_Utils_update(
+								$author$project$ChirunPackageConfig$blank_contentitem,
+								{n: type_}))
+						]))
+			});
+	});
 var $zwilias$elm_rosetree$Tree$mapLabel = F2(
 	function (f, _v0) {
 		var v = _v0.a;
@@ -5904,17 +5898,17 @@ var $zwilias$elm_rosetree$Tree$mapLabel = F2(
 var $author$project$ChirunPackageConfig$apply_item_msg = F2(
 	function (msg, tree) {
 		switch (msg.$) {
-			case 'SetType':
+			case 2:
 				var type_ = msg.a;
 				return A2(
 					$zwilias$elm_rosetree$Tree$mapLabel,
 					function (item) {
 						return _Utils_update(
 							item,
-							{type_: type_});
+							{n: type_});
 					},
 					tree);
-			case 'SetSetting':
+			case 1:
 				var key = msg.a;
 				var setting = msg.b;
 				return A2(
@@ -5923,13 +5917,11 @@ var $author$project$ChirunPackageConfig$apply_item_msg = F2(
 						return _Utils_update(
 							item,
 							{
-								settings: A3($elm$core$Dict$insert, key, setting, item.settings)
+								p: A3($elm$core$Dict$insert, key, setting, item.p)
 							});
 					},
 					tree);
-			case 'Add':
-				return tree;
-			case 'Move':
+			case 3:
 				return tree;
 			default:
 				return tree;
@@ -5948,20 +5940,19 @@ var $elm$core$Task$onError = _Scheduler_onError;
 var $elm$core$Task$attempt = F2(
 	function (resultToMessage, task) {
 		return $elm$core$Task$command(
-			$elm$core$Task$Perform(
+			A2(
+				$elm$core$Task$onError,
 				A2(
-					$elm$core$Task$onError,
+					$elm$core$Basics$composeL,
+					A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
+					$elm$core$Result$Err),
+				A2(
+					$elm$core$Task$andThen,
 					A2(
 						$elm$core$Basics$composeL,
 						A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
-						$elm$core$Result$Err),
-					A2(
-						$elm$core$Task$andThen,
-						A2(
-							$elm$core$Basics$composeL,
-							A2($elm$core$Basics$composeL, $elm$core$Task$succeed, resultToMessage),
-							$elm$core$Result$Ok),
-						task))));
+						$elm$core$Result$Ok),
+					task)));
 	});
 var $zwilias$elm_rosetree$Tree$children = function (_v0) {
 	var c = _v0.b;
@@ -5991,7 +5982,7 @@ var $elm_community$list_extra$List$Extra$removeAt = F2(
 var $lue_bird$elm_rosetree_path$Forest$Navigate$remove = function (path) {
 	var _v0 = $lue_bird$elm_rosetree_path$Tree$Path$step(
 		$lue_bird$elm_rosetree_path$Forest$Path$pathIntoTreeAtIndex(path));
-	if (_v0.$ === 'Nothing') {
+	if (_v0.$ === 1) {
 		return $elm_community$list_extra$List$Extra$removeAt(
 			$lue_bird$elm_rosetree_path$Forest$Path$treeIndex(path));
 	} else {
@@ -6008,7 +5999,7 @@ var $author$project$ChirunPackageConfig$delete_item = F2(
 		return _Utils_update(
 			_package,
 			{
-				content: A2($lue_bird$elm_rosetree_path$Forest$Navigate$remove, path, _package.content)
+				f: A2($lue_bird$elm_rosetree_path$Forest$Navigate$remove, path, _package.f)
 			});
 	});
 var $elm$browser$Browser$Dom$focus = _Browser_call('focus');
@@ -6025,7 +6016,7 @@ var $author$project$ChirunPackageConfig$last_index = A2(
 	$elm$core$Basics$add(-1));
 var $elm$core$Maybe$map = F2(
 	function (f, maybe) {
-		if (maybe.$ === 'Just') {
+		if (!maybe.$) {
 			var value = maybe.a;
 			return $elm$core$Maybe$Just(
 				f(value));
@@ -6034,8 +6025,8 @@ var $elm$core$Maybe$map = F2(
 		}
 	});
 var $author$project$ChirunPackageConfig$item_has_children = function (item) {
-	var _v0 = item.type_;
-	if (_v0.$ === 'Part') {
+	var _v0 = item.n;
+	if (_v0 === 1) {
 		return true;
 	} else {
 		return false;
@@ -6060,7 +6051,7 @@ var $elm$core$List$concatMap = F2(
 var $elm$core$List$maybeCons = F3(
 	function (f, mx, xs) {
 		var _v0 = f(mx);
-		if (_v0.$ === 'Just') {
+		if (!_v0.$) {
 			var x = _v0.a;
 			return A2($elm$core$List$cons, x, xs);
 		} else {
@@ -6126,7 +6117,7 @@ var $lue_bird$elm_rosetree_path$Tree$Navigate$restructure = function (reduce) {
 	return function (tree) {
 		return reduce(
 			{
-				children: A2(
+				ao: A2(
 					$elm$core$List$indexedMap,
 					F2(
 						function (index, childTree) {
@@ -6135,16 +6126,16 @@ var $lue_bird$elm_rosetree_path$Tree$Navigate$restructure = function (reduce) {
 								function (state) {
 									return reduce(
 										{
-											children: state.children,
-											label: state.label,
-											path: A2($elm$core$List$cons, index, state.path)
+											ao: state.ao,
+											aw: state.aw,
+											aA: A2($elm$core$List$cons, index, state.aA)
 										});
 								},
 								childTree);
 						}),
 					$zwilias$elm_rosetree$Tree$children(tree)),
-				label: $zwilias$elm_rosetree$Tree$label(tree),
-				path: $lue_bird$elm_rosetree_path$Tree$Path$atTrunk
+				aw: $zwilias$elm_rosetree$Tree$label(tree),
+				aA: $lue_bird$elm_rosetree_path$Tree$Path$atTrunk
 			});
 	};
 };
@@ -6183,7 +6174,7 @@ var $elm_community$list_extra$List$Extra$swapAt = F3(
 					var _v2 = _Utils_Tuple2(
 						$elm_community$list_extra$List$Extra$uncons(head2),
 						$elm_community$list_extra$List$Extra$uncons(tail2));
-					if ((_v2.a.$ === 'Just') && (_v2.b.$ === 'Just')) {
+					if ((!_v2.a.$) && (!_v2.b.$)) {
 						var _v3 = _v2.a.a;
 						var value1 = _v3.a;
 						var part2 = _v3.b;
@@ -6242,7 +6233,7 @@ var $author$project$Tree$Navigate$Extra$move_down = F2(
 										trees,
 										function () {
 											var _v5 = _Utils_Tuple2(trees, mpath);
-											if (_v5.b.$ === 'Nothing') {
+											if (_v5.b.$ === 1) {
 												var _v6 = _v5.b;
 												return $elm$core$Maybe$Nothing;
 											} else {
@@ -6274,7 +6265,7 @@ var $author$project$Tree$Navigate$Extra$move_down = F2(
 											var children = A2(
 												$elm$core$List$concatMap,
 												$elm$core$Basics$identity,
-												A2($elm$core$List$map, $elm$core$Tuple$first, sub.children));
+												A2($elm$core$List$map, $elm$core$Tuple$first, sub.ao));
 											var mi = A2(
 												$elm_community$list_extra$List$Extra$find,
 												function (_v3) {
@@ -6282,7 +6273,7 @@ var $author$project$Tree$Navigate$Extra$move_down = F2(
 													var c = _v3.b;
 													return _Utils_eq(
 														_Utils_ap(
-															sub.path,
+															sub.aA,
 															_List_fromArray(
 																[i])),
 														tpath);
@@ -6291,8 +6282,8 @@ var $author$project$Tree$Navigate$Extra$move_down = F2(
 											var num_children = $elm$core$List$length(children);
 											var li = num_children - 1;
 											var child_path = $elm$core$List$head(
-												A2($elm$core$List$filterMap, $elm$core$Tuple$second, sub.children));
-											if (mi.$ === 'Just') {
+												A2($elm$core$List$filterMap, $elm$core$Tuple$second, sub.ao));
+											if (!mi.$) {
 												var _v2 = mi.a;
 												var i = _v2.a;
 												var c = _v2.b;
@@ -6302,36 +6293,36 @@ var $author$project$Tree$Navigate$Extra$move_down = F2(
 															[
 																A2(
 																$zwilias$elm_rosetree$Tree$tree,
-																sub.label,
+																sub.aw,
 																A2($elm$core$List$take, li, children))
 															]),
 														_List_fromArray(
 															[c])),
 													$elm$core$Maybe$Just(
-														$author$project$Tree$Navigate$Extra$increment_path(sub.path))) : _Utils_Tuple2(
+														$author$project$Tree$Navigate$Extra$increment_path(sub.aA))) : _Utils_Tuple2(
 													_List_fromArray(
 														[
 															A2(
 															$zwilias$elm_rosetree$Tree$tree,
-															sub.label,
+															sub.aw,
 															A2(
 																$elm$core$List$concatMap,
 																$elm$core$Basics$identity,
 																A2(
 																	$elm$core$List$map,
 																	$elm$core$Tuple$first,
-																	A3($elm_community$list_extra$List$Extra$swapAt, i, i + 1, sub.children))))
+																	A3($elm_community$list_extra$List$Extra$swapAt, i, i + 1, sub.ao))))
 														]),
 													$elm$core$Maybe$Just(
 														_Utils_ap(
-															sub.path,
+															sub.aA,
 															_List_fromArray(
 																[i + 1]))));
 											} else {
 												return _Utils_Tuple2(
 													_List_fromArray(
 														[
-															A2($zwilias$elm_rosetree$Tree$tree, sub.label, children)
+															A2($zwilias$elm_rosetree$Tree$tree, sub.aw, children)
 														]),
 													child_path);
 											}
@@ -6371,7 +6362,7 @@ var $author$project$Tree$Navigate$Extra$alter_with_side_effect = F3(
 	});
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
-		if (maybeValue.$ === 'Just') {
+		if (!maybeValue.$) {
 			var value = maybeValue.a;
 			return callback(value);
 		} else {
@@ -6388,7 +6379,7 @@ var $zwilias$elm_rosetree$Tree$Zipper$firstOf = F2(
 				var option = options.a;
 				var rest = options.b;
 				var _v1 = option(v);
-				if (_v1.$ === 'Just') {
+				if (!_v1.$) {
 					var r = _v1.a;
 					return $elm$core$Maybe$Just(r);
 				} else {
@@ -6401,40 +6392,37 @@ var $zwilias$elm_rosetree$Tree$Zipper$firstOf = F2(
 			}
 		}
 	});
-var $zwilias$elm_rosetree$Tree$Zipper$Zipper = function (a) {
-	return {$: 'Zipper', a: a};
-};
+var $zwilias$elm_rosetree$Tree$Zipper$Zipper = $elm$core$Basics$identity;
 var $zwilias$elm_rosetree$Tree$Zipper$lastChild = function (_v0) {
-	var zipper = _v0.a;
+	var zipper = _v0;
 	var _v1 = $elm$core$List$reverse(
-		$zwilias$elm_rosetree$Tree$children(zipper.focus));
+		$zwilias$elm_rosetree$Tree$children(zipper.d));
 	if (!_v1.b) {
 		return $elm$core$Maybe$Nothing;
 	} else {
 		var c = _v1.a;
 		var rest = _v1.b;
 		return $elm$core$Maybe$Just(
-			$zwilias$elm_rosetree$Tree$Zipper$Zipper(
-				{
-					after: _List_Nil,
-					before: rest,
-					crumbs: A2(
-						$elm$core$List$cons,
-						{
-							after: zipper.after,
-							before: zipper.before,
-							label: $zwilias$elm_rosetree$Tree$label(zipper.focus)
-						},
-						zipper.crumbs),
-					focus: c
-				}));
+			{
+				b: _List_Nil,
+				c: rest,
+				o: A2(
+					$elm$core$List$cons,
+					{
+						b: zipper.b,
+						c: zipper.c,
+						aw: $zwilias$elm_rosetree$Tree$label(zipper.d)
+					},
+					zipper.o),
+				d: c
+			});
 	}
 };
 var $zwilias$elm_rosetree$Tree$Zipper$lastDescendant = function (zipper) {
 	lastDescendant:
 	while (true) {
 		var _v0 = $zwilias$elm_rosetree$Tree$Zipper$lastChild(zipper);
-		if (_v0.$ === 'Nothing') {
+		if (_v0.$ === 1) {
 			return zipper;
 		} else {
 			var child = _v0.a;
@@ -6457,39 +6445,37 @@ var $zwilias$elm_rosetree$Tree$Zipper$reconstruct = F4(
 					after)));
 	});
 var $zwilias$elm_rosetree$Tree$Zipper$parent = function (_v0) {
-	var zipper = _v0.a;
-	var _v1 = zipper.crumbs;
+	var zipper = _v0;
+	var _v1 = zipper.o;
 	if (!_v1.b) {
 		return $elm$core$Maybe$Nothing;
 	} else {
 		var crumb = _v1.a;
 		var rest = _v1.b;
 		return $elm$core$Maybe$Just(
-			$zwilias$elm_rosetree$Tree$Zipper$Zipper(
-				{
-					after: crumb.after,
-					before: crumb.before,
-					crumbs: rest,
-					focus: A4($zwilias$elm_rosetree$Tree$Zipper$reconstruct, zipper.focus, zipper.before, zipper.after, crumb.label)
-				}));
+			{
+				b: crumb.b,
+				c: crumb.c,
+				o: rest,
+				d: A4($zwilias$elm_rosetree$Tree$Zipper$reconstruct, zipper.d, zipper.c, zipper.b, crumb.aw)
+			});
 	}
 };
 var $zwilias$elm_rosetree$Tree$Zipper$previousSibling = function (_v0) {
-	var zipper = _v0.a;
-	var _v1 = zipper.before;
+	var zipper = _v0;
+	var _v1 = zipper.c;
 	if (!_v1.b) {
 		return $elm$core$Maybe$Nothing;
 	} else {
 		var previous = _v1.a;
 		var rest = _v1.b;
 		return $elm$core$Maybe$Just(
-			$zwilias$elm_rosetree$Tree$Zipper$Zipper(
-				{
-					after: A2($elm$core$List$cons, zipper.focus, zipper.after),
-					before: rest,
-					crumbs: zipper.crumbs,
-					focus: previous
-				}));
+			{
+				b: A2($elm$core$List$cons, zipper.d, zipper.b),
+				c: rest,
+				o: zipper.o,
+				d: previous
+			});
 	}
 };
 var $zwilias$elm_rosetree$Tree$Zipper$backward = function (zipper) {
@@ -6506,7 +6492,7 @@ var $zwilias$elm_rosetree$Tree$Zipper$backward = function (zipper) {
 		zipper);
 };
 var $zwilias$elm_rosetree$Tree$Zipper$tree = function (_v0) {
-	var focus = _v0.a.focus;
+	var focus = _v0.d;
 	return focus;
 };
 var $zwilias$elm_rosetree$Tree$Zipper$label = function (zipper) {
@@ -6518,7 +6504,7 @@ var $zwilias$elm_rosetree$Tree$Zipper$find = F3(
 		find:
 		while (true) {
 			var _v0 = move(zipper);
-			if (_v0.$ === 'Just') {
+			if (!_v0.$) {
 				var next = _v0.a;
 				if (predicate(
 					$zwilias$elm_rosetree$Tree$Zipper$label(next))) {
@@ -6547,50 +6533,47 @@ var $elm_community$list_extra$List$Extra$getAt = F2(
 			A2($elm$core$List$drop, idx, xs));
 	});
 var $zwilias$elm_rosetree$Tree$Zipper$firstChild = function (_v0) {
-	var zipper = _v0.a;
-	var _v1 = $zwilias$elm_rosetree$Tree$children(zipper.focus);
+	var zipper = _v0;
+	var _v1 = $zwilias$elm_rosetree$Tree$children(zipper.d);
 	if (!_v1.b) {
 		return $elm$core$Maybe$Nothing;
 	} else {
 		var c = _v1.a;
 		var cs = _v1.b;
 		return $elm$core$Maybe$Just(
-			$zwilias$elm_rosetree$Tree$Zipper$Zipper(
-				{
-					after: cs,
-					before: _List_Nil,
-					crumbs: A2(
-						$elm$core$List$cons,
-						{
-							after: zipper.after,
-							before: zipper.before,
-							label: $zwilias$elm_rosetree$Tree$label(zipper.focus)
-						},
-						zipper.crumbs),
-					focus: c
-				}));
+			{
+				b: cs,
+				c: _List_Nil,
+				o: A2(
+					$elm$core$List$cons,
+					{
+						b: zipper.b,
+						c: zipper.c,
+						aw: $zwilias$elm_rosetree$Tree$label(zipper.d)
+					},
+					zipper.o),
+				d: c
+			});
 	}
 };
 var $zwilias$elm_rosetree$Tree$Zipper$fromTree = function (t) {
-	return $zwilias$elm_rosetree$Tree$Zipper$Zipper(
-		{after: _List_Nil, before: _List_Nil, crumbs: _List_Nil, focus: t});
+	return {b: _List_Nil, c: _List_Nil, o: _List_Nil, d: t};
 };
 var $zwilias$elm_rosetree$Tree$Zipper$nextSibling = function (_v0) {
-	var zipper = _v0.a;
-	var _v1 = zipper.after;
+	var zipper = _v0;
+	var _v1 = zipper.b;
 	if (!_v1.b) {
 		return $elm$core$Maybe$Nothing;
 	} else {
 		var next = _v1.a;
 		var rest = _v1.b;
 		return $elm$core$Maybe$Just(
-			$zwilias$elm_rosetree$Tree$Zipper$Zipper(
-				{
-					after: rest,
-					before: A2($elm$core$List$cons, zipper.focus, zipper.before),
-					crumbs: zipper.crumbs,
-					focus: next
-				}));
+			{
+				b: rest,
+				c: A2($elm$core$List$cons, zipper.d, zipper.c),
+				o: zipper.o,
+				d: next
+			});
 	}
 };
 var $author$project$Tree$Navigate$Extra$path_to_zipper = F2(
@@ -6619,12 +6602,12 @@ var $author$project$Tree$Navigate$Extra$path_to_zipper = F2(
 		return A2(step, path, topzip);
 	});
 var $zwilias$elm_rosetree$Tree$Zipper$siblingsBeforeFocus = function (_v0) {
-	var before = _v0.a.before;
+	var before = _v0.c;
 	return $elm$core$List$reverse(before);
 };
 var $author$project$Tree$Navigate$Extra$zipper_to_path = function (z) {
 	var _v0 = $zwilias$elm_rosetree$Tree$Zipper$parent(z);
-	if (_v0.$ === 'Nothing') {
+	if (_v0.$ === 1) {
 		return _List_Nil;
 	} else {
 		var pz = _v0.a;
@@ -6648,7 +6631,7 @@ var $author$project$Tree$Navigate$Extra$move_right = F3(
 				var _v1 = _Utils_Tuple2(
 					A2($elm_community$list_extra$List$Extra$getAt, i - 1, forest),
 					A2($elm_community$list_extra$List$Extra$getAt, i, forest));
-				if ((_v1.a.$ === 'Just') && (_v1.b.$ === 'Just')) {
+				if ((!_v1.a.$) && (!_v1.b.$)) {
 					var ptree = _v1.a.a;
 					var tree = _v1.b.a;
 					return has_children(
@@ -6708,7 +6691,7 @@ var $author$project$Tree$Navigate$Extra$move_right = F3(
 							$zwilias$elm_rosetree$Tree$Zipper$findPrevious(has_children),
 							zipper);
 						var _v3 = _Utils_Tuple2(zipper, prev);
-						if ((_v3.a.$ === 'Just') && (_v3.b.$ === 'Just')) {
+						if ((!_v3.a.$) && (!_v3.b.$)) {
 							var z = _v3.a.a;
 							var pz = _v3.b.a;
 							var t = $zwilias$elm_rosetree$Tree$Zipper$tree(z);
@@ -6723,7 +6706,7 @@ var $author$project$Tree$Navigate$Extra$move_right = F3(
 											var c = _v4.b;
 											return keep ? $elm$core$Maybe$Just(c) : $elm$core$Maybe$Nothing;
 										},
-										sub.children);
+										sub.ao);
 									var npath = $elm$core$List$head(
 										A2(
 											$elm$core$List$filterMap,
@@ -6731,34 +6714,34 @@ var $author$project$Tree$Navigate$Extra$move_right = F3(
 											A2($elm$core$List$map, $elm$core$Tuple$second, side_effect_children)));
 									var children = A2($elm$core$List$map, $elm$core$Tuple$first, side_effect_children);
 									return (_Utils_eq(
-										sub.path,
+										sub.aA,
 										A2(
 											$elm$core$List$take,
-											$elm$core$List$length(sub.path),
-											tpath)) && (($elm$core$List$length(tpath) - $elm$core$List$length(sub.path)) <= 1)) ? _Utils_Tuple2(
+											$elm$core$List$length(sub.aA),
+											tpath)) && (($elm$core$List$length(tpath) - $elm$core$List$length(sub.aA)) <= 1)) ? _Utils_Tuple2(
 										false,
 										_Utils_Tuple2(
-											A2($zwilias$elm_rosetree$Tree$tree, sub.label, children),
-											$elm$core$Maybe$Nothing)) : (_Utils_eq(sub.path, prev_path) ? _Utils_Tuple2(
+											A2($zwilias$elm_rosetree$Tree$tree, sub.aw, children),
+											$elm$core$Maybe$Nothing)) : (_Utils_eq(sub.aA, prev_path) ? _Utils_Tuple2(
 										true,
 										_Utils_Tuple2(
 											A2(
 												$zwilias$elm_rosetree$Tree$tree,
-												sub.label,
+												sub.aw,
 												_Utils_ap(
 													children,
 													_List_fromArray(
 														[t]))),
 											$elm$core$Maybe$Just(
 												_Utils_ap(
-													sub.path,
+													sub.aA,
 													_List_fromArray(
 														[
 															$elm$core$List$length(children)
 														]))))) : _Utils_Tuple2(
 										true,
 										_Utils_Tuple2(
-											A2($zwilias$elm_rosetree$Tree$tree, sub.label, children),
+											A2($zwilias$elm_rosetree$Tree$tree, sub.aw, children),
 											npath)));
 								};
 								return A2($lue_bird$elm_rosetree_path$Tree$Navigate$restructure, step, tree).b;
@@ -6774,7 +6757,7 @@ var $author$project$Tree$Navigate$Extra$move_right = F3(
 	});
 var $lue_bird$elm_rosetree_path$Tree$Navigate$to = function (path) {
 	var _v0 = $lue_bird$elm_rosetree_path$Tree$Path$step(path);
-	if (_v0.$ === 'Nothing') {
+	if (_v0.$ === 1) {
 		return $elm$core$Maybe$Just;
 	} else {
 		var _v1 = _v0.a;
@@ -6833,7 +6816,7 @@ var $author$project$Tree$Navigate$Extra$move_up = F2(
 			if ((!path.b.a) && (!path.b.b.b)) {
 				var _v1 = path.b;
 				var _v2 = A2($lue_bird$elm_rosetree_path$Forest$Navigate$to, path, forest);
-				if (_v2.$ === 'Just') {
+				if (!_v2.$) {
 					var t = _v2.a;
 					return _Utils_Tuple2(
 						_Utils_ap(
@@ -6853,7 +6836,7 @@ var $author$project$Tree$Navigate$Extra$move_up = F2(
 			} else {
 				var _v3 = $elm$core$List$head(
 					$elm$core$List$reverse(tpath));
-				if (_v3.$ === 'Just') {
+				if (!_v3.$) {
 					if (!_v3.a) {
 						return function (_v6) {
 							var f = _v6.a;
@@ -6886,20 +6869,20 @@ var $author$project$Tree$Navigate$Extra$move_up = F2(
 													A2(
 														$elm$core$List$filterMap,
 														$elm$core$Basics$identity,
-														A2($elm$core$List$map, $elm$core$Tuple$second, sub.children)));
+														A2($elm$core$List$map, $elm$core$Tuple$second, sub.ao)));
 												var children = A2(
 													$elm$core$List$concatMap,
 													$elm$core$Basics$identity,
-													A2($elm$core$List$map, $elm$core$Tuple$first, sub.children));
+													A2($elm$core$List$map, $elm$core$Tuple$first, sub.ao));
 												if (_Utils_eq(
 													$elm$core$List$reverse(
 														A2(
 															$elm$core$List$drop,
 															1,
 															$elm$core$List$reverse(tpath))),
-													sub.path)) {
+													sub.aA)) {
 													var _v4 = $elm$core$List$head(children);
-													if (_v4.$ === 'Just') {
+													if (!_v4.$) {
 														var c = _v4.a;
 														return _Utils_Tuple2(
 															_List_fromArray(
@@ -6907,15 +6890,15 @@ var $author$project$Tree$Navigate$Extra$move_up = F2(
 																	c,
 																	A2(
 																	$zwilias$elm_rosetree$Tree$tree,
-																	sub.label,
+																	sub.aw,
 																	A2($elm$core$List$drop, 1, children))
 																]),
-															$elm$core$Maybe$Just(sub.path));
+															$elm$core$Maybe$Just(sub.aA));
 													} else {
 														return _Utils_Tuple2(
 															_List_fromArray(
 																[
-																	A2($zwilias$elm_rosetree$Tree$tree, sub.label, children)
+																	A2($zwilias$elm_rosetree$Tree$tree, sub.aw, children)
 																]),
 															npath);
 													}
@@ -6923,7 +6906,7 @@ var $author$project$Tree$Navigate$Extra$move_up = F2(
 													return _Utils_Tuple2(
 														_List_fromArray(
 															[
-																A2($zwilias$elm_rosetree$Tree$tree, sub.label, children)
+																A2($zwilias$elm_rosetree$Tree$tree, sub.aw, children)
 															]),
 														npath);
 												}
@@ -6954,25 +6937,25 @@ var $author$project$Tree$Navigate$Extra$move_up = F2(
 												A2(
 													$elm$core$List$filterMap,
 													$elm$core$Basics$identity,
-													A2($elm$core$List$map, $elm$core$Tuple$second, sub.children)));
-											var children = A2($elm$core$List$map, $elm$core$Tuple$first, sub.children);
+													A2($elm$core$List$map, $elm$core$Tuple$second, sub.ao)));
+											var children = A2($elm$core$List$map, $elm$core$Tuple$first, sub.ao);
 											return _Utils_eq(
 												$elm$core$List$reverse(
 													A2(
 														$elm$core$List$drop,
 														1,
 														$elm$core$List$reverse(tpath))),
-												sub.path) ? _Utils_Tuple2(
+												sub.aA) ? _Utils_Tuple2(
 												A2(
 													$zwilias$elm_rosetree$Tree$tree,
-													sub.label,
+													sub.aw,
 													A3($elm_community$list_extra$List$Extra$swapAt, n - 1, n, children)),
 												$elm$core$Maybe$Just(
 													_Utils_ap(
-														sub.path,
+														sub.aA,
 														_List_fromArray(
 															[n - 1])))) : _Utils_Tuple2(
-												A2($zwilias$elm_rosetree$Tree$tree, sub.label, children),
+												A2($zwilias$elm_rosetree$Tree$tree, sub.aw, children),
 												npath);
 										},
 										tree);
@@ -6986,10 +6969,10 @@ var $author$project$Tree$Navigate$Extra$move_up = F2(
 		}
 	});
 var $author$project$ChirunPackageConfig$move_item = function (direction) {
-	switch (direction.$) {
-		case 'Up':
+	switch (direction) {
+		case 0:
 			return $author$project$Tree$Navigate$Extra$move_up;
-		case 'Down':
+		case 1:
 			return $author$project$Tree$Navigate$Extra$move_down;
 		default:
 			return $author$project$Tree$Navigate$Extra$move_right($author$project$ChirunPackageConfig$item_has_children);
@@ -7003,7 +6986,7 @@ var $author$project$ChirunPackageConfig$set_package_setting = F3(
 		return _Utils_update(
 			_package,
 			{
-				settings: A3($elm$core$Dict$insert, key, setting, _package.settings)
+				p: A3($elm$core$Dict$insert, key, setting, _package.p)
 			});
 	});
 var $lue_bird$elm_rosetree_path$Tree$Path$toChild = function (childIndex) {
@@ -7030,83 +7013,59 @@ var $author$project$ChirunPackageConfig$update_item = F3(
 		return _Utils_update(
 			_package,
 			{
-				content: A3($lue_bird$elm_rosetree_path$Forest$Navigate$alter, path, fn, _package.content)
+				f: A3($lue_bird$elm_rosetree_path$Forest$Navigate$alter, path, fn, _package.f)
 			});
 	});
 var $author$project$ChirunPackageConfig$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
-			case 'FocusButton':
+			case 4:
 				return $author$project$ChirunPackageConfig$nocmd(model);
-			case 'ItemMsg':
+			case 1:
 				switch (msg.a.$) {
-					case 'Add':
+					case 3:
 						var _v1 = msg.a;
+						var direction = _v1.a;
+						var button_id = _v1.b;
 						var path = msg.b;
-						var npackage = A2($author$project$ChirunPackageConfig$add_item, path, model._package);
-						var npath = A2(
-							$elm$core$Maybe$map,
-							A2(
-								$elm$core$Basics$composeR,
-								$zwilias$elm_rosetree$Tree$children,
-								A2(
-									$elm$core$Basics$composeR,
-									$author$project$ChirunPackageConfig$last_index,
-									A2(
-										$elm$core$Basics$composeR,
-										function (i) {
-											return A2($lue_bird$elm_rosetree_path$Forest$Path$toChild, i, path);
-										},
-										$author$project$ChirunPackageConfig$ContentItemTab))),
-							A2($lue_bird$elm_rosetree_path$Forest$Navigate$to, path, npackage.content));
-						var tab = A2($elm$core$Maybe$withDefault, model.tab, npath);
-						return $author$project$ChirunPackageConfig$nocmd(
-							_Utils_update(
-								model,
-								{_package: npackage, tab: tab}));
-					case 'Move':
-						var _v2 = msg.a;
-						var direction = _v2.a;
-						var button_id = _v2.b;
-						var path = msg.b;
-						var _package = model._package;
-						var _v3 = A3($author$project$ChirunPackageConfig$move_item, direction, path, _package.content);
-						var ncontent = _v3.a;
-						var npath = _v3.b;
+						var _package = model.e;
+						var _v2 = A3($author$project$ChirunPackageConfig$move_item, direction, path, _package.f);
+						var ncontent = _v2.a;
+						var npath = _v2.b;
 						var tab = A2(
 							$elm$core$Maybe$withDefault,
-							model.tab,
+							model.q,
 							A2($elm$core$Maybe$map, $author$project$ChirunPackageConfig$ContentItemTab, npath));
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
-									_package: _Utils_update(
+									e: _Utils_update(
 										_package,
-										{content: ncontent}),
-									tab: tab
+										{f: ncontent}),
+									q: tab
 								}),
 							A2(
 								$elm$core$Task$attempt,
 								$author$project$ChirunPackageConfig$FocusButton,
 								$elm$browser$Browser$Dom$focus(button_id)));
-					case 'Delete':
-						var _v4 = msg.a;
+					case 0:
+						var _v3 = msg.a;
 						var path = msg.b;
 						var tab = function () {
-							var _v5 = model.tab;
-							if (_v5.$ === 'ContentItemTab') {
-								var p2 = _v5.a;
-								return _Utils_eq(p2, path) ? $author$project$ChirunPackageConfig$PackageSettingsTab : model.tab;
+							var _v4 = model.q;
+							if (_v4.$ === 1) {
+								var p2 = _v4.a;
+								return _Utils_eq(p2, path) ? $author$project$ChirunPackageConfig$PackageSettingsTab : model.q;
 							} else {
-								return model.tab;
+								return model.q;
 							}
 						}();
-						var npackage = A2($author$project$ChirunPackageConfig$delete_item, path, model._package);
+						var npackage = A2($author$project$ChirunPackageConfig$delete_item, path, model.e);
 						return $author$project$ChirunPackageConfig$nocmd(
 							_Utils_update(
 								model,
-								{_package: npackage, tab: tab}));
+								{e: npackage, q: tab}));
 					default:
 						var item_msg = msg.a;
 						var path = msg.b;
@@ -7114,32 +7073,59 @@ var $author$project$ChirunPackageConfig$update = F2(
 							_Utils_update(
 								model,
 								{
-									_package: A3(
+									e: A3(
 										$author$project$ChirunPackageConfig$update_item,
 										path,
 										$author$project$ChirunPackageConfig$apply_item_msg(item_msg),
-										model._package)
+										model.e)
 								}));
 				}
-			case 'AddTopItem':
-				var npackage = $author$project$ChirunPackageConfig$add_top_item(model._package);
-				return $author$project$ChirunPackageConfig$nocmd(
-					_Utils_update(
-						model,
-						{
-							_package: npackage,
-							tab: $author$project$ChirunPackageConfig$ContentItemTab(
+			case 3:
+				var mpath = msg.a;
+				var type_ = msg.b;
+				if (!mpath.$) {
+					var path = mpath.a;
+					var npackage = A3($author$project$ChirunPackageConfig$add_item, path, type_, model.e);
+					var npath = A2(
+						$elm$core$Maybe$map,
+						A2(
+							$elm$core$Basics$composeR,
+							$zwilias$elm_rosetree$Tree$children,
+							A2(
+								$elm$core$Basics$composeR,
+								$author$project$ChirunPackageConfig$last_index,
 								A2(
-									$lue_bird$elm_rosetree_path$Forest$Path$fromIndex,
-									$author$project$ChirunPackageConfig$last_index(npackage.content),
-									$lue_bird$elm_rosetree_path$Tree$Path$atTrunk))
-						}));
-			case 'SetTab':
+									$elm$core$Basics$composeR,
+									function (i) {
+										return A2($lue_bird$elm_rosetree_path$Forest$Path$toChild, i, path);
+									},
+									$author$project$ChirunPackageConfig$ContentItemTab))),
+						A2($lue_bird$elm_rosetree_path$Forest$Navigate$to, path, npackage.f));
+					var tab = A2($elm$core$Maybe$withDefault, model.q, npath);
+					return $author$project$ChirunPackageConfig$nocmd(
+						_Utils_update(
+							model,
+							{e: npackage, q: tab}));
+				} else {
+					var npackage = A2($author$project$ChirunPackageConfig$add_top_item, type_, model.e);
+					return $author$project$ChirunPackageConfig$nocmd(
+						_Utils_update(
+							model,
+							{
+								e: npackage,
+								q: $author$project$ChirunPackageConfig$ContentItemTab(
+									A2(
+										$lue_bird$elm_rosetree_path$Forest$Path$fromIndex,
+										$author$project$ChirunPackageConfig$last_index(npackage.f),
+										$lue_bird$elm_rosetree_path$Tree$Path$atTrunk))
+							}));
+				}
+			case 0:
 				var tab = msg.a;
 				return $author$project$ChirunPackageConfig$nocmd(
 					_Utils_update(
 						model,
-						{tab: tab}));
+						{q: tab}));
 			default:
 				var key = msg.a;
 				var setting = msg.b;
@@ -7147,7 +7133,7 @@ var $author$project$ChirunPackageConfig$update = F2(
 					_Utils_update(
 						model,
 						{
-							_package: A3($author$project$ChirunPackageConfig$set_package_setting, key, setting, model._package)
+							e: A3($author$project$ChirunPackageConfig$set_package_setting, key, setting, model.e)
 						}));
 		}
 	});
@@ -7162,15 +7148,160 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $author$project$ChirunPackageConfig$AddItem = F2(
+	function (a, b) {
+		return {$: 3, a: a, b: b};
+	});
+var $elm$html$Html$h2 = _VirtualDom_node('h2');
+var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $author$project$Localise$localise = $elm$core$Basics$identity;
+var $author$project$ChirunPackageConfig$item_type_name = function (type_) {
+	switch (type_) {
+		case 0:
+			return $author$project$Localise$localise('Introduction');
+		case 1:
+			return $author$project$Localise$localise('Part');
+		case 3:
+			return $author$project$Localise$localise('Document');
+		case 2:
+			return $author$project$Localise$localise('Chapter');
+		case 4:
+			return $author$project$Localise$localise('Standalone');
+		case 7:
+			return $author$project$Localise$localise('URL');
+		case 8:
+			return $author$project$Localise$localise('HTML');
+		case 5:
+			return $author$project$Localise$localise('Slides');
+		case 9:
+			return $author$project$Localise$localise('Exam');
+		default:
+			return $author$project$Localise$localise('Notebook');
+	}
+};
+var $elm$html$Html$li = _VirtualDom_node('li');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 0, a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$virtual_dom$VirtualDom$attribute = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_attribute,
+			_VirtualDom_noOnOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
+	});
+var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
+var $author$project$Html$ChirunExtra$role = $elm$html$Html$Attributes$attribute('role');
+var $elm$html$Html$section = _VirtualDom_node('section');
+var $elm$html$Html$span = _VirtualDom_node('span');
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$Html$ChirunExtra$text = A2($elm$core$Basics$composeR, $author$project$Localise$localise, $elm$html$Html$text);
+var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
+var $elm$html$Html$ul = _VirtualDom_node('ul');
+var $author$project$ChirunPackageConfig$create_item_tab = function (path) {
+	var type_selector = F2(
+		function (type_, description) {
+			return A2(
+				$elm$html$Html$li,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('item-type')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick(
+								A2($author$project$ChirunPackageConfig$AddItem, path, type_)),
+								$elm$html$Html$Attributes$type_('button')
+							]),
+						_List_fromArray(
+							[
+								$author$project$Html$ChirunExtra$text(
+								$author$project$ChirunPackageConfig$item_type_name(type_))
+							])),
+						A2(
+						$elm$html$Html$span,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('input-hint')
+							]),
+						_List_fromArray(
+							[
+								$author$project$Html$ChirunExtra$text(description)
+							]))
+					]));
+		});
+	return A2(
+		$elm$html$Html$section,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$id('create-item'),
+				$author$project$Html$ChirunExtra$role('tabpanel')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$h2,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$author$project$Html$ChirunExtra$text('Adding a new item')
+					])),
+				A2(
+				$elm$html$Html$p,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('input-hint')
+					]),
+				_List_fromArray(
+					[
+						$author$project$Html$ChirunExtra$text('Select a type for this item.')
+					])),
+				A2(
+				$elm$html$Html$ul,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(type_selector, 0, 'The index page for the course.'),
+						A2(type_selector, 1, 'A group of items.'),
+						A2(type_selector, 2, 'A single document, or a chapter from a longer document.'),
+						A2(type_selector, 3, 'A single document, automatically split into separate pages.'),
+						A2(type_selector, 4, 'A single document with no links to other items.'),
+						A2(type_selector, 5, 'Slides for presentation.'),
+						A2(type_selector, 6, 'A code notebook, with an automatically-created Jupyter notebook version.'),
+						A2(type_selector, 7, 'A link to a given address.'),
+						A2(type_selector, 8, 'A single passage of HTML code.')
+					]))
+			]));
+};
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$json$Json$Encode$int = _Json_wrap;
 var $author$project$ChirunPackageConfig$encode_setting = function (setting) {
 	switch (setting.$) {
-		case 'StringSetting':
+		case 0:
 			var s = setting.a;
 			return $elm$json$Json$Encode$string(s);
-		case 'IntSetting':
+		case 1:
 			var i = setting.a;
 			return $elm$json$Json$Encode$int(i);
 		default:
@@ -7198,7 +7329,7 @@ var $elm$json$Json$Encode$list = F2(
 			A3(
 				$elm$core$List$foldl,
 				_Json_addEntry(func),
-				_Json_emptyArray(_Utils_Tuple0),
+				_Json_emptyArray(0),
 				entries));
 	});
 var $elm$json$Json$Encode$object = function (pairs) {
@@ -7211,7 +7342,7 @@ var $elm$json$Json$Encode$object = function (pairs) {
 					var v = _v0.b;
 					return A3(_Json_addField, k, v, obj);
 				}),
-			_Json_emptyObject(_Utils_Tuple0),
+			_Json_emptyObject(0),
 			pairs));
 };
 var $author$project$ChirunPackageConfig$encode_content_item = function (tree) {
@@ -7224,7 +7355,7 @@ var $author$project$ChirunPackageConfig$encode_content_item = function (tree) {
 					_Utils_Tuple2(
 					'type',
 					$elm$json$Json$Encode$string(
-						$author$project$ChirunPackageConfig$item_type_code(item.type_)))
+						$author$project$ChirunPackageConfig$item_type_code(item.n)))
 				]),
 			_Utils_ap(
 				A2(
@@ -7241,7 +7372,7 @@ var $author$project$ChirunPackageConfig$encode_content_item = function (tree) {
 								]);
 						},
 						children)),
-				$author$project$ChirunPackageConfig$encode_settings(item.settings))));
+				$author$project$ChirunPackageConfig$encode_settings(item.p))));
 };
 var $author$project$ChirunPackageConfig$encode_package = function (_package) {
 	return $elm$json$Json$Encode$object(
@@ -7250,40 +7381,39 @@ var $author$project$ChirunPackageConfig$encode_package = function (_package) {
 				[
 					_Utils_Tuple2(
 					'structure',
-					A2($elm$json$Json$Encode$list, $author$project$ChirunPackageConfig$encode_content_item, _package.content))
+					A2($elm$json$Json$Encode$list, $author$project$ChirunPackageConfig$encode_content_item, _package.f))
 				]),
-			$author$project$ChirunPackageConfig$encode_settings(_package.settings)));
+			$author$project$ChirunPackageConfig$encode_settings(_package.p)));
 };
 var $elm$html$Html$Attributes$enctype = $elm$html$Html$Attributes$stringProperty('enctype');
 var $elm$html$Html$form = _VirtualDom_node('form');
-var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
 var $elm$html$Html$input = _VirtualDom_node('input');
-var $author$project$ChirunPackageConfig$Delete = {$: 'Delete'};
-var $author$project$ChirunPackageConfig$Down = {$: 'Down'};
+var $author$project$ChirunPackageConfig$Delete = {$: 0};
+var $author$project$ChirunPackageConfig$Down = 1;
 var $author$project$ChirunPackageConfig$ItemMsg = F2(
 	function (a, b) {
-		return {$: 'ItemMsg', a: a, b: b};
+		return {$: 1, a: a, b: b};
 	});
 var $author$project$ChirunPackageConfig$Move = F2(
 	function (a, b) {
-		return {$: 'Move', a: a, b: b};
+		return {$: 3, a: a, b: b};
 	});
-var $author$project$ChirunPackageConfig$Right = {$: 'Right'};
+var $author$project$ChirunPackageConfig$Right = 2;
 var $author$project$ChirunPackageConfig$SetSetting = F2(
 	function (a, b) {
-		return {$: 'SetSetting', a: a, b: b};
+		return {$: 1, a: a, b: b};
 	});
 var $author$project$ChirunPackageConfig$SetType = function (a) {
-	return {$: 'SetType', a: a};
+	return {$: 2, a: a};
 };
-var $author$project$ChirunPackageConfig$Up = {$: 'Up'};
+var $author$project$ChirunPackageConfig$Up = 0;
 var $author$project$Form$add_input = F2(
 	function (element, o) {
 		return _Utils_update(
 			o,
 			{
-				input: _Utils_ap(
-					o.input,
+				I: _Utils_ap(
+					o.I,
 					_List_fromArray(
 						[element]))
 			});
@@ -7299,22 +7429,11 @@ var $elm$html$Html$Attributes$boolProperty = F2(
 var $elm$html$Html$Attributes$checked = $elm$html$Html$Attributes$boolProperty('checked');
 var $author$project$Form$just_input = function (element) {
 	return {
-		input: _List_fromArray(
+		I: _List_fromArray(
 			[element]),
-		label: _List_Nil
+		aw: _List_Nil
 	};
 };
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
 var $elm$json$Json$Decode$at = F2(
 	function (fields, decoder) {
 		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
@@ -7330,7 +7449,6 @@ var $elm$html$Html$Events$onCheck = function (tagger) {
 		'change',
 		A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetChecked));
 };
-var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $author$project$Form$bool_checkbox = F2(
 	function (control, value) {
 		return $author$project$Form$just_input(
@@ -7339,16 +7457,16 @@ var $author$project$Form$bool_checkbox = F2(
 				_Utils_ap(
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$id(control.id),
+							$elm$html$Html$Attributes$id(control.A),
 							$elm$html$Html$Attributes$type_('checkbox'),
 							$elm$html$Html$Attributes$checked(value),
-							$elm$html$Html$Events$onCheck(control.onInput)
+							$elm$html$Html$Events$onCheck(control.J)
 						]),
-					control.attr(value)),
+					control.E(value)),
 				_List_Nil));
 	});
 var $author$project$ChirunPackageConfig$bool_setting = function (setting) {
-	if (setting.$ === 'BoolSetting') {
+	if (setting.$ === 2) {
 		var b = setting.a;
 		return b;
 	} else {
@@ -7360,7 +7478,7 @@ var $elm$html$Html$fieldset = _VirtualDom_node('fieldset');
 var $author$project$FS$extension = A2(
 	$elm$core$Basics$composeR,
 	function ($) {
-		return $.name;
+		return $.a$;
 	},
 	A2(
 		$elm$core$Basics$composeR,
@@ -7408,19 +7526,11 @@ var $elm$core$List$member = F2(
 	});
 var $author$project$ChirunPackageConfig$file_extension_filter = F2(
 	function (valid_extensions, i) {
-		return _Utils_eq(i.type_, $author$project$FS$Directory) || A2(
+		return (!i.n) || A2(
 			$elm$core$List$member,
 			$author$project$FS$extension(i),
 			valid_extensions);
 	});
-var $elm$virtual_dom$VirtualDom$attribute = F2(
-	function (key, value) {
-		return A2(
-			_VirtualDom_attribute,
-			_VirtualDom_noOnOrFormAction(key),
-			_VirtualDom_noJavaScriptOrHtmlUri(value));
-	});
-var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
 var $author$project$Html$ChirunExtra$optional_attribute = F2(
 	function (name, on) {
 		return on ? _List_fromArray(
@@ -7448,20 +7558,13 @@ var $elm$core$List$isEmpty = function (xs) {
 		return false;
 	}
 };
-var $elm$html$Html$li = _VirtualDom_node('li');
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
-};
 var $elm$core$List$singleton = function (value) {
 	return _List_fromArray(
 		[value]);
 };
 var $author$project$Form$path_to_pathnames = F2(
 	function (path, files) {
-		var name = $zwilias$elm_rosetree$Tree$label(files).name;
+		var name = $zwilias$elm_rosetree$Tree$label(files).a$;
 		if (!path.b) {
 			return (name === '') ? _List_Nil : $elm$core$List$singleton(name);
 		} else {
@@ -7471,7 +7574,7 @@ var $author$project$Form$path_to_pathnames = F2(
 				$elm_community$list_extra$List$Extra$getAt,
 				i,
 				$zwilias$elm_rosetree$Tree$children(files));
-			if (_v1.$ === 'Just') {
+			if (!_v1.$) {
 				var sub = _v1.a;
 				var subnames = A2($author$project$Form$path_to_pathnames, rest, sub);
 				return (name === '') ? subnames : A2($elm$core$List$cons, name, subnames);
@@ -7493,9 +7596,9 @@ var $author$project$Form$pathnames_to_path = F2(
 					var i = _v2.a;
 					var sub = _v2.b;
 					var _v3 = _Utils_Tuple2(
-						$zwilias$elm_rosetree$Tree$label(sub).type_,
+						$zwilias$elm_rosetree$Tree$label(sub).n,
 						rest);
-					if (_v3.a.$ === 'File') {
+					if (_v3.a === 1) {
 						if (!_v3.b.b) {
 							var _v4 = _v3.a;
 							return $elm$core$Maybe$Just(
@@ -7519,7 +7622,7 @@ var $author$project$Form$pathnames_to_path = F2(
 						var i = _v1.a;
 						var t = _v1.b;
 						return _Utils_eq(
-							$zwilias$elm_rosetree$Tree$label(t).name,
+							$zwilias$elm_rosetree$Tree$label(t).a$,
 							pathname);
 					},
 					A2(
@@ -7528,21 +7631,17 @@ var $author$project$Form$pathnames_to_path = F2(
 						$zwilias$elm_rosetree$Tree$children(tree))));
 		}
 	});
-var $author$project$Html$ChirunExtra$role = $elm$html$Html$Attributes$attribute('role');
 var $elm$html$Html$summary = _VirtualDom_node('summary');
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $author$project$Form$file_selector = F3(
 	function (files, control, value) {
 		var filepath = A2($elm$core$String$split, '/', value);
 		var mpath = A2($author$project$Form$pathnames_to_path, filepath, files);
 		var show_item = function (sub) {
-			var path = sub.path;
+			var path = sub.aA;
 			var selected = _Utils_eq(
 				mpath,
 				$elm$core$Maybe$Just(path));
-			var name = sub.label.name;
+			var name = sub.aw.a$;
 			var in_selected = (!_Utils_eq(path, _List_Nil)) && function (p) {
 				return _Utils_eq(
 					A2(
@@ -7552,8 +7651,8 @@ var $author$project$Form$file_selector = F3(
 					path);
 			}(
 				A2($elm$core$Maybe$withDefault, _List_Nil, mpath));
-			var _v0 = sub.label.type_;
-			if (_v0.$ === 'Directory') {
+			var _v0 = sub.aw.n;
+			if (!_v0) {
 				return function (e) {
 					return _Utils_eq(path, _List_Nil) ? e : A2(
 						$elm$html$Html$li,
@@ -7611,7 +7710,7 @@ var $author$project$Form$file_selector = F3(
 								A2(
 								$elm$html$Html$ul,
 								_List_Nil,
-								$elm$core$List$isEmpty(sub.children) ? _List_fromArray(
+								$elm$core$List$isEmpty(sub.ao) ? _List_fromArray(
 									[
 										A2(
 										$elm$html$Html$li,
@@ -7623,7 +7722,7 @@ var $author$project$Form$file_selector = F3(
 											[
 												$elm$html$Html$text('Empty directory')
 											]))
-									]) : sub.children)
+									]) : sub.ao)
 							])));
 			} else {
 				return A2(
@@ -7647,7 +7746,7 @@ var $author$project$Form$file_selector = F3(
 												_Utils_Tuple2('file', true)
 											])),
 										$elm$html$Html$Events$onClick(
-										control.onInput(
+										control.J(
 											A2(
 												$elm$core$String$join,
 												'/',
@@ -7668,12 +7767,12 @@ var $zwilias$elm_rosetree$Tree$restructureHelp = F4(
 	function (fLabel, fTree, acc, stack) {
 		restructureHelp:
 		while (true) {
-			var _v0 = acc.todo;
+			var _v0 = acc.j;
 			if (!_v0.b) {
 				var node = A2(
 					fTree,
-					acc.label,
-					$elm$core$List$reverse(acc.done));
+					acc.aw,
+					$elm$core$List$reverse(acc.a));
 				if (!stack.b) {
 					return node;
 				} else {
@@ -7684,7 +7783,7 @@ var $zwilias$elm_rosetree$Tree$restructureHelp = F4(
 						$temp$acc = _Utils_update(
 						top,
 						{
-							done: A2($elm$core$List$cons, node, top.done)
+							a: A2($elm$core$List$cons, node, top.a)
 						}),
 						$temp$stack = rest;
 					fLabel = $temp$fLabel;
@@ -7703,14 +7802,14 @@ var $zwilias$elm_rosetree$Tree$restructureHelp = F4(
 						$temp$acc = _Utils_update(
 						acc,
 						{
-							done: A2(
+							a: A2(
 								$elm$core$List$cons,
 								A2(
 									fTree,
 									fLabel(l),
 									_List_Nil),
-								acc.done),
-							todo: rest
+								acc.a),
+							j: rest
 						}),
 						$temp$stack = stack;
 					fLabel = $temp$fLabel;
@@ -7726,15 +7825,15 @@ var $zwilias$elm_rosetree$Tree$restructureHelp = F4(
 					var $temp$fLabel = fLabel,
 						$temp$fTree = fTree,
 						$temp$acc = {
-						done: _List_Nil,
-						label: fLabel(l),
-						todo: cs
+						a: _List_Nil,
+						aw: fLabel(l),
+						j: cs
 					},
 						$temp$stack = A2(
 						$elm$core$List$cons,
 						_Utils_update(
 							acc,
-							{todo: rest}),
+							{j: rest}),
 						stack);
 					fLabel = $temp$fLabel;
 					fTree = $temp$fTree;
@@ -7754,9 +7853,9 @@ var $zwilias$elm_rosetree$Tree$restructure = F3(
 			convertLabel,
 			convertTree,
 			{
-				done: _List_Nil,
-				label: convertLabel(l),
-				todo: c
+				a: _List_Nil,
+				aw: convertLabel(l),
+				j: c
 			},
 			_List_Nil);
 	});
@@ -7779,7 +7878,7 @@ var $elm$core$Dict$get = F2(
 	function (targetKey, dict) {
 		get:
 		while (true) {
-			if (dict.$ === 'RBEmpty_elm_builtin') {
+			if (dict.$ === -2) {
 				return $elm$core$Maybe$Nothing;
 			} else {
 				var key = dict.b;
@@ -7787,14 +7886,14 @@ var $elm$core$Dict$get = F2(
 				var left = dict.d;
 				var right = dict.e;
 				var _v1 = A2($elm$core$Basics$compare, targetKey, key);
-				switch (_v1.$) {
-					case 'LT':
+				switch (_v1) {
+					case 0:
 						var $temp$targetKey = targetKey,
 							$temp$dict = left;
 						targetKey = $temp$targetKey;
 						dict = $temp$dict;
 						continue get;
-					case 'EQ':
+					case 1:
 						return $elm$core$Maybe$Just(value);
 					default:
 						var $temp$targetKey = targetKey,
@@ -7818,7 +7917,7 @@ var $author$project$ChirunPackageConfig$get_setting = F3(
 			A2(
 				$elm$core$Maybe$andThen,
 				function (s) {
-					if (s.$ === 'IntSetting') {
+					if (s.$ === 1) {
 						var i = s.a;
 						return $elm$core$Basics$isNaN(i) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(s);
 					} else {
@@ -7837,14 +7936,14 @@ var $author$project$Form$int_input = F2(
 				_Utils_ap(
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$id(control.id),
+							$elm$html$Html$Attributes$id(control.A),
 							$elm$html$Html$Attributes$type_('number'),
 							A2(
 							$elm$html$Html$Events$on,
 							'input',
 							A2(
 								$elm$json$Json$Decode$map,
-								control.onInput,
+								control.J,
 								A2(
 									$elm$json$Json$Decode$field,
 									'target',
@@ -7852,11 +7951,11 @@ var $author$project$Form$int_input = F2(
 							$elm$html$Html$Attributes$value(
 							$elm$core$String$fromInt(value))
 						]),
-					control.attr(value)),
+					control.E(value)),
 				_List_Nil));
 	});
 var $author$project$ChirunPackageConfig$int_setting = function (setting) {
-	if (setting.$ === 'IntSetting') {
+	if (setting.$ === 1) {
 		var i = setting.a;
 		return i;
 	} else {
@@ -7900,31 +7999,6 @@ var $author$project$ChirunPackageConfig$item_defaults = $elm$core$Dict$fromList(
 			'footer',
 			$author$project$ChirunPackageConfig$BoolSetting(true))
 		]));
-var $author$project$Localise$localise = $elm$core$Basics$identity;
-var $author$project$ChirunPackageConfig$item_type_name = function (type_) {
-	switch (type_.$) {
-		case 'Introduction':
-			return $author$project$Localise$localise('Introduction');
-		case 'Part':
-			return $author$project$Localise$localise('Part');
-		case 'Document':
-			return $author$project$Localise$localise('Document');
-		case 'Chapter':
-			return $author$project$Localise$localise('Chapter');
-		case 'Standalone':
-			return $author$project$Localise$localise('Standalone');
-		case 'URL':
-			return $author$project$Localise$localise('URL');
-		case 'HTML':
-			return $author$project$Localise$localise('HTML');
-		case 'Slides':
-			return $author$project$Localise$localise('Slides');
-		case 'Exam':
-			return $author$project$Localise$localise('Exam');
-		default:
-			return $author$project$Localise$localise('Notebook');
-	}
-};
 var $elm$html$Html$legend = _VirtualDom_node('legend');
 var $elm$core$Tuple$mapFirst = F2(
 	function (func, _v0) {
@@ -7940,8 +8014,8 @@ var $author$project$Form$add_label = F2(
 		return _Utils_update(
 			o,
 			{
-				label: _Utils_ap(
-					o.label,
+				aw: _Utils_ap(
+					o.aw,
 					_List_fromArray(
 						[element]))
 			});
@@ -7951,12 +8025,12 @@ var $elm$html$Html$label = _VirtualDom_node('label');
 var $author$project$Form$labelled = F4(
 	function (label, element, control, value) {
 		return function (o) {
-			return (_Utils_eq(o.input, _List_Nil) ? $elm$core$Basics$identity : $author$project$Form$add_label(
+			return (_Utils_eq(o.I, _List_Nil) ? $elm$core$Basics$identity : $author$project$Form$add_label(
 				A2(
 					$elm$html$Html$label,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$for(control.id)
+							$elm$html$Html$Attributes$for(control.A)
 						]),
 					_List_fromArray(
 						[
@@ -7985,18 +8059,18 @@ var $author$project$Form$render = F8(
 	function (getter, msg, m, o, element, map_element, id, label) {
 		return function (c) {
 			return _Utils_ap(
-				$author$project$Form$wrap_multiple(c.label),
-				$author$project$Form$wrap_multiple(c.input));
+				$author$project$Form$wrap_multiple(c.aw),
+				$author$project$Form$wrap_multiple(c.I));
 		}(
 			A2(
 				map_element(
 					A2($author$project$Form$labelled, label, element)),
 				{
-					attr: function (_v0) {
+					E: function (_v0) {
 						return _List_Nil;
 					},
-					id: id,
-					onInput: A2(
+					A: id,
+					J: A2(
 						$elm$core$Basics$composeR,
 						o,
 						msg(id))
@@ -8004,12 +8078,11 @@ var $author$project$Form$render = F8(
 				m(
 					getter(id))));
 	});
-var $elm$html$Html$section = _VirtualDom_node('section');
 var $elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
 var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
-	return {$: 'MayStopPropagation', a: a};
+	return {$: 1, a: a};
 };
 var $elm$html$Html$Events$stopPropagationOn = F2(
 	function (event, decoder) {
@@ -8043,10 +8116,10 @@ var $author$project$Form$select = F3(
 				_Utils_ap(
 					_List_fromArray(
 						[
-							$elm$html$Html$Events$onInput(control.onInput),
-							$elm$html$Html$Attributes$id(control.id)
+							$elm$html$Html$Events$onInput(control.J),
+							$elm$html$Html$Attributes$id(control.A)
 						]),
-					control.attr(value)),
+					control.E(value)),
 				A2(
 					$elm$core$List$map,
 					function (_v0) {
@@ -8067,6 +8140,16 @@ var $author$project$Form$select = F3(
 					},
 					options)));
 	});
+var $author$project$ChirunPackageConfig$source_extensions = function (item) {
+	var _v0 = item.n;
+	if (_v0 === 8) {
+		return _List_fromArray(
+			['.html', '.htm']);
+	} else {
+		return _List_fromArray(
+			['.tex', '.md']);
+	}
+};
 var $elm$html$Html$Attributes$src = function (url) {
 	return A2(
 		$elm$html$Html$Attributes$stringProperty,
@@ -8074,7 +8157,7 @@ var $elm$html$Html$Attributes$src = function (url) {
 		_VirtualDom_noJavaScriptOrHtmlUri(url));
 };
 var $author$project$ChirunPackageConfig$string_setting = function (setting) {
-	if (setting.$ === 'StringSetting') {
+	if (!setting.$) {
 		var s = setting.a;
 		return s;
 	} else {
@@ -8093,8 +8176,8 @@ var $author$project$ChirunPackageConfig$get_string_setting_or_default = $author$
 		var setting = _v0.a;
 		var _default = _v0.b;
 		var _v1 = _Utils_Tuple2(setting, _default);
-		if ((_v1.a.$ === 'Just') && (_v1.a.a.$ === 'StringSetting')) {
-			if (((_v1.b.$ === 'Just') && (_v1.b.a.$ === 'StringSetting')) && (_v1.a.a.a === '')) {
+		if ((!_v1.a.$) && (!_v1.a.a.$)) {
+			if (((!_v1.b.$) && (!_v1.b.a.$)) && (_v1.a.a.a === '')) {
 				var d = _v1.b.a.a;
 				return d;
 			} else {
@@ -8102,7 +8185,7 @@ var $author$project$ChirunPackageConfig$get_string_setting_or_default = $author$
 				return s;
 			}
 		} else {
-			if ((_v1.b.$ === 'Just') && (_v1.b.a.$ === 'StringSetting')) {
+			if ((!_v1.b.$) && (!_v1.b.a.$)) {
 				var d = _v1.b.a.a;
 				return d;
 			} else {
@@ -8111,9 +8194,8 @@ var $author$project$ChirunPackageConfig$get_string_setting_or_default = $author$
 		}
 	});
 var $author$project$ChirunPackageConfig$structure_button_id = function (item) {
-	return $author$project$ChirunPackageConfig$item_type_code(item.type_) + ('-' + (A3($author$project$ChirunPackageConfig$get_string_setting_or_default, $author$project$ChirunPackageConfig$item_defaults, item.settings, 'title') + '-structure-button'));
+	return $author$project$ChirunPackageConfig$item_type_code(item.n) + ('-' + (A3($author$project$ChirunPackageConfig$get_string_setting_or_default, $author$project$ChirunPackageConfig$item_defaults, item.p, 'title') + '-structure-button'));
 };
-var $author$project$Html$ChirunExtra$text = A2($elm$core$Basics$composeR, $author$project$Localise$localise, $elm$html$Html$text);
 var $author$project$Form$text_input = F2(
 	function (control, value) {
 		return $author$project$Form$just_input(
@@ -8123,11 +8205,11 @@ var $author$project$Form$text_input = F2(
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$type_('text'),
-							$elm$html$Html$Attributes$id(control.id),
-							$elm$html$Html$Events$onInput(control.onInput),
+							$elm$html$Html$Attributes$id(control.A),
+							$elm$html$Html$Events$onInput(control.J),
 							$elm$html$Html$Attributes$value(value)
 						]),
-					control.attr(value)),
+					control.E(value)),
 				_List_Nil));
 	});
 var $elm$html$Html$textarea = _VirtualDom_node('textarea');
@@ -8139,10 +8221,10 @@ var $author$project$Form$textarea = F2(
 				_Utils_ap(
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$id(control.id),
-							$elm$html$Html$Events$onInput(control.onInput)
+							$elm$html$Html$Attributes$id(control.A),
+							$elm$html$Html$Events$onInput(control.J)
 						]),
-					control.attr(value)),
+					control.E(value)),
 				_List_fromArray(
 					[
 						$elm$html$Html$text(value)
@@ -8152,7 +8234,6 @@ var $author$project$Form$visible_if = F2(
 	function (visible, elements) {
 		return visible ? elements : _List_Nil;
 	});
-var $elm$html$Html$p = _VirtualDom_node('p');
 var $author$project$Form$with_hint = F4(
 	function (hint, element, control, value) {
 		return A2(
@@ -8174,11 +8255,11 @@ var $author$project$Form$with_placeholder = F3(
 			_Utils_update(
 				control,
 				{
-					attr: function (v) {
+					E: function (v) {
 						return A2(
 							$elm$core$List$cons,
 							$elm$html$Html$Attributes$placeholder(placeholder),
-							control.attr(v));
+							control.E(v));
 					}
 				}));
 	});
@@ -8202,7 +8283,7 @@ var $author$project$ChirunPackageConfig$item_settings_tab = F3(
 			$author$project$ChirunPackageConfig$content_item_types);
 		var item = $zwilias$elm_rosetree$Tree$label(tree);
 		var item_setting = function (key) {
-			return A3($author$project$ChirunPackageConfig$get_setting, $author$project$ChirunPackageConfig$item_defaults, item.settings, key);
+			return A3($author$project$ChirunPackageConfig$get_setting, $author$project$ChirunPackageConfig$item_defaults, item.p, key);
 		};
 		var pcontrol = A2(
 			$author$project$Form$render,
@@ -8241,20 +8322,10 @@ var $author$project$ChirunPackageConfig$item_settings_tab = F3(
 			'Split at');
 		var text_input = A3(pcontrol, $author$project$ChirunPackageConfig$string_setting, $author$project$ChirunPackageConfig$StringSetting, $author$project$Form$text_input);
 		var textarea = A3(pcontrol, $author$project$ChirunPackageConfig$string_setting, $author$project$ChirunPackageConfig$StringSetting, $author$project$Form$textarea);
-		var source_extensions = function () {
-			var _v5 = item.type_;
-			if (_v5.$ === 'HTML') {
-				return _List_fromArray(
-					['.html', '.htm']);
-			} else {
-				return _List_fromArray(
-					['.tex', '.md']);
-			}
-		}();
 		var type_select = A8(
 			$author$project$Form$render,
 			function (_v3) {
-				return item.type_;
+				return item.n;
 			},
 			F2(
 				function (_v4, t) {
@@ -8269,7 +8340,8 @@ var $author$project$ChirunPackageConfig$item_settings_tab = F3(
 			$elm$core$Basics$identity,
 			'type',
 			'Type');
-		var is_source_file = $author$project$ChirunPackageConfig$file_extension_filter(source_extensions);
+		var is_source_file = $author$project$ChirunPackageConfig$file_extension_filter(
+			$author$project$ChirunPackageConfig$source_extensions(item));
 		var int_input = A3(pcontrol, $author$project$ChirunPackageConfig$int_setting, $author$project$ChirunPackageConfig$IntSetting, $author$project$Form$int_input);
 		var image_preview = F3(
 			function (element, control, value) {
@@ -8279,7 +8351,7 @@ var $author$project$ChirunPackageConfig$item_settings_tab = F3(
 						_List_fromArray(
 							[
 								$elm$html$Html$Attributes$src(
-								_Utils_ap(model.media_root, value)),
+								_Utils_ap(model.ad, value)),
 								$elm$html$Html$Attributes$class('thumbnail'),
 								$elm$html$Html$Attributes$alt('Thumbnail')
 							]),
@@ -8292,32 +8364,32 @@ var $author$project$ChirunPackageConfig$item_settings_tab = F3(
 				$author$project$ChirunPackageConfig$string_setting,
 				$author$project$ChirunPackageConfig$StringSetting,
 				$author$project$Form$file_selector(
-					A2($author$project$FS$filter, valid_files, model.files)));
+					A2($author$project$FS$filter, valid_files, model.ab)));
 		};
 		var source_input = function () {
-			var _v2 = item.type_;
-			switch (_v2.$) {
-				case 'URL':
+			var _v2 = item.n;
+			switch (_v2) {
+				case 7:
 					return A3(
 						text_input,
 						$author$project$Form$with_hint(
 							$author$project$Html$ChirunExtra$text('A URL')),
 						'source',
 						'URL');
-				case 'HTML':
+				case 8:
 					return A3(textarea, $elm$core$Basics$identity, 'html', 'HTML code');
 				default:
 					return A4(file_selector, is_source_file, $elm$core$Basics$identity, 'source', 'Source');
 			}
 		}();
 		var can_build_pdf = function () {
-			var _v1 = item.type_;
-			switch (_v1.$) {
-				case 'URL':
+			var _v1 = item.n;
+			switch (_v1) {
+				case 7:
 					return false;
-				case 'HTML':
+				case 8:
 					return false;
-				case 'Part':
+				case 1:
 					return false;
 				default:
 					return true;
@@ -8338,16 +8410,16 @@ var $author$project$ChirunPackageConfig$item_settings_tab = F3(
 						$elm$html$Html$Attributes$disabled(
 						_Utils_eq(
 							$elm$core$Maybe$Nothing,
-							A3($author$project$ChirunPackageConfig$move_item, direction, path, model._package.content).b))
+							A3($author$project$ChirunPackageConfig$move_item, direction, path, model.e.f).b))
 					]),
 				_List_fromArray(
 					[
 						$author$project$Html$ChirunExtra$text(
 						function () {
-							switch (direction.$) {
-								case 'Up':
+							switch (direction) {
+								case 0:
 									return '↑';
-								case 'Down':
+								case 1:
 									return '↓';
 								default:
 									return '→';
@@ -8382,9 +8454,9 @@ var $author$project$ChirunPackageConfig$item_settings_tab = F3(
 							_List_fromArray(
 								[
 									$elm$html$Html$text('Move this item'),
-									move_button($author$project$ChirunPackageConfig$Up),
-									move_button($author$project$ChirunPackageConfig$Down),
-									move_button($author$project$ChirunPackageConfig$Right)
+									move_button(0),
+									move_button(1),
+									move_button(2)
 								])),
 							A2(
 							$elm$html$Html$button,
@@ -8443,7 +8515,7 @@ var $author$project$ChirunPackageConfig$item_settings_tab = F3(
 							source_input,
 							_Utils_ap(
 								A4(file_selector, $author$project$ChirunPackageConfig$is_image_file, image_preview, 'thumbnail', 'Thumbnail image'),
-								(!_Utils_eq(item.type_, $author$project$ChirunPackageConfig$Document)) ? _List_Nil : splitlevel_select)))),
+								(item.n !== 3) ? _List_Nil : splitlevel_select)))),
 					A2(
 					$elm$html$Html$fieldset,
 					_List_Nil,
@@ -8482,7 +8554,7 @@ var $elm$html$Html$Attributes$method = $elm$html$Html$Attributes$stringProperty(
 var $elm$html$Html$Attributes$name = $elm$html$Html$Attributes$stringProperty('name');
 var $author$project$ChirunPackageConfig$SetPackageSetting = F2(
 	function (a, b) {
-		return {$: 'SetPackageSetting', a: a, b: b};
+		return {$: 2, a: a, b: b};
 	});
 var $author$project$ChirunPackageConfig$locale_options = _List_fromArray(
 	[
@@ -8524,7 +8596,7 @@ var $author$project$ChirunPackageConfig$package_defaults = $elm$core$Dict$fromLi
 		]));
 var $author$project$ChirunPackageConfig$package_settings_tab = function (_package) {
 	var package_setting = function (key) {
-		return A3($author$project$ChirunPackageConfig$get_setting, $author$project$ChirunPackageConfig$package_defaults, _package.settings, key);
+		return A3($author$project$ChirunPackageConfig$get_setting, $author$project$ChirunPackageConfig$package_defaults, _package.p, key);
 	};
 	var pcontrol = A2($author$project$Form$render, package_setting, $author$project$ChirunPackageConfig$SetPackageSetting);
 	var select = function (options) {
@@ -8596,35 +8668,50 @@ var $author$project$ChirunPackageConfig$package_settings_tab = function (_packag
 							A3(text_input, $elm$core$Basics$identity, 'mathjax_url', 'URL to load MathJax from')))))
 			]));
 };
-var $author$project$ChirunPackageConfig$Add = {$: 'Add'};
-var $author$project$ChirunPackageConfig$AddTopItem = {$: 'AddTopItem'};
 var $author$project$ChirunPackageConfig$SetTab = function (a) {
-	return {$: 'SetTab', a: a};
+	return {$: 0, a: a};
 };
-var $author$project$ChirunPackageConfig$add_item_button = function (msg) {
-	return A2(
-		$elm$html$Html$li,
-		_List_Nil,
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('action add-item'),
-						$elm$html$Html$Attributes$type_('button'),
-						$elm$html$Html$Events$onClick(msg)
-					]),
-				_List_fromArray(
-					[
-						$author$project$Html$ChirunExtra$text('+ Add an item')
-					]))
-			]));
+var $author$project$ChirunPackageConfig$CreateItemTab = function (a) {
+	return {$: 2, a: a};
 };
+var $author$project$ChirunPackageConfig$add_item_button = F2(
+	function (model, path) {
+		return A2(
+			$elm$html$Html$li,
+			_List_Nil,
+			_List_fromArray(
+				[
+					_Utils_eq(
+					model.q,
+					$author$project$ChirunPackageConfig$CreateItemTab(path)) ? A2(
+					$elm$html$Html$span,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('adding-item')
+						]),
+					_List_fromArray(
+						[
+							$author$project$Html$ChirunExtra$text('Adding an item')
+						])) : A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('action add-item'),
+							$elm$html$Html$Attributes$type_('button'),
+							$elm$html$Html$Events$onClick(
+							$author$project$ChirunPackageConfig$SetTab(
+								$author$project$ChirunPackageConfig$CreateItemTab(path)))
+						]),
+					_List_fromArray(
+						[
+							$author$project$Html$ChirunExtra$text('+ Add an item')
+						]))
+				]));
+	});
 var $author$project$Html$ChirunExtra$aria_expanded = $author$project$Html$ChirunExtra$optional_attribute('aria-expanded');
 var $elm$html$Html$br = _VirtualDom_node('br');
 var $elm$virtual_dom$VirtualDom$Custom = function (a) {
-	return {$: 'Custom', a: a};
+	return {$: 3, a: a};
 };
 var $elm$html$Html$Events$custom = F2(
 	function (event, decoder) {
@@ -8635,7 +8722,6 @@ var $elm$html$Html$Events$custom = F2(
 	});
 var $elm$json$Json$Decode$fail = _Json_fail;
 var $elm$core$Basics$not = _Basics_not;
-var $elm$html$Html$span = _VirtualDom_node('span');
 var $author$project$ChirunPackageConfig$structure_tree = function (model) {
 	var move_keypress = F2(
 		function (path, id) {
@@ -8643,12 +8729,12 @@ var $author$project$ChirunPackageConfig$structure_tree = function (model) {
 				$elm$json$Json$Decode$map,
 				function (dir) {
 					return {
-						message: A2(
+						a_: A2(
 							$author$project$ChirunPackageConfig$ItemMsg,
 							A2($author$project$ChirunPackageConfig$Move, dir, id),
 							path),
-						preventDefault: true,
-						stopPropagation: true
+						a3: true,
+						a6: true
 					};
 				},
 				A2(
@@ -8656,11 +8742,11 @@ var $author$project$ChirunPackageConfig$structure_tree = function (model) {
 					function (key) {
 						switch (key) {
 							case 'ArrowUp':
-								return $elm$json$Json$Decode$succeed($author$project$ChirunPackageConfig$Up);
+								return $elm$json$Json$Decode$succeed(0);
 							case 'ArrowDown':
-								return $elm$json$Json$Decode$succeed($author$project$ChirunPackageConfig$Down);
+								return $elm$json$Json$Decode$succeed(1);
 							case 'ArrowRight':
-								return $elm$json$Json$Decode$succeed($author$project$ChirunPackageConfig$Right);
+								return $elm$json$Json$Decode$succeed(2);
 							default:
 								return $elm$json$Json$Decode$fail('not a key I\'m interested in');
 						}
@@ -8674,11 +8760,11 @@ var $author$project$ChirunPackageConfig$structure_tree = function (model) {
 		});
 	var structure_single_item = F2(
 		function (i, sub) {
-			var path = A2($lue_bird$elm_rosetree_path$Forest$Path$fromIndex, i, sub.path);
+			var path = A2($lue_bird$elm_rosetree_path$Forest$Path$fromIndex, i, sub.aA);
 			var this_tab = $author$project$ChirunPackageConfig$ContentItemTab(path);
-			var item = sub.label;
-			var title = A3($author$project$ChirunPackageConfig$get_string_setting_or_default, $author$project$ChirunPackageConfig$item_defaults, item.settings, 'title');
-			var has_children = $author$project$ChirunPackageConfig$item_has_children(sub.label);
+			var item = sub.aw;
+			var title = A3($author$project$ChirunPackageConfig$get_string_setting_or_default, $author$project$ChirunPackageConfig$item_defaults, item.p, 'title');
+			var has_children = $author$project$ChirunPackageConfig$item_has_children(sub.aw);
 			var button_id = $author$project$ChirunPackageConfig$structure_button_id(item);
 			return A2(
 				$elm$html$Html$li,
@@ -8707,9 +8793,9 @@ var $author$project$ChirunPackageConfig$structure_tree = function (model) {
 									]),
 								_Utils_ap(
 									$author$project$Html$ChirunExtra$aria_expanded(
-										!($elm$core$List$isEmpty(sub.children) && has_children)),
+										!($elm$core$List$isEmpty(sub.ao) && has_children)),
 									$author$project$Html$ChirunExtra$aria_current(
-										_Utils_eq(model.tab, this_tab)))),
+										_Utils_eq(model.q, this_tab)))),
 							_List_fromArray(
 								[
 									A2(
@@ -8721,7 +8807,7 @@ var $author$project$ChirunPackageConfig$structure_tree = function (model) {
 									_List_fromArray(
 										[
 											$elm$html$Html$text(
-											$author$project$ChirunPackageConfig$item_type_name(item.type_))
+											$author$project$ChirunPackageConfig$item_type_name(item.n))
 										])),
 									A2($elm$html$Html$br, _List_Nil, _List_Nil),
 									$elm$html$Html$text(title)
@@ -8736,7 +8822,7 @@ var $author$project$ChirunPackageConfig$structure_tree = function (model) {
 									$elm$html$Html$Attributes$class('content')
 								]),
 							_Utils_ap(
-								sub.children,
+								sub.ao,
 								_List_fromArray(
 									[
 										A2(
@@ -8744,8 +8830,10 @@ var $author$project$ChirunPackageConfig$structure_tree = function (model) {
 										_List_Nil,
 										_List_fromArray(
 											[
-												$author$project$ChirunPackageConfig$add_item_button(
-												A2($author$project$ChirunPackageConfig$ItemMsg, $author$project$ChirunPackageConfig$Add, path))
+												A2(
+												$author$project$ChirunPackageConfig$add_item_button,
+												model,
+												$elm$core$Maybe$Just(path))
 											]))
 									])))
 						]) : _List_Nil));
@@ -8786,9 +8874,9 @@ var $author$project$ChirunPackageConfig$structure_tree = function (model) {
 								]),
 							_Utils_ap(
 								$author$project$Html$ChirunExtra$aria_expanded(
-									!$elm$core$List$isEmpty(model._package.content)),
+									!$elm$core$List$isEmpty(model.e.f)),
 								$author$project$Html$ChirunExtra$aria_current(
-									_Utils_eq(model.tab, $author$project$ChirunPackageConfig$PackageSettingsTab)))),
+									_Utils_eq(model.q, $author$project$ChirunPackageConfig$PackageSettingsTab)))),
 						_List_fromArray(
 							[
 								$author$project$Html$ChirunExtra$text('Package settings')
@@ -8800,10 +8888,10 @@ var $author$project$ChirunPackageConfig$structure_tree = function (model) {
 								$author$project$Html$ChirunExtra$role('tree')
 							]),
 						_Utils_ap(
-							A2($elm$core$List$indexedMap, structure_item_tree, model._package.content),
+							A2($elm$core$List$indexedMap, structure_item_tree, model.e.f),
 							_List_fromArray(
 								[
-									$author$project$ChirunPackageConfig$add_item_button($author$project$ChirunPackageConfig$AddTopItem)
+									A2($author$project$ChirunPackageConfig$add_item_button, model, $elm$core$Maybe$Nothing)
 								])))
 					]))
 			]));
@@ -8849,24 +8937,28 @@ var $author$project$ChirunPackageConfig$form = function (model) {
 								$author$project$ChirunPackageConfig$structure_tree(model)
 							])),
 						function () {
-						var _v0 = model.tab;
-						if (_v0.$ === 'PackageSettingsTab') {
-							return $author$project$ChirunPackageConfig$package_settings_tab(model._package);
-						} else {
-							var path = _v0.a;
-							var _v1 = A2($lue_bird$elm_rosetree_path$Forest$Navigate$to, path, model._package.content);
-							if (_v1.$ === 'Just') {
-								var t = _v1.a;
-								return A3($author$project$ChirunPackageConfig$item_settings_tab, model, path, t);
-							} else {
-								return A2(
-									$elm$html$Html$div,
-									_List_Nil,
-									_List_fromArray(
-										[
-											$author$project$Html$ChirunExtra$text('Oh no!')
-										]));
-							}
+						var _v0 = model.q;
+						switch (_v0.$) {
+							case 0:
+								return $author$project$ChirunPackageConfig$package_settings_tab(model.e);
+							case 1:
+								var path = _v0.a;
+								var _v1 = A2($lue_bird$elm_rosetree_path$Forest$Navigate$to, path, model.e.f);
+								if (!_v1.$) {
+									var t = _v1.a;
+									return A3($author$project$ChirunPackageConfig$item_settings_tab, model, path, t);
+								} else {
+									return A2(
+										$elm$html$Html$div,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$author$project$Html$ChirunExtra$text('Oh no!')
+											]));
+								}
+							default:
+								var path = _v0.a;
+								return $author$project$ChirunPackageConfig$create_item_tab(path);
 						}
 					}()
 					])),
@@ -8881,14 +8973,14 @@ var $author$project$ChirunPackageConfig$form = function (model) {
 						A2(
 							$elm$json$Json$Encode$encode,
 							0,
-							$author$project$ChirunPackageConfig$encode_package(model._package)))
+							$author$project$ChirunPackageConfig$encode_package(model.e)))
 					]),
 				_List_Nil)
 			]));
 };
 var $author$project$ChirunPackageConfig$view = function (model) {
-	var _v0 = model.err;
-	if (_v0.$ === 'Just') {
+	var _v0 = model.aa;
+	if (!_v0.$) {
 		var err = _v0.a;
 		return A2(
 			$elm$html$Html$p,
@@ -8906,12 +8998,12 @@ var $author$project$ChirunPackageConfig$view = function (model) {
 };
 var $author$project$ChirunPackageConfig$main = $elm$browser$Browser$element(
 	{
-		init: $author$project$ChirunPackageConfig$init,
-		subscriptions: function (_v0) {
+		aZ: $author$project$ChirunPackageConfig$init,
+		a7: function (_v0) {
 			return $elm$core$Platform$Sub$none;
 		},
-		update: $author$project$ChirunPackageConfig$update,
-		view: $author$project$ChirunPackageConfig$view
+		a9: $author$project$ChirunPackageConfig$update,
+		ba: $author$project$ChirunPackageConfig$view
 	});
 _Platform_export({'ChirunPackageConfig':{'init':$author$project$ChirunPackageConfig$main($elm$json$Json$Decode$value)(0)}});}(window));
 class ChirunPackageConfigElement extends HTMLElement {
