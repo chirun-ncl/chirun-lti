@@ -252,13 +252,22 @@ update msg model = case msg of
         in
             ({ model | package = { package | content = ncontent }, tab = tab }, Task.attempt FocusButton (Browser.Dom.focus button_id))
 
+    ItemMsg Delete path ->
+        let
+            npackage = delete_item path model.package
+            tab = case model.tab of
+                ContentItemTab p2 -> if p2 == path then PackageSettingsTab else model.tab
+                _ -> model.tab
+        in
+            { model | package = npackage, tab = tab } |> nocmd
+
+    ItemMsg item_msg path -> { model | package = update_item path (apply_item_msg item_msg) model.package  } |> nocmd
+
     AddTopItem -> 
         let
             npackage = add_top_item model.package
         in
             { model | package = npackage, tab = ContentItemTab (FP.fromIndex (last_index npackage.content) TP.atTrunk) } |> nocmd
-
-    ItemMsg item_msg path -> { model | package = update_item path (apply_item_msg item_msg) model.package  } |> nocmd
 
     SetTab tab -> { model | tab = tab } |> nocmd
 
@@ -276,11 +285,19 @@ apply_item_msg : ItemMsg -> Tree ContentItem -> Tree ContentItem
 apply_item_msg msg tree = case msg of
     SetType type_ -> tree |> Tree.mapLabel (\item -> { item | type_ = type_ })
     SetSetting key setting -> tree |> Tree.mapLabel (\item -> { item | settings = Dict.insert key setting item.settings })
-    _ -> tree
+
+    {- These messages are handled by the top-level update function -}
+    Add -> tree
+    Move _ _ -> tree
+    Delete -> tree
+
 
 {- Add a blank item somewhere inside the package structure. -}
 add_item : ItemPath -> Package -> Package
 add_item path package = { package | content = FN.alter path (Tree.appendChild (Tree.singleton blank_contentitem)) package.content }
+
+{- Delete an item from the package structure. -}
+delete_item path package = { package | content = FN.remove path package.content }
 
 {- Add an item to the top level of the package structure. -}
 add_top_item : Package -> Package

@@ -5927,6 +5927,10 @@ var $author$project$ChirunPackageConfig$apply_item_msg = F2(
 							});
 					},
 					tree);
+			case 'Add':
+				return tree;
+			case 'Move':
+				return tree;
 			default:
 				return tree;
 		}
@@ -5967,6 +5971,45 @@ var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
 		return g(
 			f(x));
+	});
+var $elm_community$list_extra$List$Extra$removeAt = F2(
+	function (index, l) {
+		if (index < 0) {
+			return l;
+		} else {
+			var _v0 = A2($elm$core$List$drop, index, l);
+			if (!_v0.b) {
+				return l;
+			} else {
+				var rest = _v0.b;
+				return _Utils_ap(
+					A2($elm$core$List$take, index, l),
+					rest);
+			}
+		}
+	});
+var $lue_bird$elm_rosetree_path$Forest$Navigate$remove = function (path) {
+	var _v0 = $lue_bird$elm_rosetree_path$Tree$Path$step(
+		$lue_bird$elm_rosetree_path$Forest$Path$pathIntoTreeAtIndex(path));
+	if (_v0.$ === 'Nothing') {
+		return $elm_community$list_extra$List$Extra$removeAt(
+			$lue_bird$elm_rosetree_path$Forest$Path$treeIndex(path));
+	} else {
+		var furtherInChildren = _v0.a;
+		return A2(
+			$elm_community$list_extra$List$Extra$updateAt,
+			$lue_bird$elm_rosetree_path$Forest$Path$treeIndex(path),
+			$zwilias$elm_rosetree$Tree$mapChildren(
+				$lue_bird$elm_rosetree_path$Forest$Navigate$remove(furtherInChildren)));
+	}
+};
+var $author$project$ChirunPackageConfig$delete_item = F2(
+	function (path, _package) {
+		return _Utils_update(
+			_package,
+			{
+				content: A2($lue_bird$elm_rosetree_path$Forest$Navigate$remove, path, _package.content)
+			});
 	});
 var $elm$browser$Browser$Dom$focus = _Browser_call('focus');
 var $lue_bird$elm_rosetree_path$Forest$Path$fromIndex = F2(
@@ -6575,22 +6618,6 @@ var $author$project$Tree$Navigate$Extra$path_to_zipper = F2(
 			});
 		return A2(step, path, topzip);
 	});
-var $elm_community$list_extra$List$Extra$removeAt = F2(
-	function (index, l) {
-		if (index < 0) {
-			return l;
-		} else {
-			var _v0 = A2($elm$core$List$drop, index, l);
-			if (!_v0.b) {
-				return l;
-			} else {
-				var rest = _v0.b;
-				return _Utils_ap(
-					A2($elm$core$List$take, index, l),
-					rest);
-			}
-		}
-	});
 var $zwilias$elm_rosetree$Tree$Zipper$siblingsBeforeFocus = function (_v0) {
 	var before = _v0.a.before;
 	return $elm$core$List$reverse(before);
@@ -6745,21 +6772,6 @@ var $author$project$Tree$Navigate$Extra$move_right = F3(
 					forest));
 		}
 	});
-var $lue_bird$elm_rosetree_path$Forest$Navigate$remove = function (path) {
-	var _v0 = $lue_bird$elm_rosetree_path$Tree$Path$step(
-		$lue_bird$elm_rosetree_path$Forest$Path$pathIntoTreeAtIndex(path));
-	if (_v0.$ === 'Nothing') {
-		return $elm_community$list_extra$List$Extra$removeAt(
-			$lue_bird$elm_rosetree_path$Forest$Path$treeIndex(path));
-	} else {
-		var furtherInChildren = _v0.a;
-		return A2(
-			$elm_community$list_extra$List$Extra$updateAt,
-			$lue_bird$elm_rosetree_path$Forest$Path$treeIndex(path),
-			$zwilias$elm_rosetree$Tree$mapChildren(
-				$lue_bird$elm_rosetree_path$Forest$Navigate$remove(furtherInChildren)));
-	}
-};
 var $lue_bird$elm_rosetree_path$Tree$Navigate$to = function (path) {
 	var _v0 = $lue_bird$elm_rosetree_path$Tree$Path$step(path);
 	if (_v0.$ === 'Nothing') {
@@ -7026,19 +7038,6 @@ var $author$project$ChirunPackageConfig$update = F2(
 		switch (msg.$) {
 			case 'FocusButton':
 				return $author$project$ChirunPackageConfig$nocmd(model);
-			case 'AddTopItem':
-				var npackage = $author$project$ChirunPackageConfig$add_top_item(model._package);
-				return $author$project$ChirunPackageConfig$nocmd(
-					_Utils_update(
-						model,
-						{
-							_package: npackage,
-							tab: $author$project$ChirunPackageConfig$ContentItemTab(
-								A2(
-									$lue_bird$elm_rosetree_path$Forest$Path$fromIndex,
-									$author$project$ChirunPackageConfig$last_index(npackage.content),
-									$lue_bird$elm_rosetree_path$Tree$Path$atTrunk))
-						}));
 			case 'ItemMsg':
 				switch (msg.a.$) {
 					case 'Add':
@@ -7091,6 +7090,23 @@ var $author$project$ChirunPackageConfig$update = F2(
 								$elm$core$Task$attempt,
 								$author$project$ChirunPackageConfig$FocusButton,
 								$elm$browser$Browser$Dom$focus(button_id)));
+					case 'Delete':
+						var _v4 = msg.a;
+						var path = msg.b;
+						var tab = function () {
+							var _v5 = model.tab;
+							if (_v5.$ === 'ContentItemTab') {
+								var p2 = _v5.a;
+								return _Utils_eq(p2, path) ? $author$project$ChirunPackageConfig$PackageSettingsTab : model.tab;
+							} else {
+								return model.tab;
+							}
+						}();
+						var npackage = A2($author$project$ChirunPackageConfig$delete_item, path, model._package);
+						return $author$project$ChirunPackageConfig$nocmd(
+							_Utils_update(
+								model,
+								{_package: npackage, tab: tab}));
 					default:
 						var item_msg = msg.a;
 						var path = msg.b;
@@ -7105,6 +7121,19 @@ var $author$project$ChirunPackageConfig$update = F2(
 										model._package)
 								}));
 				}
+			case 'AddTopItem':
+				var npackage = $author$project$ChirunPackageConfig$add_top_item(model._package);
+				return $author$project$ChirunPackageConfig$nocmd(
+					_Utils_update(
+						model,
+						{
+							_package: npackage,
+							tab: $author$project$ChirunPackageConfig$ContentItemTab(
+								A2(
+									$lue_bird$elm_rosetree_path$Forest$Path$fromIndex,
+									$author$project$ChirunPackageConfig$last_index(npackage.content),
+									$lue_bird$elm_rosetree_path$Tree$Path$atTrunk))
+						}));
 			case 'SetTab':
 				var tab = msg.a;
 				return $author$project$ChirunPackageConfig$nocmd(
