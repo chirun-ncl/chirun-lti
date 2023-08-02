@@ -4,6 +4,8 @@
     --hue-danger: 12;
     --hue-generic: 170;
 
+    --lum-danger: 30%;
+
     --main-bg-hue: var(--hue-primary);
     --main-bg-sat: 0%;
     --main-bg-lum: 100%;
@@ -56,6 +58,8 @@
     :root {
         --main-bg-lum: 0%;
         --main-color: white;
+        --lum-danger: 70%;
+
         --header-bg-lum: 25%;
         --button-bg-lum: 20%;
         --button-disabled-color: hsl(var(--button-bg-hue), var(--button-bg-sat), 40%);
@@ -195,6 +199,10 @@ button.delete {
     --highlight-lum-factor: 1.4;
     --button-color: white;
     --button-bg-hue: var(--hue-danger);
+}
+
+a.danger {
+    color: hsl(var(--hue-danger), var(--link-sat), var(--lum-danger));
 }
 
 body.package-file .breadcrumbs {

@@ -17,7 +17,7 @@
             </form>
             <a href="{% url 'material:configure' package.edit_uid %}">{% translate "Configure" %}</a>
             <a href="{% url 'material:file_root' package.edit_uid %}">{% translate "View or edit files in this package" %}</a>
-            <a class="danger" href="{% url 'material:delete' package.edit_uid %}">{% translate "Delete" %}</a>
+            <a class="danger" href="{% url 'material:delete' package.edit_uid %}">{% translate "Delete this package" %}</a>
         </nav>
     </section>
 
