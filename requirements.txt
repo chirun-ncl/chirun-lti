@@ -1,3 +1,4 @@
+daphne
 django-multiupload
 django
 huey
