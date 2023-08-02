@@ -97,7 +97,6 @@ class LTIView:
             # Resource link might not exist yet if this is a deep linking launch.
             return
 
-        print(message_launch_data.keys())
         resource_link_id = str(resource_link_claim.get('id',''))
         resource_link_title = resource_link_claim.get('title','')
 
@@ -150,7 +149,6 @@ class CachedLTIView(LTIView):
 
     def get_message_launch(self):
         launch_id = self.get_launch_id()
-        print(launch_id)
         if launch_id is None:
             raise SuspiciousOperation
 

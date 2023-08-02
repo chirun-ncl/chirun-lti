@@ -1,5 +1,5 @@
 from   . import forms
-from   .models import ChirunPackage, Compilation
+from   .models import ChirunPackage, Compilation, PackageLTIUse
 from   chirun_lti.mixins import BackPageMixin, HelpPageMixin
 from   dataclasses import dataclass
 from   django.conf import settings
@@ -24,8 +24,8 @@ class DeepLinkView(generic.View):
         def respond(view):
             return view(request, *args, **kwargs)
 
-        if request.method.lower() == 'post':
-            return respond(DeepLinkConfirmView.as_view())
+        if request.method.lower() == 'post' and 'url' not in self.request.POST:
+                return respond(DeepLinkConfirmView.as_view())
 
         if 'package' not in self.request.GET:
             return respond(DeepLinkPickPackageView.as_view())
@@ -49,7 +49,7 @@ class AbstractDeepLinkView:
 
         return super().dispatch(request, *args, **kwargs)
 
-class DeepLinkPickPackageView(AbstractDeepLinkView, CachedLTIView, generic.ListView):
+class DeepLinkPickPackageView(AbstractDeepLinkView, CachedLTIView, generic.FormView):
     """
         During a deep link launch, pick the package to use.
         The next step is to pick a theme, if there's more than one, or to pick an item in the package.
@@ -57,22 +57,27 @@ class DeepLinkPickPackageView(AbstractDeepLinkView, CachedLTIView, generic.ListV
     template_name = 'package/deep_link/pick_package.html'
     context_object_name = 'packages'
 
+    form_class = forms.DeepLinkImportForm
+
+    def get_launch_id(self):
+        return self.kwargs['launch_id']
+
+    def form_valid(self, form):
+
+        package = form.cleaned_data['package']
+
+        PackageLTIUse.objects.get_or_create(package = package, lti_context = self.get_lti_context())
+
+        return redirect(reverse('material:deep_link', kwargs={'launch_id': self.get_launch_id()})+'?package='+str(package.uid))
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
 
         queryset = ChirunPackage.objects.all()
 
-        same_context = queryset.filter(lti_context=self.get_lti_context())
+        same_context = queryset.filter(lti_uses__lti_context=self.get_lti_context()).distinct()
 
         context['same_context'] = same_context
-
-        queryset = queryset.exclude(uid__in=same_context)
-
-        same_tool = queryset.filter(lti_tool = self.get_lti_tool())
-        
-        context['same_tool'] = same_tool
-
-        queryset = queryset.exclude(uid__in=same_tool)
 
         return context
 
@@ -155,12 +160,16 @@ class DeepLinkConfirmView(AbstractDeepLinkView, BackPageMixin, CachedLTIView, ge
         package = form.cleaned_data.get('package')
         item_url = form.cleaned_data.get('item')
         theme = self.request.GET.get('theme')
-        item_format = form.cleaned_data.get('item_format')
+        item_format = form.cleaned_data.get('item_format', 'default')
 
         item = package.get_item_by_url(item_url)
 
         if item_format is not None:
-            format_manifest = next(f for f in item['formats'] if f['format'] == item_format)
+            try:
+                format_manifest = next(f for f in item['formats'] if f['format'] == item_format)
+            except StopIteration:
+                raise Exception(f"This item isn't available in the format \"{item_format}\"")
+
             item_url = format_manifest['url']
 
         resource = DeepLinkResource()\

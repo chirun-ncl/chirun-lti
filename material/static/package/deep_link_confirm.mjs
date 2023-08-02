@@ -8,6 +8,10 @@ function update_preview() {
 }
 
 const output_root_url = JSON.parse(document.getElementById('output_root_url').textContent);
-const format_select = document.getElementById('id_item_format');
 const preview_iframe = document.querySelector('#preview iframe');
-format_select.addEventListener('change', update_preview);
+
+const format_select = document.getElementById('id_item_format');
+
+if(format_select) {
+    format_select.addEventListener('change', update_preview);
+}

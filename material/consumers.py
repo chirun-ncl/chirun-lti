@@ -55,7 +55,6 @@ class CompilationConsumer(AsyncJsonWebsocketConsumer):
 
 class DeepLinkConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
-        print(self.channel_name)
         await self.channel_layer.group_add('hey',self.channel_name)
         await self.accept()
 
@@ -64,14 +63,11 @@ class DeepLinkConsumer(AsyncJsonWebsocketConsumer):
 
         async for package in packages:
             group_name = package.get_channel_group_name()
-            print("Joining",group_name)
             await self.channel_layer.group_add(
                 group_name, self.channel_name
             )
 
     async def receive_json(self, content):
-        print("Received", content)
-
         message_type = content.get('type')
 
         if message_type == 'subscribe-to-packages':
@@ -80,7 +76,6 @@ class DeepLinkConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json({'type': 'error', 'message': f'Unknown message type {message_type}'})
 
     async def build_status(self, event):
-        print("Build status", event)
         await self.send_json(content = {
             'type': 'build_status',
             'message': event['message'],

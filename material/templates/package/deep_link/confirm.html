@@ -34,6 +34,10 @@
                     <option value="{{format.format}}" data-url="{{format.url}}">{{format.format|title}}</option>
                     {% endfor %}
                 </select>
+            {% else %}
+                {% for format in formats %}
+                    <input type="hidden" name="item_format" value="{{format.format}}">
+                {% endfor %}
             {% endif %}
 
             <p><button type="Submit">{% translate "Use this choice" %}</button></p>

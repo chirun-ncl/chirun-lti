@@ -68,4 +68,5 @@ urlpatterns = [
         views.ConfigView.as_view(),
         name='deep_link_configure'
     ),
+
 ]

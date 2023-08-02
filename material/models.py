@@ -18,9 +18,6 @@ class ChirunPackage(models.Model):
 
     created = models.DateTimeField(auto_now_add = True)
 
-    lti_tool = models.ForeignKey(LtiTool, null=True, blank=True, related_name='chirun_packages', on_delete = models.SET_NULL)
-    lti_context = models.ForeignKey(Context, null=True, blank=True, related_name='chirun_packages', on_delete = models.SET_NULL)
-
     def __str__(self):
         return f'{self.name} ({self.uid})'
 
@@ -183,6 +180,14 @@ class ChirunPackage(models.Model):
             rd = Path(d).relative_to(top)
             for f in sorted(files, key=str):
                 yield str(rd / f)
+
+class PackageLTIUse(models.Model):
+    """
+        Recording that a package has been used with a certain context in an LTI tool.
+    """
+
+    package = models.ForeignKey(ChirunPackage, related_name='lti_uses', on_delete = models.CASCADE)
+    lti_context = models.ForeignKey(Context, related_name='chirun_packages', on_delete = models.CASCADE)
 
 BUILD_STATUSES = [
     ("building", "Building"),

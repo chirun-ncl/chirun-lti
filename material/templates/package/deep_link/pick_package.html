@@ -16,17 +16,28 @@
 {% block main %}
     {% if same_context.exists %}
     <section id="same-context">
-        <h2>{% translate "Packages in this context" %}</h2>
         {% with packages=same_context %}{% include "package/deep_link/packages.html" %}{% endwith %}
     </section>
     {% endif %}
 
-    {% if same_tool.exists %}
-    <section id="same-tool">
-        <h2>{% translate "Packages in other contexts on this platform" %}</h2>
-        {% with packages=same_tool %}{% include "package/deep_link/packages.html" %}{% endwith %}
+    <section id="new-package">
+        <p>{% translate "Or" %}</p>
+        <ul>
+            <li><a href="{% url 'material:new' %}?launch_id={{message_launch.get_launch_id}}">{% translate "Create a new package" %}</a>.</li>
+            <li>
+                <p>{% translate "Import a package from another context by URL" %}</p>
+                <form method="POST">
+                    <label for="import-url">{% translate "Package URL:" %}</label>
+                    <input id="import-url" type="text" name="url">
+                    <button type="submit">{% translate "Import to this context" %}</button>
+                    {% for error in form.non_field_errors %}
+                    <div class="form-error">{{error}}</div>
+                    {% endfor %}
+                    {% for error in form.errors.url %}
+                        <div class="form-error">{% translate "Package URL:" %} {{error}}</div>
+                    {% endfor %}
+                </form>
+            </li>
+        </ul>
     </section>
-    {% endif %}
-
-    <p>{% translate "Or" %} <a href="{% url 'material:new' %}?launch_id={{message_launch.get_launch_id}}">{% translate "upload a new package" %}</a>.</p>
 {% endblock main %}

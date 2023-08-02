@@ -5,12 +5,16 @@
 {% block body_class %}package-details{% endblock body_class %}
 
 {% block main %}
-    <section id="controls">
+    <section id="intro">
         <h2>{% translate "Manage this package" %}</h2>
 
         <p>{% translate "The following URL allows you to edit this package at a later date." %}</p>
-        <pre>{{request.build_absolute_uri}}</pre>
+        <a id="edit-link" href="{{request.build_absolute_uri}}">{{request.build_absolute_uri}}</a>
 
+    </section>
+
+    <section id="controls">
+        <h2>{% translate "Actions" %}</h2>
         <nav>
             <form method="POST" action="{% url 'material:build' package.edit_uid %}">
                 <button type="submit">{% translate "Build" %}</button>
