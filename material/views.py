@@ -561,7 +561,7 @@ class ConfigView(BackPageMixin, HelpPageMixin, PackageEditView, CachedLTIView, g
         else:
             return reverse_lazy('material:view', args=(str(self.get_object().edit_uid),))
 
-class DownloadView(PackageEditView, generic.DetailView):
+class DownloadOutputView(PackageEditView, generic.DetailView):
     def get(self, request, *args, **kwargs):
         package = self.get_object()
         response = HttpResponse(content_type='application/zip')
@@ -570,3 +570,48 @@ class DownloadView(PackageEditView, generic.DetailView):
         for fname in package.all_output_files():
             zf.write(str(Path(package.absolute_output_path) / fname), fname)
         return response
+
+class ZipDownloadView(PackageEditView, generic.DetailView):
+    def get_all_files(self):
+        """
+            A generator giving the absolute source paths, and paths in the .zip package, of all files to include in the download.
+
+            Yields tuples (source_path, zip_path)
+        """
+        raise NotImplementedError
+
+    def get_zip_filename(self):
+        """
+            Get the stem of the name of the .zip file to produce.
+        """
+        raise NotImplementedError
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type='application/zip')
+        response['Content-Disposition'] = f'attachment; filename="{self.get_zip_filename()}.zip"'
+        zf = zipfile.ZipFile(response,'w')
+        for path, fname in self.get_all_files():
+            zf.write(path, fname)
+        return response
+
+
+class DownloadOutputView(ZipDownloadView):
+    def get_all_files(self):
+        package = self.get_object()
+        for fname in package.all_output_files():
+            yield (str(Path(package.absolute_output_path) / fname), fname)
+
+    def get_zip_filename(self):
+        package = self.get_object()
+        return package.edit_uid
+
+class DownloadSourceView(ZipDownloadView):
+    def get_all_files(self):
+        package = self.get_object()
+        for fname in package.all_source_files_list():
+            yield (str(Path(package.absolute_extracted_path) / fname), fname)
+
+    def get_zip_filename(self):
+        package = self.get_object()
+        return f'{package.edit_uid}-source'
+

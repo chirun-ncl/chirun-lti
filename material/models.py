@@ -11,6 +11,12 @@ from   pylti1p3.contrib.django.lti1p3_tool_config.models import LtiTool
 import uuid
 import yaml
 
+def all_files_relative_to(top):
+    for d,dirs,files in os.walk(str(top)):
+        rd = Path(d).relative_to(top)
+        for f in sorted(files, key=str):
+            yield str(rd / f)
+
 class ChirunPackage(models.Model):
     name = models.CharField(max_length=500)
     uid = models.UUIDField(default = uuid.uuid4, primary_key = True)
@@ -174,12 +180,11 @@ class ChirunPackage(models.Model):
 
         return visit(root)
 
+    def all_source_files_list(self):
+        yield from all_files_relative_to(Path(self.absolute_extracted_path))
+
     def all_output_files(self):
-        top = Path(self.absolute_output_path)
-        for d,dirs,files in os.walk(str(top)):
-            rd = Path(d).relative_to(top)
-            for f in sorted(files, key=str):
-                yield str(rd / f)
+        yield from all_files_relative_to(Path(self.absolute_output_path))
 
 class PackageLTIUse(models.Model):
     """

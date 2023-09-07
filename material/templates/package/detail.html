@@ -21,6 +21,7 @@
             </form>
             <a href="{% url 'material:configure' package.edit_uid %}">{% translate "Configure" %}</a>
             <a href="{% url 'material:file_root' package.edit_uid %}">{% translate "View or edit files in this package" %}</a>
+            <a href="{% url 'material:download_source' package.edit_uid %}">{% translate "Download this package's source files" %}</a>
             <a class="danger" href="{% url 'material:delete' package.edit_uid %}">{% translate "Delete this package" %}</a>
         </nav>
     </section>
@@ -29,7 +30,7 @@
     <section id="view">
         <h2>{% translate "View this package's content" %}</h2>
 
-        <p><a href="{% url 'material:download' package.edit_uid %}">{% translate "Download the generated content as a .zip file" %}</a></p>
+        <p><a href="{% url 'material:download_output' package.edit_uid %}">{% translate "Download the generated content as a .zip file" %}</a></p>
 
         {% if package.themes|length > 1 %}
         <ul class="package-built-themes">

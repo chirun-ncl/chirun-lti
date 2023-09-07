@@ -15,8 +15,13 @@ urlpatterns = [
     ),
 
     path(r'package/<uuid:pk>.zip',
-        views.DownloadView.as_view(),
-        name='download'
+        views.DownloadOutputView.as_view(),
+        name='download_output'
+    ),
+
+    path(r'package/<uuid:pk>-source.zip',
+        views.DownloadSourceView.as_view(),
+        name='download_source'
     ),
 
     path(r'package/<uuid:pk>/delete',
