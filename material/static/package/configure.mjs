@@ -5516,7 +5516,38 @@ var $elm$core$Dict$map = F2(
 				A2($elm$core$Dict$map, func, right));
 		}
 	});
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$List$member = F2(
+	function (x, xs) {
+		return A2(
+			$elm$core$List$any,
+			function (a) {
+				return _Utils_eq(a, x);
+			},
+			xs);
+	});
 var $elm$core$Basics$neq = _Utils_notEqual;
+var $elm$core$Basics$not = _Basics_not;
 var $author$project$ChirunPackageConfig$decode_settings = A2(
 	$elm$json$Json$Decode$map,
 	$elm$core$Dict$map(
@@ -5529,7 +5560,11 @@ var $author$project$ChirunPackageConfig$decode_settings = A2(
 		$elm$core$Dict$filter(
 			F2(
 				function (k, v) {
-					return (k !== 'content') && (!_Utils_eq(v, $elm$core$Maybe$Nothing));
+					return (!A2(
+						$elm$core$List$member,
+						k,
+						_List_fromArray(
+							['content', 'type']))) && (!_Utils_eq(v, $elm$core$Maybe$Nothing));
 				})),
 		$elm$json$Json$Decode$dict($author$project$ChirunPackageConfig$decode_setting)));
 function $author$project$ChirunPackageConfig$cyclic$decode_content_item() {
@@ -7494,36 +7529,6 @@ var $author$project$FS$extension = A2(
 					$elm$core$Maybe$map(
 						$elm$core$Basics$append('.')),
 					$elm$core$Maybe$withDefault(''))))));
-var $elm$core$List$any = F2(
-	function (isOkay, list) {
-		any:
-		while (true) {
-			if (!list.b) {
-				return false;
-			} else {
-				var x = list.a;
-				var xs = list.b;
-				if (isOkay(x)) {
-					return true;
-				} else {
-					var $temp$isOkay = isOkay,
-						$temp$list = xs;
-					isOkay = $temp$isOkay;
-					list = $temp$list;
-					continue any;
-				}
-			}
-		}
-	});
-var $elm$core$List$member = F2(
-	function (x, xs) {
-		return A2(
-			$elm$core$List$any,
-			function (a) {
-				return _Utils_eq(a, x);
-			},
-			xs);
-	});
 var $author$project$ChirunPackageConfig$file_extension_filter = F2(
 	function (valid_extensions, i) {
 		return (!i.n) || A2(
@@ -8721,7 +8726,6 @@ var $elm$html$Html$Events$custom = F2(
 			$elm$virtual_dom$VirtualDom$Custom(decoder));
 	});
 var $elm$json$Json$Decode$fail = _Json_fail;
-var $elm$core$Basics$not = _Basics_not;
 var $author$project$ChirunPackageConfig$structure_tree = function (model) {
 	var move_keypress = F2(
 		function (path, id) {

@@ -924,7 +924,7 @@ decode_content_item =
 decode_settings : JD.Decoder SettingsDict
 decode_settings =
        JD.dict decode_setting
-    |> JD.map (Dict.filter (\k v -> k /= "content" && v /= Nothing))
+    |> JD.map (Dict.filter (\k v -> not (List.member k ["content", "type"]) && v /= Nothing))
     |> JD.map (Dict.map (\_ -> Maybe.withDefault (StringSetting "")))
 
 decode_setting : JD.Decoder (Maybe Setting)
