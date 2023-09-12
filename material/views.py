@@ -293,9 +293,7 @@ class CreatePackageView(BackPageMixin, CachedLTIView, PackageUploadView, generic
     def get_deep_link_success_url(self):
         self.get_lti_data()
         if self.message_launch.is_deep_link_launch():
-            self.object.lti_tool = self.lti_tool
-            self.object.lti_context = self.lti_context
-            self.object.save(update_fields=('lti_tool', 'lti_context',))
+            PackageLTIUse.objects.get_or_create(package = self.object, lti_context = self.lti_context)
 
             launch_id = self.message_launch.get_launch_id()
 
