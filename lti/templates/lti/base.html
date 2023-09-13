@@ -10,7 +10,7 @@
             <link rel="stylesheet" href="{% static 'chirun_lti.css' %}">
         {% endblock head %}
     </head>
-    <body class="{% block body_class %}{% endblock %}">
+    <body class="{% block body_class %}{% endblock %}" {% block body_attributes %}{% endblock body_attributes %}>
         {% block body %}
         <header>
             {% block header %}

@@ -1,0 +1,32 @@
+{% extends "package/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Building a package" %} - {{block.super}}{% endblock title %}
+
+{% block body_class %}deep-link build-package{% endblock body_class %}
+{% block body_attributes %}data-build-status="{{package.build_status}}"{% endblock body_attributes %}
+
+{% block head %}
+    {{block.super}}
+    {{package.uid|json_script:"package_uid"}}
+    <script type="module" src="{% static 'package/deep_link_build_package.mjs' %}"></script>
+{% endblock head %}
+
+{% block main %}
+    <section data-build-status="not_built">
+        <p>{% blocktranslate %}This package has not been built yet. Please build it to continue.{% endblocktranslate %}</p>
+    </section>
+    <section data-build-status="built">
+        <p>{% blocktranslate %}This package has been successfully built.{% endblocktranslate %}</p>
+        <p><a href="{% url 'material:deep_link' launch_id %}?package={{package.uid}}">{% translate "Pick an item to use" %}</a>.</p>
+    </section>
+    <section data-build-status="building">
+        <p>{% blocktranslate %}This package is being built. Please wait.{% endblocktranslate %}</p>
+    </section>
+    <section data-build-status="error">
+        <p>{% blocktranslate %}There was an error building this package. Please fix the problem and build it again.{% endblocktranslate %}</p>
+    </section>
+
+    {% include "package/deep_link/edit_package.html" %}
+{% endblock main %}

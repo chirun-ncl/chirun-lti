@@ -56,7 +56,6 @@ function progress_websocket() {
 
     ws.onmessage = ({data}) => {
         data = JSON.parse(data);
-        console.log(data);
         const {type} = data;
         if(type in message_handlers) {
             message_handlers[type](data);

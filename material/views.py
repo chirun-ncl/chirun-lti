@@ -29,8 +29,13 @@ class DeepLinkView(generic.View):
 
         if 'package' not in self.request.GET:
             return respond(DeepLinkPickPackageView.as_view())
+
+        package = ChirunPackage.objects.get(uid=self.request.GET['package'])
+
+        if package.build_status() != 'built':
+            return redirect(reverse('material:deep_link_build', kwargs={'launch_id': kwargs['launch_id'], 'pk': package.uid}))
+
         if 'theme' not in self.request.GET:
-            package = ChirunPackage.objects.get(uid=self.request.GET['package'])
             themes = package.themes()
             if len(themes) == 1:
                 return redirect(reverse('material:deep_link', args=(kwargs['launch_id'],))+f'''?package={package.uid}&theme={themes[0]['path']}''')
@@ -44,10 +49,24 @@ class DeepLinkView(generic.View):
 
 class AbstractDeepLinkView:
     def dispatch(self, request, *args, **kwargs):
+        package_uid = self.request.GET.get('package', self.kwargs.get('pk'))
+
+        if package_uid is not None:
+            self.package = ChirunPackage.objects.get(uid=package_uid)
+
         if not self.get_message_launch().is_deep_link_launch():
             return HttpResponseForbidden('Must be a deep link!')
 
         return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if hasattr(self, 'package'):
+            context['package'] = self.package
+
+        return context
+
 
 class DeepLinkPickPackageView(AbstractDeepLinkView, CachedLTIView, generic.FormView):
     """
@@ -84,6 +103,17 @@ class DeepLinkPickPackageView(AbstractDeepLinkView, CachedLTIView, generic.FormV
     def get_queryset(self):
         return ChirunPackage.objects.all()
 
+class DeepLinkBuildPackageView(AbstractDeepLinkView, BackPageMixin, CachedLTIView, generic.TemplateView):
+    """
+        During a deep link, after picking a package that hasn't been built or is in the middle of being built, show a holding message.
+    """
+
+    template_name = 'package/deep_link/build_package.html'
+
+    def get_back_url(self):
+        return reverse_lazy('material:deep_link', kwargs={'launch_id': self.kwargs['launch_id']})
+
+
 class DeepLinkPickThemeView(AbstractDeepLinkView, BackPageMixin, CachedLTIView, generic.TemplateView):
     """
         During a deep link launch, pick the theme to use in the chosen package.
@@ -92,18 +122,6 @@ class DeepLinkPickThemeView(AbstractDeepLinkView, BackPageMixin, CachedLTIView, 
 
     def get_back_url(self):
         return reverse_lazy('material:deep_link', kwargs=self.kwargs)
-
-    def dispatch(self, request, *args, **kwargs):
-        self.package = ChirunPackage.objects.get(uid=self.request.GET['package'])
-
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context['package'] = self.package
-
-        return context
 
 class DeepLinkPickItemView(DeepLinkPickThemeView):
     """
@@ -280,33 +298,49 @@ class CreatePackageView(BackPageMixin, CachedLTIView, PackageUploadView, generic
         if package.get_config() is None:
             messages.info(self.request, _("Your package didn't contain a config file, so we've created one. Please review the configuration."))
             package.create_initial_config()
-            return redirect(reverse('material:configure', args=(self.object.edit_uid,)))
+            return redirect(self.get_configure_url())
 
         return redirect(self.get_success_url())
 
+    def is_deep_link_launch(self):
+        if 'launch_id' not in self.request.GET:
+            return False
+
+        self.get_lti_data()
+        return self.message_launch.is_deep_link_launch()
+
+    def get_configure_url(self):
+        kwargs = {
+            'pk': self.object.edit_uid,
+        }
+        if self.is_deep_link_launch():
+            kwargs['launch_id'] = self.message_launch.get_launch_id()
+
+        return reverse('material:configure', kwargs = kwargs)
+
     def get_success_url(self):
-        if 'launch_id' in self.request.GET:
+        if self.is_deep_link_launch():
             return self.get_deep_link_success_url()
         else:
             return reverse('material:configure', args=(self.object.edit_uid,))
   
     def get_deep_link_success_url(self):
-        self.get_lti_data()
-        if self.message_launch.is_deep_link_launch():
-            PackageLTIUse.objects.get_or_create(package = self.object, lti_context = self.lti_context)
+        package = self.object
 
-            launch_id = self.message_launch.get_launch_id()
+        PackageLTIUse.objects.get_or_create(package = package, lti_context = self.lti_context)
 
-            if self.object.get_config() is None:
-                return reverse(
-                    'material:deep_link_configure', 
-                    kwargs = {
-                        'pk': self.object.uid,
-                        'launch_id': launch_id,
-                    }
-                )
+        launch_id = self.message_launch.get_launch_id()
 
-            return reverse('material:deep_link', args=(launch_id,))
+        if package.get_config() is None:
+            return reverse(
+                'material:deep_link_configure', 
+                kwargs = {
+                    'pk': package.uid,
+                    'launch_id': launch_id,
+                }
+            )
+
+        return reverse('material:deep_link', args=(launch_id,)) + f'''?package={package.uid}'''
 
 class UploadFilesView(PackageUploadView, BackPageMixin, generic.UpdateView):
     template_name = 'package/upload.html'
@@ -524,6 +558,7 @@ class ConfigView(BackPageMixin, HelpPageMixin, PackageEditView, CachedLTIView, g
         context['config'] = package.get_config()
         context['files'] = package.all_source_files()
         context['media_root'] = settings.MEDIA_URL + str(package.relative_extracted_path) + '/'
+        context['is_deep_link_launch'] = self.is_deep_link_launch()
 
         return context
 

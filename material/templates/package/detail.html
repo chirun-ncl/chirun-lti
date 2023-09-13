@@ -26,7 +26,7 @@
         </nav>
     </section>
 
-    {% if package.build_status == 'built' %}
+    {% if package.build_status == "built" %}
     <section id="view">
         <h2>{% translate "View this package's content" %}</h2>
 
@@ -57,13 +57,19 @@
         {% endif %}
     </section>
 
-    {% elif package.build_status == 'error' %}
+    {% elif package.build_status == "error" %}
     <section id="build-error">
         <p>{% translate "There was an error building this package." %}</p>
     </section>
-    {% elif package.build_status == 'building' %}
+
+    {% elif package.build_status == "building" %}
     <section id="building">
         <p>{% translate "This package is being built." %}</p>
+    </section>
+
+    {% elif package.build_status == "not built" %}
+    <section id="not-built">
+        <p>{% translate "This package has not been built yet." %}</p>
     </section>
     {% endif %}
 

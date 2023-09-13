@@ -69,6 +69,11 @@ urlpatterns = [
         name='deep_link'
     ),
 
+    path(r'deep-link/<str:launch_id>/package/<uuid:pk>/build',
+        views.DeepLinkBuildPackageView.as_view(),
+        name='deep_link_build'
+    ),
+
     path(r'deep-link/<str:launch_id>/package/<uuid:pk>/configure',
         views.ConfigView.as_view(),
         name='deep_link_configure'
