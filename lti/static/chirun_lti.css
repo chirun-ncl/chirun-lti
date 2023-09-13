@@ -477,13 +477,6 @@ body.configure-package .directory-tree li + li :is(details,ul) {
     font-size: var(--text-muted-size);
 }
 
-body.build-progress:not(.build-status-built) #built-message,
-body.build-progress:not(.build-status-error) #error-message,
-body.build-progress:not(.build-status-building) #building-message,
-body.build-progress.build-status-building #time-taken-message
-{ display: none; }
-
-
 body.build-progress :is(#stdout, #stderr) {
     height: 30vh;
     overflow-y: scroll;
@@ -560,9 +553,9 @@ body.deep-link.confirm-deep-link #preview iframe {
     border: 1px solid var(--main-color);
 }
 
-body.deep-link.build-package:not([data-build-status="not_built"]) [data-build-status="not_built"],
-body.deep-link.build-package:not([data-build-status="built"]) [data-build-status="built"],
-body.deep-link.build-package:not([data-build-status="building"]) [data-build-status="building"],
-body.deep-link.build-package:not([data-build-status="error"]) [data-build-status="error"] {
+body.build-package:not([data-build-status="not_built"]) [data-build-status="not_built"],
+body.build-package:not([data-build-status="built"]) [data-build-status="built"],
+body.build-package:not([data-build-status="building"]) [data-build-status="building"],
+body.build-package:not([data-build-status="error"]) [data-build-status="error"] {
     display: none;
 }

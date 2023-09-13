@@ -203,7 +203,7 @@ BUILD_STATUSES = [
 
 class Compilation(models.Model):
     package = models.ForeignKey(ChirunPackage, related_name='compilations', on_delete=models.CASCADE)
-    status = models.CharField(max_length=10, choices=BUILD_STATUSES, default='not_built')
+    status = models.CharField(max_length=10, choices=BUILD_STATUSES, default='building')
     output = models.TextField(default='', blank=True)
 
     start_time = models.DateTimeField(auto_now_add = True)

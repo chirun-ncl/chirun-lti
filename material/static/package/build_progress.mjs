@@ -45,8 +45,7 @@ function progress_websocket() {
         },
         'status_change': ({status, end_time, time_taken}) => {
             document.title = `${status} - ${document_title}`;
-            document.body.classList.remove('build-status-building');
-            document.body.classList.add(`build-status-${status}`);
+            document.body.dataset.buildStatus = status;
             for(let e of document.querySelectorAll('.end-time')) {
                 e.textContent = end_time;
             }
