@@ -298,7 +298,8 @@ class CreatePackageView(BackPageMixin, CachedLTIView, PackageUploadView, generic
         if package.get_config() is None:
             messages.info(self.request, _("Your package didn't contain a config file, so we've created one. Please review the configuration."))
             package.create_initial_config()
-            return redirect(self.get_configure_url())
+        else:
+            messages.info(self.request, _("A new package has been created."))
 
         return redirect(self.get_success_url())
 
@@ -308,15 +309,6 @@ class CreatePackageView(BackPageMixin, CachedLTIView, PackageUploadView, generic
 
         self.get_lti_data()
         return self.message_launch.is_deep_link_launch()
-
-    def get_configure_url(self):
-        kwargs = {
-            'pk': self.object.edit_uid,
-        }
-        if self.is_deep_link_launch():
-            kwargs['launch_id'] = self.message_launch.get_launch_id()
-
-        return reverse('material:configure', kwargs = kwargs)
 
     def get_success_url(self):
         if self.is_deep_link_launch():
@@ -330,15 +322,6 @@ class CreatePackageView(BackPageMixin, CachedLTIView, PackageUploadView, generic
         PackageLTIUse.objects.get_or_create(package = package, lti_context = self.lti_context)
 
         launch_id = self.message_launch.get_launch_id()
-
-        if package.get_config() is None:
-            return reverse(
-                'material:deep_link_configure', 
-                kwargs = {
-                    'pk': package.uid,
-                    'launch_id': launch_id,
-                }
-            )
 
         return reverse('material:deep_link', args=(launch_id,)) + f'''?package={package.uid}'''
 
