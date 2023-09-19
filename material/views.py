@@ -432,7 +432,11 @@ class FileView(PackageEditView, BackPageMixin, generic.UpdateView):
         initial['path'] = self.get_relative_path()
 
         try:
-            initial['content'] = path.read_text()
+            if path.exists():
+                initial['content'] = path.read_text()
+            else:
+                if path.suffix == '.tex':
+                    initial['content'] = getattr(settings,'TEX_FILE_INITIAL_CONTENT','')
         except UnicodeDecodeError:
             self.is_binary = True
         except (FileNotFoundError, IsADirectoryError):
@@ -523,13 +527,7 @@ class ConfigView(BackPageMixin, HelpPageMixin, PackageEditView, CachedLTIView, g
     help_url = 'package/configure.html'
     get_message_launch_on_dispatch = False
 
-    def is_deep_link_launch(self):
-        return 'launch_id' in self.kwargs
-
     def get_back_url(self):
-        if self.is_deep_link_launch():
-            return reverse_lazy('material:deep_link', args=(self.get_launch_id(),))
-
         return reverse_lazy('material:view', args=(str(self.get_object().edit_uid),))
 
     template_name = 'package/config.html'
@@ -541,7 +539,6 @@ class ConfigView(BackPageMixin, HelpPageMixin, PackageEditView, CachedLTIView, g
         context['config'] = package.get_config()
         context['files'] = package.all_source_files()
         context['media_root'] = settings.MEDIA_URL + str(package.relative_extracted_path) + '/'
-        context['is_deep_link_launch'] = self.is_deep_link_launch()
 
         return context
 
@@ -572,10 +569,7 @@ class ConfigView(BackPageMixin, HelpPageMixin, PackageEditView, CachedLTIView, g
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        if self.is_deep_link_launch():
-            return reverse_lazy('material:deep_link', args=(self.get_launch_id(),))
-        else:
-            return reverse_lazy('material:view', args=(str(self.get_object().edit_uid),))
+        return reverse_lazy('material:view', args=(str(self.get_object().edit_uid),))
 
 class DownloadOutputView(PackageEditView, generic.DetailView):
     def get(self, request, *args, **kwargs):

@@ -138,3 +138,14 @@ MEDIA_ROOT = 'media'
 HELP_URL = 'https://chirun.org.uk/docs/en/latest/'
 
 CHIRUN_DOCKER_IMAGE = 'coursebuilder/chirun-docker'
+
+# Initial content for a new .tex file.
+TEX_FILE_INITIAL_CONTENT = \
+r'''\documentclass{article}
+
+\usepackage{chirun}
+\usepackage{amsmath}
+
+\begin{document}
+
+\end{document}'''

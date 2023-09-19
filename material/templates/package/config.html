@@ -19,9 +19,5 @@
 {% block body_class %}configure-package two-column{% endblock body_class %}
 
 {% block main %}
-    {% if is_deep_link_launch %}
-    <p><a href="{% url 'material:configure' object.edit_uid %}" target="_blank">{% translate "Configure this package" %}</a>.</p>
-    {% else %}
-        <chirun-package-config files="files_json" config="config_json" media-root="{{media_root}}"></chirun-package-config>
-    {% endif %}
+    <chirun-package-config files="files_json" config="config_json" media-root="{{media_root}}"></chirun-package-config>
 {% endblock main %}
