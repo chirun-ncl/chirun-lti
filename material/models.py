@@ -112,14 +112,18 @@ class ChirunPackage(models.Model):
 
         root = self.absolute_extracted_path
 
-        for p in root.rglob('*'):
+        source_files = [p for p in root.rglob('*') if p.suffix in ('.tex', '.md')]
+
+        is_standalone = len(source_files) == 1
+
+        for p in source_files:
             if p.suffix not in ('.tex','.md'):
                 continue
 
             structure.append({
                 'source': str(p.relative_to(root)),
                 'title': p.name,
-                'type': 'chapter',
+                'type': 'standalone' if is_standalone else 'chapter',
             })
 
         self.save_config(config)
