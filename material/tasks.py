@@ -69,6 +69,8 @@ async def build_package(compilation):
         cmd = [ 
             'chirun',
             '-vv',
+            '--hash-salt',
+            str(package.edit_uid),
             '-o',
             chirun_output_path,
         ]
