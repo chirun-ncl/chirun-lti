@@ -5,7 +5,7 @@ from asgiref.sync import async_to_sync
 from django import forms
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
-from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import TemplateView, FormView, RedirectView
@@ -191,15 +191,20 @@ class LaunchView(LTIView, TemplateView):
     def post(self, request, *args, **kwargs):
         launch_id = self.message_launch.get_launch_id()
 
-        if self.message_launch.check_teacher_access() or self.message_launch.check_teaching_assistant_access():
+        if self.message_launch.check_teacher_access() or self.message_launch.check_teaching_assistant_access() or self.message_launch.check_staff_access():
             if self.message_launch.is_deep_link_launch():
                 return redirect(reverse('material:deep_link', args=(launch_id,)))
-            else:
+            elif self.message_launch.is_resource_launch():
                 return redirect(reverse('lti:teacher_launch', args=(launch_id,)))
+            else:
+                return HttpResponseBadRequest("This launch type is not recognised.")
         elif self.message_launch.check_student_access():
-            return redirect(reverse('lti:student_launch', args=(launch_id,)))
+            if self.message_launch.is_resource_launch():
+                return redirect(reverse('lti:student_launch', args=(launch_id,)))
+            else:
+                return HttpResponseBadRequest("This launch type is not recognised.")
         else:
-            raise Exception(f"You have an unknown role.")
+            return HttpResponseBadRequest(f"You have an unknown role.")
 
 class JWKSView(View):
     """
