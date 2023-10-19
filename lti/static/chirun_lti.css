@@ -559,3 +559,37 @@ body.build-package:not([data-build-status="building"]) [data-build-status="build
 body.build-package:not([data-build-status="error"]) [data-build-status="error"] {
     display: none;
 }
+
+form .form-columns {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-gap: var(--spacing);
+}
+
+form .form-columns > label {
+    justify-self: end;
+    align-self: center;
+}
+
+body.create-package main {
+    display: grid;
+    grid-auto-flow: column;
+    grid-gap: calc(2 * var(--spacing));
+}
+
+body.create-package main > hr {
+    width: 0;
+    justify-self: center;
+}
+
+@media (max-width: 60em) {
+    body.create-package main {
+        grid-auto-flow: row;
+    }
+
+    body.create-package main > hr {
+        height: 0;
+        width: initial;
+        justify-self: normal;
+    }
+}

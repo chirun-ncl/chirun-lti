@@ -4,14 +4,40 @@
 
 {% block page_title %}{% translate "Create a new package" %}{% endblock page_title %}
 
-{% block main %}
-    <form method="POST" enctype="multipart/form-data">
-        <p class="input-hint">{% blocktranslate %}If you already have source files, upload them, either separately or in a .zip file.{% endblocktranslate %}</p>
-        <p>{% blocktranslate %}Or to start a new package from scratch, just click <strong class="guilabel">Submit</strong>.{% endblocktranslate %}</p>
-        <hr>
-        {{form}}
-        
-        <p><button class="action" type="submit">{% translate "Submit" %}</button></p>
-    </form>
+{% block body_class %}{{block.super}} create-package{% endblock %}
 
+{% block main %}
+    <section id="from-scratch">
+        <h2>{% translate "Start from scratch" %}</h2>
+        <form method="POST">
+            <p><button class="action" type="submit">{% translate "Create a new package" %}</button></p>
+        </form>
+    </section>
+
+    <hr>
+
+    <section id="upload-files">
+        <h2>{% translate "Upload files" %}</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <p class="input-hint">{% blocktranslate %}If you already have source files, upload them, either separately or in a .zip file.{% endblocktranslate %}</p>
+            <div class="form-columns">
+                {{form}}
+            </div>
+            
+            <p><button class="action" type="submit">{% translate "Upload" %}</button></p>
+        </form>
+    </section>
+
+    <hr>
+
+    <section id="git-clone">
+        <h2>{% translate "Clone a git repository" %}</h2>
+        <form action="{% url 'material:git_clone' %}" method="POST">
+            <p class="input-hint">{% blocktranslate %}If you store your package's files in a git repository, clone it.{% endblocktranslate %}</p>
+            <div class="form-columns">
+                {{git_form}}
+            </div>
+            
+            <p><button class="action" type="submit">{% translate "Clone from git" %}</button></p>
+        </form>
 {% endblock main %}

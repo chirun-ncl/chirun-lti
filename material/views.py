@@ -287,6 +287,7 @@ class CreatePackageView(BackPageMixin, CachedLTIView, PackageUploadView, generic
         context = super().get_context_data(**kwargs)
 
         context['launch_id'] = self.request.GET.get('launch_id')
+        context['git_form'] = forms.CreatePackageFromGitForm()
 
         return context
 
@@ -324,6 +325,72 @@ class CreatePackageView(BackPageMixin, CachedLTIView, PackageUploadView, generic
         launch_id = self.message_launch.get_launch_id()
 
         return reverse('material:deep_link', args=(launch_id,)) + f'''?package={package.uid}'''
+
+class CreatePackageFromGitView(BackPageMixin, PackageEditView, generic.CreateView):
+    template_name = 'package/git/create.html'
+    back_url = reverse_lazy('index')
+    help_url = 'package/git.html'
+    form_class = forms.CreatePackageFromGitForm
+
+    def form_valid(self, form):
+        package = form.save()
+
+        package.clone_from_git()
+
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse('material:view', args=(self.object.edit_uid,))
+
+class UpdateFromGitView(PackageEditView, generic.UpdateView):
+    template_name = 'package/git/update.html'
+    help_url = 'package/git.html'
+
+    def post(self, request, *args, **kwargs):
+        package = self.get_object()
+
+        package.update_from_git()
+
+        return redirect(package.get_absolute_url())
+
+class ConfigureGitView(BackPageMixin, HelpPageMixin, PackageEditView, generic.UpdateView):
+    template_name = 'package/git/configure.html'
+    form_class = forms.ConfigureGitForm
+    help_url = 'package/git.html'
+
+    def get_back_url(self):
+        return reverse_lazy('material:view', args=(str(self.get_object().edit_uid),))
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        package = self.get_object()
+
+        kwargs['initial'].update({
+            'ref': package.git_current_branch()
+        })
+
+        return kwargs
+
+    def get_form(self, **kwargs):
+        form = super().get_form(**kwargs)
+
+        package = self.get_object()
+
+        ref = form.fields['ref']
+        ref.choices = [(a, a) for a in package.git_branches()]
+
+        return form
+
+    def form_valid(self, form):
+        package = form.save()
+
+        package.update_from_git(ref=form.cleaned_data.get('ref'))
+
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse('material:view', args=(self.object.edit_uid,))
 
 class UploadFilesView(PackageUploadView, BackPageMixin, generic.UpdateView):
     template_name = 'package/upload.html'

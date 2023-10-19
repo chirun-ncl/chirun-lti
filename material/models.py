@@ -1,4 +1,5 @@
 from   channels.layers import get_channel_layer
+import configparser
 from   django.conf import settings
 from   django.db import models
 from   django.urls import reverse
@@ -8,6 +9,8 @@ from   lti.models import Context
 import os
 from   pathlib import Path, PurePath
 from   pylti1p3.contrib.django.lti1p3_tool_config.models import LtiTool
+import subprocess
+import urllib.parse
 import uuid
 import yaml
 
@@ -17,6 +20,12 @@ def all_files_relative_to(top):
         for f in sorted(files, key=str):
             yield str(rd / f)
 
+GIT_STATUSES = [
+    ("cloning", "Cloning from the source repository."),
+    ("updating", "Updating from the source repository."),
+    ("ready", "Ready to use")
+]
+
 class ChirunPackage(models.Model):
     name = models.CharField(max_length=500)
     uid = models.UUIDField(default = uuid.uuid4, primary_key = True)
@@ -24,11 +33,23 @@ class ChirunPackage(models.Model):
 
     created = models.DateTimeField(auto_now_add = True)
 
+    git_url = models.CharField(max_length=2000, default='', blank=True, verbose_name='Git URL')
+    git_username = models.CharField(max_length=200, default='', blank=True, verbose_name='Username')
+    git_status = models.CharField(max_length=10, default='cloning', choices=GIT_STATUSES)
+
     def __str__(self):
         return f'{self.name} ({self.uid})'
 
     class Meta:
         ordering = (models.functions.Lower('name'), '-created', 'uid')
+
+
+    @property
+    def source_type(self):
+        if self.git_url:
+            return 'git'
+
+        return 'local'
 
     @staticmethod
     def channel_group_name_for_package(uid):
@@ -75,6 +96,92 @@ class ChirunPackage(models.Model):
         tasks.build_package(compilation)
 
         return compilation
+
+    def run_git_command(self, cmd):
+        return subprocess.run(cmd, cwd=self.absolute_extracted_path, env={'GIT_CEILING_DIRECTORIES': str(self.absolute_extracted_path.parent)}, capture_output=True, encoding='utf-8')
+
+    def clone_from_git(self, ref=None):
+        self.git_status = 'cloning'
+        self.save(update_fields=('git_status',))
+
+        from . import tasks
+        tasks.clone_from_git(self, ref=ref)
+
+    @property
+    def git_remote_url(self):
+        pr = urllib.parse.urlparse(self.git_url)
+        scheme, netloc, path, params, query, fragment = pr
+        netloc = f'{self.git_username}@{pr.hostname}' if self.git_username else pr.netloc
+        return urllib.parse.urlunparse((scheme, netloc, path, params, query, fragment))
+
+    def update_from_git(self, ref=None):
+        from . import tasks
+
+        self.git_status = 'updating'
+        self.save(update_fields=('git_status',))
+
+        git_config = self.absolute_extracted_path / '.git' / 'config'
+        if not git_config.exists():
+            print("No git config, so clone")
+            self.clone_from_git(ref=ref)
+
+        cp = configparser.ConfigParser()
+        cp.read(git_config)
+        try:
+            remote_url = cp.get('remote "origin"', 'url')
+        except configparser.NoSectionError:
+            remote_url = None
+        if self.git_remote_url != remote_url:
+            print("Not the same URL, so clone")
+            self.clone_from_git()
+
+        tasks.update_from_git(self, ref=ref)
+
+    def git_current_branch(self):
+        if self.git_status != 'ready':
+            return
+
+        try:
+            with open(self.absolute_extracted_path / '.git' / 'HEAD') as f:
+                ref = f.read().strip()
+        except FileNotFoundError:
+            return
+
+        if ref[:5] != 'ref: ':
+            return
+
+        return PurePath(ref[5:]).name
+
+    def git_last_commit(self):
+        if self.git_status != 'ready':
+            return
+
+        result = self.run_git_command(['git','log','--format=format:%h%x09%s','-n','1']).stdout.strip()
+        i = result.index('\t')
+        commit_hash = result[:i]
+        commit_message = result[i+1:]
+        return commit_hash, commit_message
+
+    def git_branches(self):
+        if self.git_status != 'ready':
+            return
+
+        branches = set()
+        current = None
+        for line in self.run_git_command(['git','branch','-a', '--no-color']).stdout.split('\n'):
+            if not line:
+                continue
+
+            current = line[0] == '*'
+
+            ref = line[2:].split(' ')[0]
+            if '(' in ref or 'HEAD' in ref:
+                continue
+
+            ref = PurePath(ref)
+            branches.add(ref.name)
+
+        return sorted(branches)
 
     def get_absolute_url(self):
         return reverse('material:view', args=(self.edit_uid,))

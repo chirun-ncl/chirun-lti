@@ -19,12 +19,48 @@
             <form method="POST" action="{% url 'material:build' package.edit_uid %}">
                 <button type="submit">{% translate "Build" %}</button>
             </form>
-            <a href="{% url 'material:configure' package.edit_uid %}">{% translate "Configure" %}</a>
-            <a href="{% url 'material:file_root' package.edit_uid %}">{% translate "View or edit files in this package" %}</a>
+
+            {% if package.source_type == 'local' %}
+                <a href="{% url 'material:configure' package.edit_uid %}">{% translate "Configure" %}</a>
+
+                <a href="{% url 'material:file_root' package.edit_uid %}">{% translate "View or edit files in this package" %}</a>
+            {% elif package.source_type == 'git' %}
+                <form method="POST" action="{% url 'material:git_update' package.edit_uid %}">
+                    <button type="submit">{% translate "Update from git" %}</button>
+                </form>
+
+                <a href="{% url 'material:git_configure' package.edit_uid %}">{% translate "Configure" %}</a>
+                
+                <a href="{{package.git_url}}">{% translate "View the source repository" %}</a>
+            {% endif %}
+
             <a href="{% url 'material:download_source' package.edit_uid %}">{% translate "Download this package's source files" %}</a>
+
             <a class="danger" href="{% url 'material:delete' package.edit_uid %}">{% translate "Delete this package" %}</a>
         </nav>
     </section>
+
+    {% if package.source_type == 'git' %}
+    <section id="git-info">
+        <p>{% blocktranslate %}This package is linked to an external git repository.{% endblocktranslate %}</p>
+        <dl>
+            <dt>{% translate "Current status" %}</dt>
+            <dd>{{package.get_git_status_display}}</dd>
+    
+            {% if package.git_status == 'ready' %}
+
+            <dt>{% translate "Current branch" %}</dt>
+            <dd><code>{{package.git_current_branch}}</code></dd>
+
+            <dt>{% translate "Last commit" %}</dt>
+            {% with commit=package.git_last_commit %}
+            <dd><a href="{{package.git_url}}/commit/{{commit.0}}"><code>{{commit.1}}</code></a></dd>
+            {% endwith %}
+
+            {% endif %}
+        </dl>
+    </section>
+    {% endif %}
 
     {% if package.build_status == "built" %}
     <section id="view">

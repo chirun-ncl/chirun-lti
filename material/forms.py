@@ -13,6 +13,17 @@ class UploadPackageForm(forms.ModelForm):
         model = ChirunPackage
         fields = []
 
+class CreatePackageFromGitForm(forms.ModelForm):
+    class Meta:
+        model = ChirunPackage
+        fields = ['git_url', 'git_username']
+        widgets = {
+            'git_username': forms.TextInput(attrs={'placeholder': _('A username or access token, if needed')})
+        }
+
+class ConfigureGitForm(CreatePackageFromGitForm):
+    ref = forms.ChoiceField(required=False, label='Branch')
+
 class DeepLinkForm(forms.Form):
     package = forms.ModelChoiceField(queryset=ChirunPackage.objects.all())
     item = forms.CharField(required=False)

@@ -7,7 +7,7 @@ from   datetime import datetime, timedelta
 from   django.conf import settings
 from   django.utils.timezone import now
 import functools
-from   huey.contrib.djhuey import task
+from   huey.contrib.djhuey import task, db_task
 import shutil
 import subprocess
 import tempfile
@@ -184,3 +184,33 @@ async def build_package(compilation):
 def delete_package_files(package):
     shutil.rmtree(package.absolute_extracted_path)
     shutil.rmtree(package.absolute_output_path)
+
+@db_task()
+def clone_from_git(package, ref=None):
+    print(f"Clone from git package {package}")
+    shutil.rmtree(package.absolute_extracted_path)
+
+    package.run_git_command(['git', 'clone', package.git_remote_url, package.absolute_extracted_path])
+
+    if ref is not None:
+        package.run_git_command(['git', 'checkout', ref])
+
+    package.git_status = 'ready'
+    package.save(update_fields=('git_status',))
+
+@db_task()
+def update_from_git(package, ref=None):
+    print(f"Update from git package {package}")
+    if not (package.absolute_extracted_path / '.git').exists():
+        return clone_from_git(package, ref)
+
+    package.run_git_command(['git', 'reset', '--hard'])
+    package.run_git_command(['git', 'fetch'])
+
+    if ref is not None:
+        package.run_git_command(['git', 'checkout', ref])
+
+    package.run_git_command(['git', 'pull'])
+
+    package.git_status = 'ready'
+    package.save(update_fields=('git_status',))

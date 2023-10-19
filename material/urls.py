@@ -9,6 +9,11 @@ urlpatterns = [
         name='new'
     ),
 
+    path(r'git-clone/',
+        views.CreatePackageFromGitView.as_view(),
+        name='git_clone'
+    ),
+
     path(r'package/<uuid:pk>/',
         views.ViewPackageView.as_view(),
         name='view'
@@ -52,6 +57,16 @@ urlpatterns = [
     path(r'package/<uuid:pk>/configure',
         views.ConfigView.as_view(),
         name='configure'
+    ),
+
+    path(r'package/<uuid:pk>/git/update',
+        views.UpdateFromGitView.as_view(),
+        name='git_update'
+    ),
+
+    path(r'package/<uuid:pk>/git/configure',
+        views.ConfigureGitView.as_view(),
+        name='git_configure'
     ),
 
     path(r'package/<uuid:pk>/build',
