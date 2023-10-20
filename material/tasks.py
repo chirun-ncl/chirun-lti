@@ -1,4 +1,4 @@
-from   .models import Compilation
+from   .models import Compilation, GitException
 from   asgiref.sync import async_to_sync, sync_to_async
 import asyncio
 from   channels.layers import get_channel_layer
@@ -187,16 +187,24 @@ def delete_package_files(package):
 
 @db_task()
 def clone_from_git(package, ref=None):
-    print(f"Clone from git package {package}")
+    print(f"Clone from git package {package}: {package.git_remote_url}")
     shutil.rmtree(package.absolute_extracted_path)
 
-    package.run_git_command(['git', 'clone', package.git_remote_url, package.absolute_extracted_path])
+    try:
+        package.run_git_command(['git', 'clone', package.git_remote_url, package.absolute_extracted_path], save_interaction=True)
+        if ref:
+            package.run_git_command(['git', 'checkout', ref], save_interaction=True)
 
-    if ref is not None:
-        package.run_git_command(['git', 'checkout', ref])
+        package.git_status = 'ready'
 
-    package.git_status = 'ready'
-    package.save(update_fields=('git_status',))
+        package.build()
+
+    except GitException:
+        package.git_status = 'error'
+
+    finally:
+        package.save(update_fields=('git_status',))
+
 
 @db_task()
 def update_from_git(package, ref=None):
@@ -204,13 +212,21 @@ def update_from_git(package, ref=None):
     if not (package.absolute_extracted_path / '.git').exists():
         return clone_from_git(package, ref)
 
-    package.run_git_command(['git', 'reset', '--hard'])
-    package.run_git_command(['git', 'fetch'])
+    try:
+        package.run_git_command(['git', 'reset', '--hard'], save_interaction=True)
+        package.run_git_command(['git', 'fetch'], save_interaction=True)
 
-    if ref is not None:
-        package.run_git_command(['git', 'checkout', ref])
+        if ref:
+            package.run_git_command(['git', 'checkout', ref], save_interaction=True)
 
-    package.run_git_command(['git', 'pull'])
+        package.run_git_command(['git', 'pull'], save_interaction=True)
 
-    package.git_status = 'ready'
-    package.save(update_fields=('git_status',))
+        package.git_status = 'ready'
+
+        package.build()
+
+    except GitException:
+        package.git_status = 'error'
+
+    finally:
+        package.save(update_fields=('git_status',))

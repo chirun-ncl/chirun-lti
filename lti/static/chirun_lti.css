@@ -158,6 +158,11 @@ details > summary {
     padding: var(--spacing);
 }
 
+.list-unstyled {
+    list-style: none;
+    padding-left: 0;
+}
+
 
 body > main {
     padding: 0 var(--spacing);

@@ -3,6 +3,7 @@ import configparser
 from   django.conf import settings
 from   django.db import models
 from   django.urls import reverse
+from   django.utils.translation import gettext as _
 import functools
 import json
 from   lti.models import Context
@@ -21,10 +22,14 @@ def all_files_relative_to(top):
             yield str(rd / f)
 
 GIT_STATUSES = [
-    ("cloning", "Cloning from the source repository."),
-    ("updating", "Updating from the source repository."),
-    ("ready", "Ready to use")
+    ("cloning", _("Cloning from the source repository.")),
+    ("updating", _("Updating from the source repository.")),
+    ("ready", _("Ready to use")),
+    ("error", _("There was an error fetching from the source repository."))
 ]
+
+class GitException(Exception):
+    pass
 
 class ChirunPackage(models.Model):
     name = models.CharField(max_length=500)
@@ -33,8 +38,8 @@ class ChirunPackage(models.Model):
 
     created = models.DateTimeField(auto_now_add = True)
 
-    git_url = models.CharField(max_length=2000, default='', blank=True, verbose_name='Git URL')
-    git_username = models.CharField(max_length=200, default='', blank=True, verbose_name='Username')
+    git_url = models.CharField(max_length=2000, default='', blank=True, verbose_name=_('Git URL'))
+    git_username = models.CharField(max_length=200, default='', blank=True, verbose_name=_('Username'))
     git_status = models.CharField(max_length=10, default='cloning', choices=GIT_STATUSES)
 
     def __str__(self):
@@ -60,12 +65,12 @@ class ChirunPackage(models.Model):
 
     @property
     def title(self):
-        return self.manifest.get('title', self.name if self.name else "Unnamed package")
+        return self.manifest.get('title', self.name if self.name else _("Unnamed package"))
 
     @property 
     def relative_extracted_path(self):
         if self.uid is None:
-            raise Exception("This object doesn't have an ID yet.")
+            raise Exception(_("This object doesn't have an ID yet."))
         path = Path('chirun-packages') / 'source' / str(self.uid)
         return path
 
@@ -78,7 +83,7 @@ class ChirunPackage(models.Model):
     @property 
     def relative_output_path(self):
         if self.uid is None:
-            raise Exception("This object doesn't have an ID yet.")
+            raise Exception(_("This object doesn't have an ID yet."))
         path = Path('chirun-packages') / 'output' / str(self.uid)
         return path
 
@@ -92,13 +97,33 @@ class ChirunPackage(models.Model):
         compilation = Compilation.objects.create(package = self)
 
         from . import tasks
-        print(f"Building {self}")
         tasks.build_package(compilation)
 
         return compilation
 
-    def run_git_command(self, cmd):
-        return subprocess.run(cmd, cwd=self.absolute_extracted_path, env={'GIT_CEILING_DIRECTORIES': str(self.absolute_extracted_path.parent)}, capture_output=True, encoding='utf-8')
+    def run_git_command(self, cmd, save_interaction=False):
+        cmd = [str(x) for x in cmd]
+        if save_interaction:
+            git_interaction = GitInteraction.objects.create(package = self, command = ' '.join(cmd))
+        result = subprocess.run(cmd, cwd=self.absolute_extracted_path, env={'GIT_CEILING_DIRECTORIES': str(self.absolute_extracted_path.parent)}, capture_output=True, encoding='utf-8')
+
+        if save_interaction:
+            try:
+                result.check_returncode()
+                git_interaction.status = 'success'
+            except subprocess.CalledProcessError:
+                git_interaction.status = 'error'
+
+            git_interaction.output = result.stdout + ('\n' if result.stdout and result.stderr else '') + result.stderr
+
+            git_interaction.save(update_fields=('status', 'output'))
+
+        try:
+            result.check_returncode()
+        except subprocess.CalledProcessError as e:
+            raise GitException(e)
+
+        return result
 
     def clone_from_git(self, ref=None):
         self.git_status = 'cloning'
@@ -122,7 +147,6 @@ class ChirunPackage(models.Model):
 
         git_config = self.absolute_extracted_path / '.git' / 'config'
         if not git_config.exists():
-            print("No git config, so clone")
             self.clone_from_git(ref=ref)
 
         cp = configparser.ConfigParser()
@@ -132,7 +156,6 @@ class ChirunPackage(models.Model):
         except configparser.NoSectionError:
             remote_url = None
         if self.git_remote_url != remote_url:
-            print("Not the same URL, so clone")
             self.clone_from_git()
 
         tasks.update_from_git(self, ref=ref)
@@ -156,8 +179,12 @@ class ChirunPackage(models.Model):
         if self.git_status != 'ready':
             return
 
-        result = self.run_git_command(['git','log','--format=format:%h%x09%s','-n','1']).stdout.strip()
-        i = result.index('\t')
+
+        try:
+            result = self.run_git_command(['git','log','--format=format:%h%x09%s','-n','1']).stdout.strip()
+            i = result.index('\t')
+        except (GitException, ValueError):
+            return
         commit_hash = result[:i]
         commit_message = result[i+1:]
         return commit_hash, commit_message
@@ -166,9 +193,14 @@ class ChirunPackage(models.Model):
         if self.git_status != 'ready':
             return
 
+        try:
+            result = self.run_git_command(['git','branch','-a', '--no-color'])
+        except GitException:
+            return
+
         branches = set()
         current = None
-        for line in self.run_git_command(['git','branch','-a', '--no-color']).stdout.split('\n'):
+        for line in result.stdout.split('\n'):
             if not line:
                 continue
 
@@ -306,10 +338,10 @@ class PackageLTIUse(models.Model):
     lti_context = models.ForeignKey(Context, related_name='chirun_packages', on_delete = models.CASCADE)
 
 BUILD_STATUSES = [
-    ("building", "Building"),
-    ("built", "Built"),
-    ("error", "Error during building"),
-    ("not_built", "Not built"),
+    ("building", _("Building")),
+    ("built", _("Built")),
+    ("error", _("Error during building")),
+    ("not_built", _("Not built")),
 ]
 
 class Compilation(models.Model):
@@ -324,7 +356,7 @@ class Compilation(models.Model):
         ordering = ('-start_time',)
 
     def __str__(self):
-        return f'Compilation {self.pk} of {self.package}'
+        return _('Compilation {pk} of {package}').format(pk=self.pk, package=self.package)
 
     def get_absolute_url(self):
         return reverse('material:build_progress', kwargs = {
@@ -364,3 +396,41 @@ class Compilation(models.Model):
 
         await channel_layer.group_send(self.get_channel_group_name(), message)
         await channel_layer.group_send(package.get_channel_group_name(), {'type': 'build_status', 'package': str(package.uid), 'message': message})
+
+GIT_INTERACTION_STATUSES =[
+    ('running', _('Running')),
+    ('success', _('Finished')),
+    ('error', _('Ended with an error')),
+]
+
+class GitInteraction(models.Model):
+    package = models.ForeignKey(ChirunPackage, related_name='git_interactions', on_delete=models.CASCADE)
+    command = models.TextField()
+    status = models.CharField(max_length=10, choices=GIT_INTERACTION_STATUSES, default='running')
+    output = models.TextField(default='', blank=True)
+
+    time = models.DateTimeField(auto_now_add = True)
+
+    def censor_string(self, string):
+        """
+            Remove information that shouldn't be displayed to the user from a string.
+        """
+
+        path = str(self.package.absolute_extracted_path)
+
+        return string.replace(path, '<LOCAL_SOURCE>')
+
+    @property
+    def short_command(self):
+        return ' '.join(self.censor_string(self.command).split(' ')[:2])
+
+    @property
+    def censored_command(self):
+        return self.censor_string(self.command)
+
+    @property
+    def censored_output(self):
+        return self.censor_string(self.output)
+
+    class Meta:
+        ordering = ('-time',)

@@ -69,6 +69,11 @@ urlpatterns = [
         name='git_configure'
     ),
 
+    path(r'package/<uuid:pk>/git/webhook',
+        views.GitWebhookView.as_view(),
+        name='git_webhook'
+    ),
+
     path(r'package/<uuid:pk>/build',
         views.BuildView.as_view(),
         name='build'

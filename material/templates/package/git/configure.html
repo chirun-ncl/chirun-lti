@@ -1,0 +1,56 @@
+{% extends "package/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate "Configuring" %} {{block.super}}{% endblock title %}
+{% block page_title %}
+    {% translate "Configuring" %} <em>{{block.super}}</em>
+{% endblock page_title %}
+
+{% block body_class %}{{block.super}} configure-git{% endblock %}
+
+{% block main %}
+<form method="POST">
+    <div class="form-columns">
+        {{form}}
+    </div>
+
+    <p>
+        <button type="submit">{% trans "Save" %}</button>
+        <a href="{{back_url}}">{% trans "Cancel" %}</a>
+    </p>
+</form>
+
+<hr>
+
+<section id="webhook">
+    <h2>{% translate "Webhook" %}</h2>
+    <p>{% blocktranslate %}In order to have the package rebuilt automatically each time you commit a change, set up a webhook pointing to the following URL:{% endblocktranslate %}</p>
+    <a href="{{webhook_url}}">{{webhook_url}}</a>
+</section>
+
+<hr>
+
+<section id="git-interactions">
+    <h2>{% translate "Recent git interactions" %}</h2>
+    <ol class="list-unstyled">
+        {% for interaction in package.git_interactions.all|slice:":10" %}
+        <li>
+            <details>
+                <summary>
+                    <time>{{interaction.time}}</time>
+                    <em>{{interaction.get_status_display}}</em> - <code>{{interaction.short_command}}</code>
+                </summary>
+
+                <code>{{interaction.censored_command}}</code>
+                {% if interaction.output %}
+                <pre>{{interaction.censored_output}}</pre>
+                {% else %}
+                <p>{% translate "This interaction produced no output." %}</p>
+                {% endif %}
+            </details>
+        </li>
+        {% endfor %}
+    </ol>
+</section>
+{% endblock main %}

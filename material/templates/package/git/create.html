@@ -1,0 +1,14 @@
+{% extends "package/base.html" %}
+
+{% load i18n %}
+
+{% block page_title %}{% translate "Create a new package" %}{% endblock page_title %}
+
+{% block main %}
+    <form method="POST" enctype="multipart/form-data">
+        {{form}}
+        
+        <p><button class="action" type="submit">{% translate "Submit" %}</button></p>
+    </form>
+
+{% endblock main %}

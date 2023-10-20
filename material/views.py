@@ -7,11 +7,14 @@ from   django.contrib import messages
 from   django.contrib.auth.mixins import UserPassesTestMixin
 from   django.core.exceptions import PermissionDenied
 from   django.db.models import Q
-from   django.http import HttpResponse, HttpResponseRedirect, Http404
+from   django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseBadRequest
 from   django.views import generic
 from   django.shortcuts import render, redirect
 from   django.urls import reverse, reverse_lazy
+from   django.utils.crypto import constant_time_compare
 from   django.utils.translation import gettext as _
+import hmac
+import json
 from   lti.views import CachedLTIView
 import mimetypes
 from   pathlib import Path
@@ -358,6 +361,15 @@ class ConfigureGitView(BackPageMixin, HelpPageMixin, PackageEditView, generic.Up
     form_class = forms.ConfigureGitForm
     help_url = 'package/git.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        package = self.get_object()
+
+        context['webhook_url'] = self.request.build_absolute_uri(reverse('material:git_webhook', args=(package.edit_uid,)))
+
+        return context
+
     def get_back_url(self):
         return reverse_lazy('material:view', args=(str(self.get_object().edit_uid),))
 
@@ -378,7 +390,9 @@ class ConfigureGitView(BackPageMixin, HelpPageMixin, PackageEditView, generic.Up
         package = self.get_object()
 
         ref = form.fields['ref']
-        ref.choices = [(a, a) for a in package.git_branches()]
+        branches = package.git_branches()
+        if branches is not None:
+            ref.choices = [(a, a) for a in branches]
 
         return form
 
@@ -692,3 +706,104 @@ class DownloadSourceView(ZipDownloadView):
         package = self.get_object()
         return f'{package.edit_uid}-source'
 
+
+class WebhookValidationException(Exception):
+    pass
+
+
+class GitWebhookHandler:
+    http_method_names = ['post',]
+
+    event_map = {
+        'github': {
+            'push': 'push',
+        },
+        'gitlab': {
+            'Push Hook': 'push',
+        },
+    }
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            self.validate_payload()
+            return self.handle_webhook_event()
+        except WebhookValidationException as e:
+            return HttpResponseBadRequest()
+
+    def get_secret(self):
+        """
+            Return the secret string that is used to sign the payload.
+        """
+        return None
+
+    def get_webhook_kind(self):
+        if 'X-GitHub-Event' in self.request.headers:
+            return 'github'
+
+        if 'X-Gitlab-Event' in self.request.headers:
+            return 'gitlab'
+
+        raise WebhookValidationException("Can't work out what format of webhook this is.")
+
+    def validate_payload(self):
+        secret = self.get_secret()
+
+        if secret is None:
+            return
+
+        payload = self.request.body
+        received_signature = self.request.headers.get('X-Hub-Signature-256','')
+            
+        h = hmac.new(secret.encode('utf-8'), payload, digestmod='sha256')
+        
+        expected_signature = 'sha256=' + h.hexdigest()
+
+        if not constant_time_compare(expected_signature, received_signature):
+            raise WebhookValidationException("The payload signature does not match the expected signature.")
+
+    def handle_webhook_event(self):
+        event = self.request.headers.get('X-GitHub-Event') or self.request.headers.get('X-GitLab-Event')
+
+        if event is None:
+            raise WebhookValidationException("Couldn't find the event type header.")
+
+        webhook_kind = self.webhook_kind = self.get_webhook_kind()
+        event = self.event_map[webhook_kind].get(event)
+
+        payload = self.payload = json.loads(self.request.body.decode('utf-8'))
+
+        handler = getattr(self, f'handle_event_{event}')
+        return handler(payload)
+
+    def get_repository_info(self):
+        if self.webhook_kind == 'github':
+            return self.payload['repository']
+
+        if self.webhook_kind == 'gitlab':
+            return self.payload['project']
+
+class GitWebhookView(GitWebhookHandler, PackageEditView, generic.DetailView):
+    http_method_names = ['post',]
+
+    def check_git_repo(self, payload):
+        package = self.object
+
+        repo_info = self.get_repository_info()
+        keys = ['html_url', 'git_url', 'clone_url', 'ssh_url'] if self.webhook_kind == 'github' else ['web_url', 'git_ssh_url', 'git_http_url', 'url', 'ssh_url', 'http_url']
+        for key in keys:
+            if repo_info.get(key) == package.git_url:
+                return True
+
+        raise WebhookValidationException(f"This event is not for the package's github repo. Expected {package.git_url}.")
+        
+    def handle_event_push(self, payload):
+        package = self.object = self.get_object()
+
+        if package.source_type != 'git':
+            return HttpResponseBadRequest()
+
+        self.check_git_repo(payload)
+
+        package.update_from_git()
+
+        return HttpResponse("ok")
