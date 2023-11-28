@@ -137,7 +137,18 @@ MEDIA_ROOT = 'media'
 
 HELP_URL = 'https://chirun.org.uk/docs/en/latest/'
 
-CHIRUN_DOCKER_IMAGE = 'coursebuilder/chirun-docker'
+CHIRUN_DOCKER_IMAGE = 'coursebuilder/chirun-docker:dev'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        "LOCATION": "redis://127.0.0.1:6379",
+    }
+}
+
+# pylti1p3 wouldn't validate launch data nonces when using the default database backend for sessions.
+# It seems to work with the cached_db backend.
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 # Initial content for a new .tex file.
 TEX_FILE_INITIAL_CONTENT = \
