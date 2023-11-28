@@ -1,9 +1,4 @@
-import datetime
-
 from .models import Context, ResourceLink
-from asgiref.sync import async_to_sync
-from django import forms
-from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, redirect
@@ -110,13 +105,6 @@ class LTIView:
         return resource_link
 
     def get_custom_param(self, param_name):
-        """
-            The deep-linking launch allows the teacher to choose a letter to associate with this link.
-
-            In real use, the chosen object could be a particular quiz, or a chapter from a book.
-
-            The chosen letter is passed as a custom parameter in the launch data.
-        """
         message_launch_data = self.message_launch.get_launch_data()
 
         return message_launch_data.get('https://purl.imsglobal.org/spec/lti/claim/custom', {})\
