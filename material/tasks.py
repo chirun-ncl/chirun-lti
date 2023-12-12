@@ -7,7 +7,8 @@ from   datetime import datetime, timedelta
 from   django.conf import settings
 from   django.utils.timezone import now
 import functools
-from   huey.contrib.djhuey import task, db_task
+from   huey import crontab
+from   huey.contrib.djhuey import task, db_task, db_periodic_task
 import os
 import shutil
 import subprocess
@@ -266,3 +267,11 @@ def update_from_git(package, ref=None):
 
     finally:
         package.save(update_fields=('git_status',))
+
+@db_periodic_task(crontab(minute='*'),priority=0)
+def find_failed_compilations():
+    t = now() - timedelta(seconds = COMPILATION_TIMEOUT * 2)
+    for c in Compilation.objects.filter(start_time__lt=t, status__in=('building', 'not_built')):
+        c.status = 'error'
+        c.end_time = t
+        c.save(update_fields=('status',))
