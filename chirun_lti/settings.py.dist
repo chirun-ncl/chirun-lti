@@ -160,3 +160,7 @@ r'''\documentclass{article}
 \begin{document}
 
 \end{document}'''
+
+# The maximum number of seconds that a package build process can run for.
+# The process is stopped if it takes longer than this.
+COMPILATION_TIMEOUT = 60 * 5

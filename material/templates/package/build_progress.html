@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% block body_class %}build-progress build-package{% endblock body_class %}
-{% block body_attributes %}data-build-status="{{package.build_status}}"{% endblock body_attributes %}
+{% block body_attributes %}data-build-status="{{compilation.status}}"{% endblock body_attributes %}
 
 {% block head %}
     {{block.super}}
@@ -32,9 +32,8 @@
     
     <section id="build-logs">
         <h2>{% translate "Build log" %}</h2>
-        <pre id="stdout" {% if compilation.status != 'building' %}class="non-empty"{% endif %}>{% if compilation.status != 'building' %}{{compilation.output}}{% endif %}</pre>
-        {% if compilation.status == 'building' %}
-        <pre id="stderr">{% if compilation.status != 'building' %}{{compilation.errput}}{% endif %}</pre>
-        {% endif %}
+        <pre id="stdout" {% if compilation.status != 'building' %}class="non-empty"{% endif %}>{{compilation.stdout}}</pre>
+        <h3>{% translate "Detailed log" %}</h3>
+        <pre id="stderr">{{compilation.stderr}}</pre>
     </section>
 {% endblock main %}

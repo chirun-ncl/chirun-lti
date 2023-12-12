@@ -93,6 +93,9 @@ class ChirunPackage(models.Model):
         path.mkdir(exist_ok=True, parents=True)
         return path.resolve()
 
+    def has_output(self):
+        return (self.absolute_output_path / 'MANIFEST.json').exists()
+
     def build(self):
         compilation = Compilation.objects.create(package = self)
 
@@ -347,7 +350,6 @@ BUILD_STATUSES = [
 class Compilation(models.Model):
     package = models.ForeignKey(ChirunPackage, related_name='compilations', on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=BUILD_STATUSES, default='building')
-    output = models.TextField(default='', blank=True)
 
     start_time = models.DateTimeField(auto_now_add = True)
     end_time = models.DateTimeField(null = True)
@@ -369,6 +371,32 @@ class Compilation(models.Model):
 
     def get_channel_group_name(self):
         return Compilation.channel_group_name_for_compilation(self.pk)
+
+    def get_build_log_path(self):
+        path = Path() / settings.MEDIA_ROOT / 'chirun-packages' / 'build-logs' / str(self.package.uid) / str(self.pk)
+        path.mkdir(exist_ok=True, parents=True)
+        return path.resolve()
+
+    def get_build_log(self, name):
+        d = self.get_build_log_path()
+        p = (d / name).with_suffix('.txt')
+        if not p.exists():
+            return ''
+        with open(p) as f:
+            return f.read()
+
+    @property
+    def stdout(self):
+        return self.get_build_log('stdout')
+
+    @property
+    def stderr(self):
+        return self.get_build_log('stderr')
+
+    @property
+    def output(self):
+        logs = [self.stdout, self.stderr]
+        return '\n\n'.join(x for x in logs if x)
 
     @staticmethod
     def channel_group_name_for_compilation(pk):

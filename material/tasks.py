@@ -8,9 +8,12 @@ from   django.conf import settings
 from   django.utils.timezone import now
 import functools
 from   huey.contrib.djhuey import task, db_task
+import os
 import shutil
 import subprocess
 import tempfile
+
+COMPILATION_TIMEOUT = getattr(settings, 'COMPILATION_TIMEOUT', 60 * 5)
 
 def async_task(*args, **kwargs):
     """
@@ -36,6 +39,25 @@ def async_task(*args, **kwargs):
 
 @async_task()
 async def build_package(compilation):
+    try:
+        await do_build_package(compilation)
+
+    except Exception:
+        compilation.status = 'error'
+
+    finally:
+        compilation.end_time = now()
+
+        await compilation.send_status_change()
+
+        print(f"Finished building {compilation.package}: {compilation}")
+
+        await sync_to_async(compilation.save)()
+
+class BuildException(Exception):
+    pass
+
+async def do_build_package(compilation):
     """
         Build a package, and record the results in the given Compilation object.
 
@@ -94,91 +116,105 @@ async def build_package(compilation):
         stderr_cache_key = cache_key + '_stderr'
         channel_group_name = compilation.get_channel_group_name()
 
-        async def read(pipe, pipe_name):
-            out = b''
-            part = b''
-            count = 0
-            while True:
-                t = datetime.now()
-                buf = b''
-                while datetime.now() - t < timedelta(seconds=0.2):
-                    bit = await pipe.read(100)
-                    if not bit:
+        async def read(pipe, pipe_name, log_name):
+            with open(log_name, 'wb') as log_file:
+                out = b''
+                part = b''
+                count = 0
+                while True:
+                    t = datetime.now()
+                    buf = b''
+                    while datetime.now() - t < timedelta(seconds=0.2):
+                        bit = await pipe.readline()
+                        if not bit:
+                            break
+                        buf += bit
+                    log_file.write(buf)
+                    if not buf:
                         break
-                    buf += bit
-                if not buf:
-                    break
 
-                part += buf
-                if b'\n' in buf:
-                    out += part
-                    await cache.set(cache_key+'_pipe_name', out)
+                    part += buf
+                    if b'\n' in part:
+                        out += part
+                        await cache.set(cache_key+'_pipe_name', out)
 
-                    count += 1
+                        count += 1
 
-                    await channel_layer.group_send(
-                        channel_group_name, {"type": f'{pipe_name}_bytes', "bytes": part, "count": count,}
-                    )
+                        await channel_layer.group_send(
+                            channel_group_name, {"type": f'{pipe_name}_bytes', "bytes": part, "count": count,}
+                        )
 
-                    part = b''
+                        part = b''
 
-            return out
+                return out
 
+        env = os.environ.copy()
+        env.update({'PYTHONUNBUFFERED': '1'})
         process = await asyncio.create_subprocess_exec(
             *cmd,
             cwd = working_directory,
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
+            stderr=asyncio.subprocess.PIPE,
+            env = env
         )
 
-        stdout_bytes, stderr_bytes = await asyncio.gather(
-            read(process.stdout, 'stdout'),
-            read(process.stderr, 'stderr')
-        )
+        log_dir = compilation.get_build_log_path()
 
-        if use_docker:
-            subprocess.run([
-                'docker',
-                'run',
-                '--rm',
-                '-v',
-                output_path+':/opt/chirun-output',
-                '-v',
-                '/etc/passwd:/etc/passwd:ro',
-                'coursebuilder/chirun-docker:dev',
-                'chown',
-                '-R',
-                final_output_path.parent.owner() + ':' + final_output_path.parent.group(),
-                '/opt/chirun-output'
-            ])
+        async def run_command():
+            stdout_bytes, stderr_bytes = await asyncio.gather(
+                read(process.stdout, 'stdout', log_name=log_dir / 'stdout.txt'),
+                read(process.stderr, 'stderr', log_name=log_dir / 'stderr.txt')
+            )
 
-        if final_output_path.exists():
-            shutil.rmtree(final_output_path)
+            if use_docker:
+                subprocess.run([
+                    'docker',
+                    'run',
+                    '--rm',
+                    '-v',
+                    output_path+':/opt/chirun-output',
+                    '-v',
+                    '/etc/passwd:/etc/passwd:ro',
+                    'coursebuilder/chirun-docker:dev',
+                    'chown',
+                    '-R',
+                    final_output_path.parent.owner() + ':' + final_output_path.parent.group(),
+                    '/opt/chirun-output'
+                ])
 
-        shutil.copytree(output_path, final_output_path, dirs_exist_ok=True)
+            await process.communicate()
 
-        final_output_path.chmod(0o755)
+            return stdout_bytes, stderr_bytes
 
-        await process.communicate()
+        try:
+            stdout_bytes, stderr_bytes = await asyncio.wait_for(run_command(), timeout=COMPILATION_TIMEOUT)
+            stdout = stdout_bytes.decode('utf-8')
+            stderr = stderr_bytes.decode('utf-8')
 
-    stdout = stdout_bytes.decode('utf-8')
-    stderr = stderr_bytes.decode('utf-8')
+        except asyncio.TimeoutError:
+            process.kill()
+            stderr = "The build process took too long and was stopped."
+            await channel_layer.group_send(
+                channel_group_name, {"type": f'stdout_bytes', "bytes": stderr.encode('utf-8'), "count": len(stderr),}
+            )
+            with open(log_dir / 'stdout.txt', 'a') as f:
+                f.write('\n'+stderr)
+
+        if process.returncode == 0:
+            if final_output_path.exists():
+                shutil.rmtree(final_output_path)
+
+            shutil.copytree(output_path, final_output_path, dirs_exist_ok=True)
+
+            final_output_path.chmod(0o755)
 
     await cache.delete(stdout_cache_key)
     await cache.delete(stderr_cache_key)
 
-    compilation.output = stdout+'\n\n'+stderr
-    if process.returncode == 0:
-        compilation.status = 'built'
-    else:
-        compilation.status = 'error'
+    if process.returncode != 0:
+        raise BuildException("There was an error during the build process.")
 
-    compilation.end_time = now()
-
-    await compilation.send_status_change()
-
-    print(f"Finished building {package}: {compilation}")
-    await sync_to_async(compilation.save)()
+    compilation.status = 'built'
 
 @task()
 def delete_package_files(package):

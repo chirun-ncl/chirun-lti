@@ -48,6 +48,8 @@
     --active-lum-factor: 0.7;
     --border-lum-factor: 0.8;
 
+    --border-width: 0.2em;
+
     --spacing: 0.5em;
     
     --header-text-size: clamp(1.2rem, 3vw, 2rem);
@@ -113,7 +115,7 @@ h1, h2, h3, h4, h5, h6, p {
 :is(input, textarea, select) {
     background: hsl(var(--input-bg-hue), var(--input-bg-sat), var(--input-bg-lum));
     color: var(--input-color);
-    border: 0.2em solid hsl(var(--input-bg-hue), var(--input-bg-sat), calc(var(--input-bg-lum) * var(--border-lum-factor)));
+    border: var(--border-width) solid hsl(var(--input-bg-hue), var(--input-bg-sat), calc(var(--input-bg-lum) * var(--border-lum-factor)));
     font-size: 1em;
     padding: calc(0.5 * var(--spacing)) calc(1 * var(--spacing));
     border-radius: var(--input-radius);
@@ -123,7 +125,7 @@ button {
     --bg-lum: var(--button-bg-lum);
     background: hsl(var(--button-bg-hue), var(--button-bg-sat), var(--bg-lum));
     color: var(--button-color);
-    border: 0.2em solid hsl(var(--button-bg-hue), var(--button-bg-sat), calc(var(--bg-lum) * 0.8));
+    border: var(--border-width) solid hsl(var(--button-bg-hue), var(--button-bg-sat), calc(var(--bg-lum) * 0.8));
     font-size: 1em;
     padding: calc(1 * var(--spacing)) calc(1 * var(--spacing));
     border-radius: var(--button-radius);
@@ -483,15 +485,14 @@ body.configure-package .directory-tree li + li :is(details,ul) {
 }
 
 body.build-progress :is(#stdout, #stderr) {
-    height: 30vh;
     overflow-y: scroll;
     width: 100%;
     overflow-x: auto;
     border: 1px solid var(--main-color);
     padding: var(--spacing);
 }
-body.build-progress.build-status-built :is(#stdout, #stderr) {
-    height: initial;
+body.build-progress[data-build-status="building"] :is(#stdout, #stderr) {
+    height: 30vh;
 }
 
 body.deep-link form.use-this {
@@ -529,6 +530,12 @@ body.package-details #controls nav {
 
 body.package-details #controls form {
     display: inline;
+}
+
+body.package-details #build-error {
+    border: var(--border-width) solid hsl(var(--hue-danger), 60%, var(--lum-danger));
+    padding: var(--spacing);
+    margin: var(--spacing);
 }
 
 .package-structure li {
