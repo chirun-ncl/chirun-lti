@@ -6,7 +6,7 @@ from django.views import View
 from django.views.generic import TemplateView, FormView, RedirectView
 from django.views.decorators.http import require_POST
 from django.urls import reverse, reverse_lazy
-from material.models import ChirunPackage
+from material.models import ChirunPackage, PackageLaunch
 from pathlib import PurePath
 from pylti1p3.contrib.django import DjangoOIDCLogin, DjangoMessageLaunch, DjangoCacheDataStorage
 from pylti1p3.contrib.django.lti1p3_tool_config import DjangoDbToolConf
@@ -117,6 +117,7 @@ class LTIView:
             context['message_launch'] = self.message_launch
 
         return context
+    
 
 class CachedLTIView(LTIView):
     """
@@ -137,6 +138,7 @@ class CachedLTIView(LTIView):
 
     def get_message_launch(self):
         launch_id = self.get_launch_id()
+
         if launch_id is None:
             raise SuspiciousOperation
 
@@ -155,13 +157,13 @@ class LoginView(LTIView, View):
         """
             Get the intended launch URL during a login request.
         """
-
         target_link_uri = self.request.POST.get('target_link_uri', self.request.GET.get('target_link_uri'))
         if not target_link_uri:
             raise Exception('Missing "target_link_uri" param')
         return target_link_uri
 
     def dispatch(self, request, *args, **kwargs):
+        
         oidc_login = DjangoOIDCLogin(request, self.tool_conf, launch_data_storage = self.launch_data_storage)
         target_link_uri = self.get_launch_url()
         return oidc_login\
@@ -176,9 +178,10 @@ class LaunchView(LTIView, TemplateView):
     """
     http_method_names = ['post']
 
+
     def post(self, request, *args, **kwargs):
         launch_id = self.message_launch.get_launch_id()
-
+        
         if self.message_launch.check_teacher_access() or self.message_launch.check_teaching_assistant_access() or self.message_launch.check_staff_access():
             if self.message_launch.is_deep_link_launch():
                 return redirect(reverse('material:deep_link', args=(launch_id,)))
@@ -193,6 +196,7 @@ class LaunchView(LTIView, TemplateView):
                 return HttpResponseBadRequest("This launch type is not recognised.")
         else:
             return HttpResponseBadRequest(f"You have an unknown role.")
+    
 
 class JWKSView(View):
     """
@@ -247,7 +251,7 @@ class TeacherLaunchView(CachedLTIView, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
+        
         package_uid = self.get_custom_param('package')
         item = self.get_custom_param('item')
         theme = self.get_custom_param('theme')
@@ -263,11 +267,24 @@ class TeacherLaunchView(CachedLTIView, TemplateView):
         return context
 
 class StudentLaunchView(CachedLTIView, RedirectView):
+
+
+    def record_package_launch(self, package, item, theme):
+        launch_record = PackageLaunch.objects.create(
+            package=package,
+            link=self.lti_resource_link,
+            item = item,
+            theme = theme        
+        ) 
+        return launch_record
+
     def get_redirect_url(self, *args, **kwargs):
+        
         package_uid = self.get_custom_param('package')
         item = self.get_custom_param('item')
         theme = self.get_custom_param('theme')
         package = ChirunPackage.objects.get(uid = package_uid)
+        launch_record = self.record_package_launch(package = package, item = item, theme = theme)
 
         url = PurePath(package.get_output_url()) / theme / item
         return str(url)

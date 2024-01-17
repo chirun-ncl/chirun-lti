@@ -4,9 +4,10 @@ from   django.conf import settings
 from   django.db import models
 from   django.urls import reverse
 from   django.utils.translation import gettext as _
+from   django.utils import timezone
 import functools
 import json
-from   lti.models import Context
+from   lti.models import Context, ResourceLink
 import os
 from   pathlib import Path, PurePath
 from   pylti1p3.contrib.django.lti1p3_tool_config.models import LtiTool
@@ -339,6 +340,20 @@ class PackageLTIUse(models.Model):
 
     package = models.ForeignKey(ChirunPackage, related_name='lti_uses', on_delete = models.CASCADE)
     lti_context = models.ForeignKey(Context, related_name='chirun_packages', on_delete = models.CASCADE)
+
+   
+class PackageLaunch(models.Model):
+    """
+        Records a single instance of package launch by a student
+    """
+    link = models.ForeignKey(ResourceLink, on_delete=models.CASCADE)
+    package = models.ForeignKey(ChirunPackage, on_delete=models.CASCADE)
+    launch_time = models.DateTimeField(default=timezone.now)
+    item = models.CharField(max_length=500) 
+    theme = models.CharField(max_length=500)
+    def __str__(self):
+        return f"{str(self.package)} - {str(self.launch_time)}" 
+
 
 BUILD_STATUSES = [
     ("building", _("Building")),
