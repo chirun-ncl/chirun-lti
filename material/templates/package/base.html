@@ -1,7 +1,7 @@
 {% extends "lti/base.html" %}
 {% load static %}
 
-{% block title %}{{package.title}} - {{block.super}}{% endblock title %}
+{% block title %}{% if package %}{{package.title}} - {% endif %}{{block.super}}{% endblock title %}
 {% block page_title %}
 {{package.title}}{% if package.manifest.code %}<small> - {{package.manifest.code}}</small>{% endif %}{% if package.manifest.year %} <small>({{package.manifest.year}})</small>{% endif %}
 {% if package.manifest.author %}

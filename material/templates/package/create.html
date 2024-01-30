@@ -2,6 +2,7 @@
 
 {% load i18n %}
 
+{% block title %}Create a new package - {{block.super}}{% endblock title %}
 {% block page_title %}{% translate "Create a new package" %}{% endblock page_title %}
 
 {% block body_class %}{{block.super}} create-package{% endblock %}
