@@ -2,6 +2,7 @@ from .models import Context, ResourceLink
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, redirect
+from django.template.loader import get_template
 from django.views import View
 from django.views.generic import TemplateView, FormView, RedirectView
 from django.views.decorators.http import require_POST
@@ -11,6 +12,7 @@ from pathlib import PurePath
 from pylti1p3.contrib.django import DjangoOIDCLogin, DjangoMessageLaunch, DjangoCacheDataStorage
 from pylti1p3.contrib.django.lti1p3_tool_config import DjangoDbToolConf
 from pylti1p3.contrib.django.lti1p3_tool_config.dynamic_registration import DjangoDynamicRegistration
+from pylti1p3.exception import LtiException
 
 PAGE_TITLE = 'Chirun'
 PAGE_DESCRIPTION = 'The Chirun tool for creating accessible online course material.'
@@ -50,7 +52,16 @@ class LTIView:
 
     def dispatch(self, request, *args, **kwargs):
         if self.get_message_launch_on_dispatch:
-            self.get_lti_data()
+            try:
+                self.get_lti_data()
+            except LtiException as e:
+                message = str(e)
+                error = self.request.POST.get('error')
+                if error is not None:
+                    message = self.request.POST.get('error_description', f"There was an error getting LTI data: {error}")
+                    template = get_template('lti/launch_error.html')
+                    return HttpResponseBadRequest(template.render({'message': message}))
+                raise SuspiciousOperation(message)
         return super().dispatch(request, *args, **kwargs)
 
     def get_lti_data(self):

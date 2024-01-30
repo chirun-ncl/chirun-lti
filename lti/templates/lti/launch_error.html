@@ -1,0 +1,11 @@
+{% extends "lti/base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Launch error" %} - {{block.super}}{% endblock title %}
+
+{% block page_title %}{% translate "Launch error" %}{% endblock page_title %}
+
+{% block main %}
+<p>{{message}}</p>
+<p>{% translate "You might be able to fix this by going back to the link that opened this resource and opening it again." %}</p>
+{% endblock main %}

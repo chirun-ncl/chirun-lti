@@ -1,0 +1,10 @@
+{% extends "lti/base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Error: bad request" %} - {{block.super}}{% endblock title %}
+
+{% block page_title %}{% translate "Error: bad request" %}{% endblock page_title %}
+
+{% block main %}
+<p>{% translate "Your request could not be processed." %}</p>
+{% endblock main %}
