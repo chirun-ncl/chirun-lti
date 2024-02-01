@@ -1,6 +1,7 @@
 from   channels.layers import get_channel_layer
 import configparser
 from   django.conf import settings
+from   django.contrib import admin
 from   django.db import models
 from   django.urls import reverse
 from   django.utils.translation import gettext as _
@@ -15,6 +16,8 @@ import subprocess
 import urllib.parse
 import uuid
 import yaml
+
+
 
 def all_files_relative_to(top):
     for d,dirs,files in os.walk(str(top)):
@@ -104,6 +107,26 @@ class ChirunPackage(models.Model):
         tasks.build_package(compilation)
 
         return compilation
+
+    @admin.display(description = "Last build",
+                   boolean = False,
+                   ordering = "-last_compiled_sort")
+    def last_compiled(self):
+        last_build = self.compilations.first()
+        if last_build:
+            return last_build.start_time
+        else:
+            return 'Never Built'
+        
+    @admin.display(description = "Last launch",
+                   boolean = False,
+                   ordering = "-last_launched_sort")
+    def last_launched(self):
+        last_launch = self.launches.first()
+        if last_launch:
+            return last_launch.launch_time
+        else:
+            return 'Never Launched'
 
     def run_git_command(self, cmd, save_interaction=False):
         cmd = [str(x) for x in cmd]
@@ -346,8 +369,8 @@ class PackageLaunch(models.Model):
     """
         Records a single instance of package launch by a student
     """
-    link = models.ForeignKey(ResourceLink, on_delete=models.CASCADE)
-    package = models.ForeignKey(ChirunPackage, on_delete=models.CASCADE)
+    link = models.ForeignKey(ResourceLink, related_name='launches', on_delete=models.CASCADE)
+    package = models.ForeignKey(ChirunPackage, related_name='launches',on_delete=models.CASCADE)
     launch_time = models.DateTimeField(default=timezone.now)
     item = models.CharField(max_length=500) 
     theme = models.CharField(max_length=500)
