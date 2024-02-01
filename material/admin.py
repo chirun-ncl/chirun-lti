@@ -8,8 +8,6 @@ from datetime import timedelta
 
 from .models import ChirunPackage
 
-#ZZZZ To do: Need to add a field to chirun package listing any connected PackageLTIUse models
-
 class LastCompiledListFilter(admin.SimpleListFilter):
     # Human-readable splitting of last compile times
     title = _("last compiled")
@@ -17,13 +15,14 @@ class LastCompiledListFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return [
-            ("na","never compiled"),
-            ("<1d","within the last day"),
-            ("<7d","within the last week"),
-            ("<30d", "within the last month"),
-            (">30d", "more than 30 days ago"),
-            (">1y", "more than a year ago"),
+            ("na", _("never built")),
+            ("<1d", _("within the last day")),
+            ("<7d", _("within the last week")),
+            ("<30d", _("within the last month")),
+            (">30d", _("more than 30 days ago")),
+            (">1y", _("more than a year ago")),
         ]
+
     def queryset(self, request, queryset):
         if self.value() == "na":
             return queryset.filter(
@@ -59,10 +58,10 @@ class LastLaunchedListFilter(admin.SimpleListFilter):
         return [
             ("na","never launched"),
             ("<7d","within the last week"),
-            ("<30d", "within the last month"),
+            ("<30d", "within the last 30 days"),
             (">30d", "more than 30 days ago"),
             (">1y", "more than a year ago"),
-            (">3y", "more than a year ago"),
+            (">3y", "more than three years ago"),
         ]
     def queryset(self, request, queryset):
         if self.value() == "na":
@@ -102,18 +101,13 @@ class ChirunPackageAdmin(admin.ModelAdmin):
     readonly_fields = ["title","last_compiled","last_launched"]
     search_fields = ["uid","edit_uid","title"] #ZZZZ Searchable fields?
 
-
     def get_queryset(self,request):
         #add the sorting conditions for the last compiled and last launched functions.
-        queryset = super().get_queryset(request)
-        queryset = queryset.annotate(last_compiled_sort = Max("compilations__start_time"))
-        queryset = queryset.annotate(last_launched_sort = Max("launches__launch_time"))
+        queryset = super().get_queryset(request) \
+            .annotate(last_compiled_sort = Max("compilations__start_time")) \
+            .annotate(last_launched_sort = Max("launches__launch_time"))
         return queryset
         
 
 
 admin.site.register(ChirunPackage, ChirunPackageAdmin)
-
-
-
-# Register your models here.
