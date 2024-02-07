@@ -76,7 +76,6 @@ async def do_build_package(compilation):
 
     with tempfile.TemporaryDirectory() as source_path, tempfile.TemporaryDirectory() as output_path:
         cache = get_cache()
-
         await compilation.send_status_change()
 
         channel_layer = get_channel_layer()
@@ -216,6 +215,8 @@ async def do_build_package(compilation):
         raise BuildException("There was an error during the build process.")
 
     compilation.status = 'built'
+    package.name = package.manifest.get('title')
+    await sync_to_async(package.save)(update_fields=['name'])
 
 @task()
 def delete_package_files(package):
