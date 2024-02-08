@@ -8002,6 +8002,9 @@ var $author$project$ChirunPackageConfig$item_defaults = $elm$core$Dict$fromList(
 			$author$project$ChirunPackageConfig$BoolSetting(true)),
 			_Utils_Tuple2(
 			'footer',
+			$author$project$ChirunPackageConfig$BoolSetting(true)),
+			_Utils_Tuple2(
+			'pager',
 			$author$project$ChirunPackageConfig$BoolSetting(true))
 		]));
 var $elm$html$Html$legend = _VirtualDom_node('legend');
@@ -8552,7 +8555,9 @@ var $author$project$ChirunPackageConfig$item_settings_tab = F3(
 									A3(bool_checkbox, $elm$core$Basics$identity, 'sidebar', 'Show the sidebar?'),
 									_Utils_ap(
 										A3(bool_checkbox, $elm$core$Basics$identity, 'topbar', 'Show the top bar?'),
-										A3(bool_checkbox, $elm$core$Basics$identity, 'footer', 'Show the footer?')))))))
+										_Utils_ap(
+											A3(bool_checkbox, $elm$core$Basics$identity, 'footer', 'Show the footer?'),
+											A3(bool_checkbox, $elm$core$Basics$identity, 'pager', 'Show the pager?'))))))))
 				]));
 	});
 var $elm$html$Html$Attributes$method = $elm$html$Html$Attributes$stringProperty('method');

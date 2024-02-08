@@ -173,6 +173,7 @@ item_defaults = Dict.fromList
     , ("sidebar", BoolSetting True)
     , ("topbar", BoolSetting True)
     , ("footer", BoolSetting True)
+    , ("pager", BoolSetting True)
     ]
 
 blank_package : Package
@@ -692,6 +693,7 @@ item_settings_tab model path tree =
                  ++ (bool_checkbox identity "sidebar" "Show the sidebar?")
                  ++ (bool_checkbox identity "topbar" "Show the top bar?")
                  ++ (bool_checkbox identity "footer" "Show the footer?")
+                 ++ (bool_checkbox identity "pager" "Show the pager?")
                 )
             ]
 
