@@ -92,14 +92,15 @@ class LastLaunchedListFilter(admin.SimpleListFilter):
 
 
 class ChirunPackageAdmin(admin.ModelAdmin):
-    fieldsets = [(None,{"fields": ["title"]}),
+    fieldsets = [(None,{"fields": ["name"]}),
                  ("UIDs",{"fields": ["uid","edit_uid"]}),
                  ("Status",{"fields":["last_compiled","last_launched"]}),
                  ("Git Connection",{"fields": ["git_url","git_username","git_status"],"classes": ["collapse"]})]
-    list_display = ["title","uid","last_compiled","last_launched"] #("Status",{"list_display":["last_compiled"]})
+    list_display = ["name","uid","last_compiled","last_launched"] #("Status",{"list_display":["last_compiled"]})
     list_filter = [LastCompiledListFilter,LastLaunchedListFilter]
-    readonly_fields = ["title","last_compiled","last_launched"]
-    search_fields = ["uid","edit_uid","title"] #ZZZZ Searchable fields?
+    list_display_links = ["name","uid"]
+    readonly_fields = ["name","last_compiled","last_launched"]
+    search_fields = ["uid","edit_uid","name"]
 
     def get_queryset(self,request):
         #add the sorting conditions for the last compiled and last launched functions.
