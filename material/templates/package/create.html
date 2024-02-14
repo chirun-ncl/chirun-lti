@@ -8,6 +8,17 @@
 {% block body_class %}{{block.super}} create-package{% endblock %}
 
 {% block main %}
+    <nav>
+        <p>{% blocktranslate %}How would you like to create this package?{% endblocktranslate %}</p>
+        <p>
+            <a href="#from-scratch">{% translate "Start from scratch" %}</a>
+            <a href="#upload-files">{% translate "Upload files" %}</a>
+            <a href="#git-clone">{% translate "Clone a git repository" %}</a>
+        </p>
+    </nav>
+
+    <hr>
+
     <section id="from-scratch">
         <h2>{% translate "Start from scratch" %}</h2>
         <form method="POST">
