@@ -95,6 +95,7 @@ nav a {
     text-decoration: none;
     background: hsl(var(--main-bg-hue),var(--main-bg-sat),var(--main-bg-lum));
     padding: var(--spacing) calc(2 * var(--spacing));
+    display: inline-block;
 }
 
 body {
@@ -583,23 +584,31 @@ form .form-columns > label {
     align-self: center;
 }
 
-body.create-package main {
+body.create-package #quick-links {
+    display: none;
+}
+
+body.create-package #forms {
     display: grid;
     grid-auto-flow: column;
     grid-gap: calc(2 * var(--spacing));
 }
 
-body.create-package main > hr {
+body.create-package #forms > hr {
     width: 0;
     justify-self: center;
 }
 
 @media (max-width: 60em) {
-    body.create-package main {
+    body.create-package #quick-links {
+        display: block;
+    }
+
+    body.create-package #forms {
         grid-auto-flow: row;
     }
 
-    body.create-package main > hr {
+    body.create-package #forms > hr {
         height: 0;
         width: initial;
         justify-self: normal;
