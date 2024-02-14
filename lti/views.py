@@ -3,6 +3,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, redirect
 from django.template.loader import get_template
+from django.templatetags.static import static
 from django.views import View
 from django.views.generic import TemplateView, FormView, RedirectView
 from django.views.decorators.http import require_POST
@@ -13,6 +14,7 @@ from pylti1p3.contrib.django import DjangoOIDCLogin, DjangoMessageLaunch, Django
 from pylti1p3.contrib.django.lti1p3_tool_config import DjangoDbToolConf
 from pylti1p3.contrib.django.lti1p3_tool_config.dynamic_registration import DjangoDynamicRegistration
 from pylti1p3.exception import LtiException
+import urllib.parse
 
 PAGE_TITLE = 'Chirun'
 PAGE_DESCRIPTION = 'The Chirun tool for creating accessible online course material.'
@@ -256,6 +258,53 @@ def register(request):
     lti_tool = registration.register()
 
     return HttpResponse(registration.complete_html())
+
+def canvas_config_json(request):
+    icon_url = request.build_absolute_uri(static("chirun_icon_512.png"))
+
+    iss = request.GET.get('iss','https://canvas.instructure.com')
+    iss = urllib.parse.quote_plus(iss)
+
+    config = {
+        "title": "Chirun",
+        "description": "Chirun accessible course notes",
+        "oidc_initiation_url": request.build_absolute_uri(reverse('lti:login')),
+        "target_link_uri": request.build_absolute_uri(reverse('lti:launch')),
+        "scopes": [
+            "https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly"
+        ],
+        "extensions": {
+            "domain": request.get_host(),
+            "tool_id": "chirun",
+            "platform": "canvas.instructure.com",
+            "settings": {
+                "text": "Chirun",
+                "icon_url": icon_url,
+                "placements":[
+                    {
+                        "text": "Chirun material",
+                        "enabled": True,
+                        "icon_url": icon_url,
+                        "placement": "editor_button",
+                        "message_type": "LtiDeepLinkingRequest",
+                        "target_link_uri": request.build_absolute_uri(reverse('lti:launch')),
+                        "canvas_icon_class": "icon-lti"
+                    },
+                    {
+                        "text": "Embed Chirun material",
+                        "enabled": True,
+                        "icon_url": icon_url,
+                        "placement": "link_selection",
+                        "message_type": "LtiDeepLinkingRequest",
+                        "target_link_uri": request.build_absolute_uri(reverse('lti:launch')),
+                        "canvas_icon_class": "icon-lti"
+                    }
+                ]
+            }
+        },
+        "public_jwk_url": request.build_absolute_uri(reverse('lti:jwks'))+"?iss="+iss
+    }
+    return JsonResponse(config)
 
 class TeacherLaunchView(CachedLTIView, TemplateView):
     template_name = 'lti/teacher_launch.html'
