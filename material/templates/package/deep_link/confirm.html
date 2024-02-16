@@ -40,6 +40,13 @@
                 {% endfor %}
             {% endif %}
 
+            {% if form.fields.link_type.choices|length > 1 %}
+                {{form.link_type.label}}
+                {{form.link_type}}
+            {% else %}
+                <input type="hidden" name="link_type" value="{{form.fields.link_type.choices.0.0}}">
+            {% endif %}
+
             <p><button type="Submit">{% translate "Use this choice" %}</button></p>
 
             <p><a href="{{back_url}}">{% translate "Choose something else" %}</a></p>

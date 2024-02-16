@@ -1,4 +1,5 @@
 from   . import forms
+from   .templatetags.material import urljoin
 from   .models import ChirunPackage, Compilation, PackageLTIUse
 from   chirun_lti.mixins import BackPageMixin, HelpPageMixin
 from   dataclasses import dataclass
@@ -8,6 +9,7 @@ from   django.contrib.auth.mixins import UserPassesTestMixin
 from   django.core.exceptions import PermissionDenied
 from   django.db.models import Q
 from   django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseBadRequest
+from   django.template.loader import get_template
 from   django.views import generic
 from   django.shortcuts import render, redirect
 from   django.urls import reverse, reverse_lazy
@@ -161,6 +163,16 @@ class DeepLinkConfirmView(AbstractDeepLinkView, BackPageMixin, CachedLTIView, ge
         theme = self.request.GET['theme']
         return reverse_lazy('material:deep_link', kwargs=self.kwargs)+f'''?package={self.package.uid}&theme={theme}'''
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        deep_link = self.get_message_launch().get_deep_link()
+        accept_types = deep_link.get_accept_types()
+
+        kwargs['link_type_choices'] = [(v,label) for v,label in forms.DEEP_LINK_TYPES if v in accept_types]
+
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -182,8 +194,11 @@ class DeepLinkConfirmView(AbstractDeepLinkView, BackPageMixin, CachedLTIView, ge
         item_url = form.cleaned_data.get('item')
         theme = self.request.GET.get('theme')
         item_format = form.cleaned_data.get('item_format', 'default')
+        link_type = form.cleaned_data.get('link_type', 'ltiResourceLink')
 
         item = package.get_item_by_url(item_url)
+
+        title = item.get('title',_('Untitled item'))
 
         if item_format is not None:
             try:
@@ -194,14 +209,24 @@ class DeepLinkConfirmView(AbstractDeepLinkView, BackPageMixin, CachedLTIView, ge
             item_url = format_manifest['url']
 
         resource = DeepLinkResource()\
-            .set_url(launch_url)\
+            .set_type(link_type)\
             .set_custom_params({
                 'package': str(package.uid),
                 'item': item_url,
                 'theme': theme,
                 'item_format': item_format,
             })\
-            .set_title(item.get('title',_('Untitled item')))
+            .set_title(title)
+
+        if link_type == 'ltiResourceLink':
+            resource = resource\
+                .set_url(launch_url)
+
+        if link_type == 'html':
+            absolute_url = self.request.build_absolute_uri(urljoin(package.get_output_url(), item_url))
+            template = get_template('package/deep_link/embed_fragment.html')
+            resource = resource\
+                .set_html(template.render({'absolute_url': absolute_url, 'title': title, package: package}))
 
         html = self.message_launch.get_deep_link().output_response_form([resource])
         return HttpResponse(html)

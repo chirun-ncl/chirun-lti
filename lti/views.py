@@ -270,39 +270,44 @@ def canvas_config_json(request):
         "description": "Chirun accessible course notes",
         "oidc_initiation_url": request.build_absolute_uri(reverse('lti:login')),
         "target_link_uri": request.build_absolute_uri(reverse('lti:launch')),
+        "custom_fields": {},
         "scopes": [
             "https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly"
         ],
-        "extensions": {
-            "domain": request.get_host(),
-            "tool_id": "chirun",
-            "platform": "canvas.instructure.com",
-            "settings": {
-                "text": "Chirun",
-                "icon_url": icon_url,
-                "placements":[
-                    {
-                        "text": "Chirun material",
-                        "enabled": True,
-                        "icon_url": icon_url,
-                        "placement": "editor_button",
-                        "message_type": "LtiDeepLinkingRequest",
-                        "target_link_uri": request.build_absolute_uri(reverse('lti:launch')),
-                        "canvas_icon_class": "icon-lti"
-                    },
-                    {
-                        "text": "Embed Chirun material",
-                        "enabled": True,
-                        "icon_url": icon_url,
-                        "placement": "link_selection",
-                        "message_type": "LtiDeepLinkingRequest",
-                        "target_link_uri": request.build_absolute_uri(reverse('lti:launch')),
-                        "canvas_icon_class": "icon-lti"
-                    }
-                ]
+        "extensions": [
+            {
+                "domain": request.get_host(),
+                "tool_id": "chirun",
+                "platform": "canvas.instructure.com",
+                "settings": {
+                    "text": "Chirun",
+                    "icon_url": icon_url,
+                    "platform": "canvas.instructure.com",
+                    "placements":[
+                        {
+                            "text": "Chirun material",
+                            "enabled": True,
+                            "icon_url": icon_url,
+                            "placement": "editor_button",
+                            "message_type": "LtiDeepLinkingRequest",
+                            "target_link_uri": request.build_absolute_uri(reverse('lti:launch')),
+                            "canvas_icon_class": "icon-lti"
+                        },
+                        {
+                            "text": "Embed Chirun material",
+                            "enabled": True,
+                            "icon_url": icon_url,
+                            "placement": "link_selection",
+                            "message_type": "LtiDeepLinkingRequest",
+                            "target_link_uri": request.build_absolute_uri(reverse('lti:launch')),
+                            "canvas_icon_class": "icon-lti"
+                        }
+                    ]
+                }
             }
-        },
-        "public_jwk_url": request.build_absolute_uri(reverse('lti:jwks'))+"?iss="+iss
+        ],
+        "public_jwk_url": request.build_absolute_uri(reverse('lti:jwks'))+"?iss="+iss,
+        "public_jwk": {},
     }
     return JsonResponse(config)
 

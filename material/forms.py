@@ -22,13 +22,27 @@ class CreatePackageFromGitForm(forms.ModelForm):
         }
 
 class ConfigureGitForm(CreatePackageFromGitForm):
-    ref = forms.ChoiceField(required=False, label='Branch')
+    ref = forms.ChoiceField(required=False, label=_('Branch'))
+
+DEEP_LINK_TYPES = [
+    ('ltiResourceLink', _('Link')),
+    ('html', _('Embedded frame')),
+]
+
 
 class DeepLinkForm(forms.Form):
     package = forms.ModelChoiceField(queryset=ChirunPackage.objects.all())
     item = forms.CharField(required=False)
     theme = forms.CharField(required=False)
     item_format = forms.CharField(required=False)
+    link_type = forms.ChoiceField(required=False, label=_('Link type'), choices = DEEP_LINK_TYPES)
+
+    def __init__(self, *args, **kwargs):
+        link_type_choices = kwargs.pop('link_type_choices')
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['link_type'].choices = link_type_choices
 
 class DeepLinkImportForm(forms.Form):
     url = forms.CharField(required=True)
