@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from datetime import timedelta
 
-from .models import ChirunPackage
+from .models import ChirunPackage, PackageLTIUse
 
 class LastCompiledListFilter(admin.SimpleListFilter):
     # Human-readable splitting of last compile times
@@ -89,18 +89,39 @@ class LastLaunchedListFilter(admin.SimpleListFilter):
                 last_launched_sort__lte = timezone.now() - timedelta(days = 1096)
                 )
 
+class GitExistsListFilter(admin.SimpleListFilter):
+    title = _("git connection")
+    parameter_name = "git_linked"
+    def lookups(self,request,model_admin):
+        return [
+            ("false","not connected"),
+            ("true","connected")
+        ]
+    def queryset(self,request,queryset):
+        if self.value() == "false":
+            return queryset.filter(git_url = "")
+        if self.value() == "true":
+            return queryset.exclude(git_url = "")
 
+class PackageLTIUseInline(admin.TabularInline):
+    model = PackageLTIUse
+    fields = ["lti_context","context_title"]
+    readonly_fields = ["lti_context","context_title"]
+    extra = 0
+    def context_title(self,instance):
+        return instance.lti_context
 
 class ChirunPackageAdmin(admin.ModelAdmin):
     fieldsets = [(None,{"fields": ["name"]}),
                  ("UIDs",{"fields": ["uid","edit_uid"]}),
                  ("Status",{"fields":["last_compiled","last_launched"]}),
                  ("Git Connection",{"fields": ["git_url","git_username","git_status"],"classes": ["collapse"]})]
-    list_display = ["name","uid","last_compiled","last_launched"] #("Status",{"list_display":["last_compiled"]})
-    list_filter = [LastCompiledListFilter,LastLaunchedListFilter]
+    list_display = ["name","uid","last_compiled","last_launched"]
+    list_filter = [LastCompiledListFilter,LastLaunchedListFilter,GitExistsListFilter]
     list_display_links = ["name","uid"]
     readonly_fields = ["name","last_compiled","last_launched"]
     search_fields = ["uid","edit_uid","name"]
+    inlines = [PackageLTIUseInline]
 
     def get_queryset(self,request):
         #add the sorting conditions for the last compiled and last launched functions.
