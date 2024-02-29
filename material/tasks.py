@@ -216,7 +216,8 @@ async def do_build_package(compilation):
 
     compilation.status = 'built'
     package.name = package.manifest.get('title')
-    await sync_to_async(package.save)(update_fields=['name'])
+    package.author = package.manifest.get('author')
+    await sync_to_async(package.save)(update_fields=['name','author'])
 
 @task()
 def delete_package_files(package):
