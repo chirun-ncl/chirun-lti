@@ -1,4 +1,5 @@
 from .models import Context, ResourceLink
+from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, redirect
@@ -30,6 +31,10 @@ class RegisterView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         context['register_url'] = self.request.build_absolute_uri(reverse('lti:dynamic_registration'))
+        context['launch_url'] = self.request.build_absolute_uri(reverse('lti:launch'))
+        context['canvas_config_url'] = self.request.build_absolute_uri(reverse('lti:canvas_config_json'))
+        context['email_address'] = settings.SUPPORT_EMAIL_ADDRESS
+        context['blackboard_app_id'] = settings.BLACKBOARD_APP_ID
 
         return context
 

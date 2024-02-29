@@ -91,11 +91,13 @@ a:is(:focus,:hover) {
     --link-sat: var(--link-hover-sat);
 }
 
-nav a {
-    text-decoration: none;
-    background: hsl(var(--main-bg-hue),var(--main-bg-sat),var(--main-bg-lum));
-    padding: var(--spacing) calc(2 * var(--spacing));
-    display: inline-block;
+dt {
+    font-weight: bold;
+    margin-top: var(--spacing);
+}
+
+dd {
+    margin-bottom: var(--spacing);
 }
 
 body {
@@ -505,6 +507,13 @@ body.deep-link form.use-this button {
     margin: var(--spacing);
 }
 
+body.package-details nav a {
+    text-decoration: none;
+    background: hsl(var(--main-bg-hue),var(--main-bg-sat),var(--main-bg-lum));
+    padding: var(--spacing) calc(2 * var(--spacing));
+    display: inline-block;
+}
+
 body.package-details main > section ~ section {
     margin-top: calc(4 * var(--spacing));
 }
@@ -613,4 +622,8 @@ body.create-package #forms > hr {
         width: initial;
         justify-self: normal;
     }
+}
+
+body.registration.begin article {
+    margin: calc(4*var(--spacing)) 0;
 }
