@@ -112,15 +112,15 @@ class PackageLTIUseInline(admin.TabularInline):
         return instance.lti_context
 
 class ChirunPackageAdmin(admin.ModelAdmin):
-    fieldsets = [(None,{"fields": ["name"]}),
+    fieldsets = [(None,{"fields": ["name","author"]}),
                  ("UIDs",{"fields": ["uid","edit_uid"]}),
-                 ("Status",{"fields":["last_compiled","last_launched"]}),
+                 ("Status",{"fields":["created","last_compiled","last_launched"]}),
                  ("Git Connection",{"fields": ["git_url","git_username","git_status"],"classes": ["collapse"]})]
-    list_display = ["name","uid","last_compiled","last_launched"]
+    list_display = ["name","author","uid","created","last_compiled","last_launched"]
     list_filter = [LastCompiledListFilter,LastLaunchedListFilter,GitExistsListFilter]
     list_display_links = ["name","uid"]
-    readonly_fields = ["name","last_compiled","last_launched"]
-    search_fields = ["uid","edit_uid","name"]
+    readonly_fields = ["name","created","author","last_compiled","last_launched"]
+    search_fields = ["uid","edit_uid","name","author"]
     inlines = [PackageLTIUseInline]
 
     def get_queryset(self,request):
