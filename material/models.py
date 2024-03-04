@@ -112,7 +112,7 @@ class ChirunPackage(models.Model):
 
     @admin.display(description = "Last build",
                    boolean = False,
-                   ordering = "-last_compiled_sort")#[F('last_compiled_sort').desc(nulls_last=True)])#"-last_compiled_sort")
+                   ordering = F('last_compiled_sort').desc(nulls_last=True))
     def last_compiled(self):
         last_build = self.compilations.first()
         if last_build:
@@ -122,7 +122,7 @@ class ChirunPackage(models.Model):
         
     @admin.display(description = "Last launch",
                    boolean = False,
-                   ordering = "-last_launched_sort")
+                   ordering = F('last_launched_sort').desc(nulls_last=True))
     def last_launched(self):
         last_launch = self.launches.first()
         if last_launch:
