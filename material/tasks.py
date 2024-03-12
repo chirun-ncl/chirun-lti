@@ -43,8 +43,9 @@ async def build_package(compilation):
     try:
         await do_build_package(compilation)
 
-    except Exception:
+    except Exception as e:
         compilation.status = 'error'
+        print(f"Error building {compilation.package}: {e}")
 
     finally:
         compilation.end_time = now()
