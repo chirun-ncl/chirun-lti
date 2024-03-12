@@ -38,7 +38,7 @@ class GitException(Exception):
 
 class ChirunPackage(models.Model):
     name = models.CharField(max_length=500)
-    author = models.CharField(max_length=200)
+    author = models.CharField(max_length=200, blank=True, null=True)
     uid = models.UUIDField(default = uuid.uuid4, primary_key = True)
     edit_uid = models.UUIDField(default = uuid.uuid4, unique = True)
 
