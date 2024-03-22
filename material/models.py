@@ -130,6 +130,16 @@ class ChirunPackage(models.Model):
         else:
             return 'Never Launched'
 
+    @admin.display(description = "Build status",
+                   boolean = False)
+    def build_status(self):
+        last_build = self.compilations.first()
+        if last_build:
+            #this should get the human-readable version of status, but doesn't. It might be something odd that the admin is doing.
+            return last_build.get_status_display()
+        else:
+            return _("Not built")
+
     def run_git_command(self, cmd, save_interaction=False):
         cmd = [str(x) for x in cmd]
         if save_interaction:

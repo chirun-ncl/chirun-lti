@@ -102,6 +102,31 @@ class GitExistsListFilter(admin.SimpleListFilter):
             return queryset.filter(git_url = "")
         if self.value() == "true":
             return queryset.exclude(git_url = "")
+        
+class LastBuildStatusListFilter(admin.SimpleListFilter):
+    title = _("last build status")
+    parameter_name = "built"
+    def lookups(self,request,model_admin):
+        return [
+            ("building",_("building")),
+            ("built",_("built")),
+            ("error",_("error")),
+            ("not",_("not built")),
+        ]
+    def queryset(self,request,queryset):
+        # see https://stackoverflow.com/questions/38778089/one-to-many-latest-query-in-a-filter-exclude for details
+        # Danger: if a compilation has precisely the same start time as another 'latest' compilation for some package, it will also be included
+        # I do not know how likely this is
+        # If this proves to be an issue, I think the only solution is to add an explicit 'last compile status' to the package itself 
+        # which is updated on a new compilation having its status set
+        if self.value() == "building":
+            return queryset.filter(compilations__start_time__in = queryset.values_list('last_compiled_sort',flat=True), compilations__status = "building")
+        if self.value() == "built":
+            return queryset.filter(compilations__start_time__in = queryset.values_list('last_compiled_sort',flat=True), compilations__status = "built")
+        if self.value() == "error":
+            return queryset.filter(compilations__start_time__in = queryset.values_list('last_compiled_sort',flat=True), compilations__status = "error")
+        if self.value() == "not":
+            return queryset.filter(compilations__start_time__in = queryset.values_list('last_compiled_sort',flat=True), compilations__status = "not_built") | queryset.filter(last_compiled_sort__isnull = True)
 
 class PackageLTIUseInline(admin.TabularInline):
     model = PackageLTIUse
@@ -114,12 +139,12 @@ class PackageLTIUseInline(admin.TabularInline):
 class ChirunPackageAdmin(admin.ModelAdmin):
     fieldsets = [(None,{"fields": ["name","author"]}),
                  ("UIDs",{"fields": ["uid","edit_uid"]}),
-                 ("Status",{"fields":["created","last_compiled","last_launched"]}),
+                 ("Status",{"fields":["created","last_compiled","build_status","last_launched"]}),
                  ("Git Connection",{"fields": ["git_url","git_username","git_status"],"classes": ["collapse"]})]
-    list_display = ["name","author","uid","created","last_compiled","last_launched"]
-    list_filter = [LastCompiledListFilter,LastLaunchedListFilter,GitExistsListFilter]
+    list_display = ["name","author","uid","created","last_compiled","build_status","last_launched"]
+    list_filter = [LastCompiledListFilter,LastLaunchedListFilter,GitExistsListFilter,LastBuildStatusListFilter]
     list_display_links = ["name","uid"]
-    readonly_fields = ["name","created","author","last_compiled","last_launched"]
+    readonly_fields = ["name","created","author","last_compiled","build_status","last_launched"]
     search_fields = ["uid","edit_uid","name","author"]
     inlines = [PackageLTIUseInline]
 
