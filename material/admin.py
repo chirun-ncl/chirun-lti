@@ -1,12 +1,12 @@
 from typing import Any
 from django.contrib import admin
-from django.db.models import Max
+from django.db.models import Max, OuterRef, Subquery
 from django.utils.translation import gettext_lazy as _
 
 from django.utils import timezone
 from datetime import timedelta
 
-from .models import ChirunPackage, PackageLTIUse
+from .models import ChirunPackage, PackageLTIUse, Compilation
 
 class LastCompiledListFilter(admin.SimpleListFilter):
     # Human-readable splitting of last compile times
@@ -114,19 +114,14 @@ class LastBuildStatusListFilter(admin.SimpleListFilter):
             ("not",_("not built")),
         ]
     def queryset(self,request,queryset):
-        # see https://stackoverflow.com/questions/38778089/one-to-many-latest-query-in-a-filter-exclude for details
-        # Danger: if a compilation has precisely the same start time as another 'latest' compilation for some package, it will also be included
-        # I do not know how likely this is
-        # If this proves to be an issue, I think the only solution is to add an explicit 'last compile status' to the package itself 
-        # which is updated on a new compilation having its status set
         if self.value() == "building":
-            return queryset.filter(compilations__start_time__in = queryset.values_list('last_compiled_sort',flat=True), compilations__status = "building")
+            return queryset.filter(last_build_status = "building")
         if self.value() == "built":
-            return queryset.filter(compilations__start_time__in = queryset.values_list('last_compiled_sort',flat=True), compilations__status = "built")
+            return queryset.filter(last_build_status = "built")
         if self.value() == "error":
-            return queryset.filter(compilations__start_time__in = queryset.values_list('last_compiled_sort',flat=True), compilations__status = "error")
+            return queryset.filter(last_build_status = "error")
         if self.value() == "not":
-            return queryset.filter(compilations__start_time__in = queryset.values_list('last_compiled_sort',flat=True), compilations__status = "not_built") | queryset.filter(last_compiled_sort__isnull = True)
+            return queryset.filter(last_build_status = "not_built") | queryset.filter(last_compiled_sort__isnull = True)
 
 class PackageLTIUseInline(admin.TabularInline):
     model = PackageLTIUse
@@ -149,10 +144,12 @@ class ChirunPackageAdmin(admin.ModelAdmin):
     inlines = [PackageLTIUseInline]
 
     def get_queryset(self,request):
+        last_compilations = Compilation.objects.filter(package = OuterRef("uid")).exclude(end_time=None).order_by("-end_time")
         #add the sorting conditions for the last compiled and last launched functions.
         queryset = super().get_queryset(request) \
             .annotate(last_compiled_sort = Max("compilations__start_time")) \
-            .annotate(last_launched_sort = Max("launches__launch_time"))
+            .annotate(last_launched_sort = Max("launches__launch_time")) \
+            .annotate(last_build_status = Subquery(last_compilations.values("status")[:1]))
         return queryset
         
 
