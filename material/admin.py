@@ -1,12 +1,12 @@
 from typing import Any
 from django.contrib import admin
-from django.db.models import Max
+from django.db.models import Max, OuterRef, Subquery
 from django.utils.translation import gettext_lazy as _
 
 from django.utils import timezone
 from datetime import timedelta
 
-from .models import ChirunPackage, PackageLTIUse
+from .models import ChirunPackage, PackageLTIUse, Compilation
 
 class LastCompiledListFilter(admin.SimpleListFilter):
     # Human-readable splitting of last compile times
@@ -102,6 +102,26 @@ class GitExistsListFilter(admin.SimpleListFilter):
             return queryset.filter(git_url = "")
         if self.value() == "true":
             return queryset.exclude(git_url = "")
+        
+class LastBuildStatusListFilter(admin.SimpleListFilter):
+    title = _("last build status")
+    parameter_name = "built"
+    def lookups(self,request,model_admin):
+        return [
+            ("building",_("building")),
+            ("built",_("built")),
+            ("error",_("error")),
+            ("not",_("not built")),
+        ]
+    def queryset(self,request,queryset):
+        if self.value() == "building":
+            return queryset.filter(last_build_status = "building")
+        if self.value() == "built":
+            return queryset.filter(last_build_status = "built")
+        if self.value() == "error":
+            return queryset.filter(last_build_status = "error")
+        if self.value() == "not":
+            return queryset.filter(last_build_status = "not_built") | queryset.filter(last_compiled_sort__isnull = True)
 
 class PackageLTIUseInline(admin.TabularInline):
     model = PackageLTIUse
@@ -114,20 +134,22 @@ class PackageLTIUseInline(admin.TabularInline):
 class ChirunPackageAdmin(admin.ModelAdmin):
     fieldsets = [(None,{"fields": ["name","author"]}),
                  ("UIDs",{"fields": ["uid","edit_uid"]}),
-                 ("Status",{"fields":["created","last_compiled","last_launched"]}),
+                 ("Status",{"fields":["created","last_compiled","build_status","last_launched"]}),
                  ("Git Connection",{"fields": ["git_url","git_username","git_status"],"classes": ["collapse"]})]
-    list_display = ["name","author","uid","created","last_compiled","last_launched"]
-    list_filter = [LastCompiledListFilter,LastLaunchedListFilter,GitExistsListFilter]
+    list_display = ["name","author","uid","created","last_compiled","build_status","last_launched"]
+    list_filter = [LastCompiledListFilter,LastLaunchedListFilter,GitExistsListFilter,LastBuildStatusListFilter]
     list_display_links = ["name","uid"]
-    readonly_fields = ["name","created","author","last_compiled","last_launched"]
+    readonly_fields = ["name","created","author","last_compiled","build_status","last_launched"]
     search_fields = ["uid","edit_uid","name","author"]
     inlines = [PackageLTIUseInline]
 
     def get_queryset(self,request):
+        last_compilations = Compilation.objects.filter(package = OuterRef("uid")).exclude(end_time=None).order_by("-end_time")
         #add the sorting conditions for the last compiled and last launched functions.
         queryset = super().get_queryset(request) \
             .annotate(last_compiled_sort = Max("compilations__start_time")) \
-            .annotate(last_launched_sort = Max("launches__launch_time"))
+            .annotate(last_launched_sort = Max("launches__launch_time")) \
+            .annotate(last_build_status = Subquery(last_compilations.values("status")[:1]))
         return queryset
         
 
