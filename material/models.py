@@ -3,7 +3,7 @@ import configparser
 from   django.conf import settings
 from   django.contrib import admin
 from   django.db import models
-from   django.db.models import F
+from   django.db.models import F, Max, OuterRef, Subquery
 from   django.urls import reverse
 from   django.utils.translation import gettext as _
 from   django.utils import timezone
@@ -36,7 +36,20 @@ GIT_STATUSES = [
 class GitException(Exception):
     pass
 
+class ChirunPackageManager(models.Manager):
+    def get_queryset(self):
+        latest_compilations = Compilation.objects.filter(package=OuterRef('uid')).order_by('-start_time')
+        
+        queryset = super().get_queryset() \
+            .annotate(last_compiled = Max("compilations__start_time")) \
+            .annotate(last_launched = Max("launches__launch_time")) \
+            .annotate(last_build_status = Subquery(latest_compilations.values('status')[:1]))
+
+        return queryset
+
 class ChirunPackage(models.Model):
+    objects = ChirunPackageManager()
+
     name = models.CharField(max_length=500)
     author = models.CharField(max_length=200, blank=True, null=True)
     uid = models.UUIDField(default = uuid.uuid4, primary_key = True)
@@ -109,27 +122,7 @@ class ChirunPackage(models.Model):
         tasks.build_package(compilation)
 
         return compilation
-
-    @admin.display(description = "Last build",
-                   boolean = False,
-                   ordering = F('last_compiled_sort').desc(nulls_last=True))
-    def last_compiled(self):
-        last_build = self.compilations.first()
-        if last_build:
-            return last_build.start_time
-        else:
-            return 'Never Built'
         
-    @admin.display(description = "Last launch",
-                   boolean = False,
-                   ordering = F('last_launched_sort').desc(nulls_last=True))
-    def last_launched(self):
-        last_launch = self.launches.first()
-        if last_launch:
-            return last_launch.launch_time
-        else:
-            return 'Never Launched'
-
     def run_git_command(self, cmd, save_interaction=False):
         cmd = [str(x) for x in cmd]
         if save_interaction:
@@ -252,13 +245,6 @@ class ChirunPackage(models.Model):
 
     def get_index_url(self):
         return self.get_output_url() / 'index.html'
-
-    def build_status(self):
-        last_build = self.compilations.first()
-        if last_build:
-            return last_build.status
-        else:
-            return 'not_built'
 
     def get_config(self):
         try: 

@@ -1,17 +1,38 @@
 from typing import Any
 from django.contrib import admin
-from django.db.models import Max
+from django.db.models import Max, OuterRef, Subquery, Q
 from django.utils.translation import gettext_lazy as _
 
 from django.utils import timezone
 from datetime import timedelta
 
-from .models import ChirunPackage, PackageLTIUse
+from .models import ChirunPackage, PackageLTIUse, Compilation
 
-class LastCompiledListFilter(admin.SimpleListFilter):
-    # Human-readable splitting of last compile times
+class DateThresholdFilter(admin.SimpleListFilter):
+    def queryset(self, request, queryset):
+        interval_str = self.value()
+
+        if interval_str is None:
+            return
+        
+        if interval_str == "na":
+            return queryset.filter(**{f'{self.field_name}__isnull': True})
+
+        comparison = 'gte' if interval_str[0] == '<' else 'lte'
+        n = int(interval_str[1:-1])
+        unit = {'d': 1, 'y': 365}[interval_str[-1]]
+
+        interval = timedelta(days=unit * n)
+        threshold = timezone.now() - interval
+
+        return queryset.filter(**{f'{self.field_name}__{comparison}': threshold})
+
+
+class LastCompiledListFilter(DateThresholdFilter):
+    # Filter on when the package was last compiled
     title = _("last compiled")
     parameter_name = "compile_threshold"
+    field_name = 'last_compiled'
 
     def lookups(self, request, model_admin):
         return [
@@ -23,34 +44,8 @@ class LastCompiledListFilter(admin.SimpleListFilter):
             (">1y", _("more than a year ago")),
         ]
 
-    def queryset(self, request, queryset):
-        if self.value() == "na":
-            return queryset.filter(
-                last_compiled_sort__isnull = True
-                )
-        if self.value() == "<1d":
-            return queryset.filter(
-                last_compiled_sort__gte = timezone.now() - timedelta(days = 1)
-                )
-        if self.value() == "<7d":
-            return queryset.filter(
-                last_compiled_sort__gte = timezone.now() - timedelta(days = 7)
-                )
-        if self.value() == "<30d":
-            return queryset.filter(
-                last_compiled_sort__gte = timezone.now() - timedelta(days = 30)
-                )
-        if self.value() == ">30d":
-            return queryset.filter(
-                last_compiled_sort__lte = timezone.now() - timedelta(days = 30)
-                )
-        if self.value() == ">1y":
-            return queryset.filter(
-                last_compiled_sort__lte = timezone.now() - timedelta(days = 365)
-                )
-
-class LastLaunchedListFilter(admin.SimpleListFilter):
-    # Human-readable splitting of last compile times
+class LastLaunchedListFilter(DateThresholdFilter):
+    # Filter on when the package was las launched via LTI
     title = _("last launched")
     parameter_name = "launch_threshold"
 
@@ -63,31 +58,21 @@ class LastLaunchedListFilter(admin.SimpleListFilter):
             (">1y", "more than a year ago"),
             (">3y", "more than three years ago"),
         ]
+
+class BuildStatusFilter(admin.SimpleListFilter):
+    title = _("build status")
+    parameter_name = 'last_build_status'
+
+    def lookups(self, request, model_admin):
+        return Compilation.status.field.choices
+
     def queryset(self, request, queryset):
-        if self.value() == "na":
-            return queryset.filter(
-                last_launched_sort__isnull = True
-                )
-        if self.value() == "<7d":
-            return queryset.filter(
-                last_launched_sort__gte = timezone.now() - timedelta(days = 7)
-                )
-        if self.value() == "<30d":
-            return queryset.filter(
-                last_launched_sort__gte = timezone.now() - timedelta(days = 30)
-                )
-        if self.value() == ">30d":
-            return queryset.filter(
-                last_launched_sort__lte = timezone.now() - timedelta(days = 30)
-                )
-        if self.value() == ">1y":
-            return queryset.filter(
-                last_launched_sort__lte = timezone.now() - timedelta(days = 365)
-                )
-        if self.value() == ">3y":
-            return queryset.filter(
-                last_launched_sort__lte = timezone.now() - timedelta(days = 1096)
-                )
+        status = self.value()
+
+        if status == 'not_built':
+            return queryset.filter(Q(last_build_status__isnull=True) | Q(last_build_status='not_built'))
+
+        return queryset.filter(last_build_status = self.value())
 
 class GitExistsListFilter(admin.SimpleListFilter):
     title = _("git connection")
@@ -114,22 +99,26 @@ class PackageLTIUseInline(admin.TabularInline):
 class ChirunPackageAdmin(admin.ModelAdmin):
     fieldsets = [(None,{"fields": ["name","author"]}),
                  ("UIDs",{"fields": ["uid","edit_uid"]}),
-                 ("Status",{"fields":["created","last_compiled","last_launched"]}),
+                 ("Status",{"fields":["created","last_compiled","build_status","last_launched"]}),
                  ("Git Connection",{"fields": ["git_url","git_username","git_status"],"classes": ["collapse"]})]
-    list_display = ["name","author","uid","created","last_compiled","last_launched"]
-    list_filter = [LastCompiledListFilter,LastLaunchedListFilter,GitExistsListFilter]
+    list_display = ["name","author","uid","created","last_compiled","build_status","last_launched"]
+    list_filter = [LastCompiledListFilter,BuildStatusFilter,LastLaunchedListFilter,GitExistsListFilter]
     list_display_links = ["name","uid"]
-    readonly_fields = ["name","created","author","last_compiled","last_launched"]
+    readonly_fields = ["name","created","author","last_compiled","build_status","last_launched"]
     search_fields = ["uid","edit_uid","name","author"]
     inlines = [PackageLTIUseInline]
 
-    def get_queryset(self,request):
-        #add the sorting conditions for the last compiled and last launched functions.
-        queryset = super().get_queryset(request) \
-            .annotate(last_compiled_sort = Max("compilations__start_time")) \
-            .annotate(last_launched_sort = Max("launches__launch_time"))
-        return queryset
-        
+    @admin.display(description=_("Last compiled"))
+    def last_compiled(self, package):
+        return package.last_compiled
+
+    @admin.display(description=_("Build status"))
+    def build_status(self, package):
+        return Compilation(package=package, status=package.last_build_status).get_status_display()
+
+    @admin.display(description=_("Last launched"))
+    def last_launched(self, package):
+        return package.last_launched
 
 
 admin.site.register(ChirunPackage, ChirunPackageAdmin)
