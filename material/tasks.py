@@ -38,7 +38,29 @@ def async_task(*args, **kwargs):
 
     return decorator
 
-@async_task()
+def async_db_task(*args, **kwargs):
+    """
+        Decorator for async tasks which use the database.
+        Applies huey.db_task, and then decorates an async function.
+    """
+
+    def decorator(fn):
+        @db_task(*args,**kwargs)
+        @functools.wraps(fn)
+        def wrapper(*args, **kwargs):
+            try:
+                loop = asyncio.get_event_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+
+            loop.run_until_complete(fn(*args,**kwargs))
+
+        return wrapper
+
+    return decorator
+
+@async_db_task()
 async def build_package(compilation):
     try:
         await do_build_package(compilation)
