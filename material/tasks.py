@@ -216,9 +216,19 @@ async def do_build_package(compilation):
         raise BuildException("There was an error during the build process.")
 
     compilation.status = 'built'
-    package.name = package.manifest.get('title')
-    package.author = package.manifest.get('author')
-    await sync_to_async(package.save)(update_fields=['name','author'])
+    try:
+        package.name = package.manifest.get('title', package.name)
+        package.author = package.manifest.get('author', package.author)
+        await sync_to_async(package.save)(update_fields=['name','author'])
+    except Exception as e:
+
+        print(" OH NO ")
+
+        with open(compilation.get_build_log_path() / 'stderr.txt', 'a') as f:
+            f.write('\n')
+            f.write("There was en error completing the build: ")
+            f.write(str(e))
+        raise e
 
 @task()
 def delete_package_files(package):
