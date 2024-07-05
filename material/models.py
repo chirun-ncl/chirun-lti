@@ -246,6 +246,13 @@ class ChirunPackage(models.Model):
     def get_index_url(self):
         return self.get_output_url() / 'index.html'
 
+    def build_status(self):
+        last_build = self.compilations.first()
+        if last_build:
+            return last_build.status
+        else:
+            return 'not_built'
+
     def get_config(self):
         try: 
             with open(self.absolute_extracted_path / 'config.yml') as f:
