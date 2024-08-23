@@ -69,6 +69,9 @@ class BuildStatusFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         status = self.value()
 
+        if not status:
+            return queryset
+
         if status == 'not_built':
             return queryset.filter(Q(last_build_status__isnull=True) | Q(last_build_status='not_built'))
 
