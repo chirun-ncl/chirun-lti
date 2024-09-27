@@ -4,19 +4,27 @@
     {% with root=package.get_output_url|urljoin:theme.path %}
 
     <span class="item-type">{{item.type}}</span>
+
     <a href="{{root|urljoin:item.url}}">{{item.title}}</a>
+
+    {% if item.is_hidden %}
+        <small class="is-hidden">{% translate "(hidden)" %}</small>
+    {% endif %}
+
     {% if item.slides_url %}
-    <a href="{{root|urljoin:item.slides_url}}">{% translate "Slides" %}</a>
+        <a href="{{root|urljoin:item.slides_url}}">{% translate "Slides" %}</a>
     {% endif %}
+
     {% if item.pdf_url %}
-    <a href="{{root|urljoin:item.pdf_url}}">{% translate "PDF" %}</a>
+        <a href="{{root|urljoin:item.pdf_url}}">{% translate "PDF" %}</a>
     {% endif %}
+
     {% if item.content %}
-    <ul>
-        {% for subitem in item.content %}
-        {% include "package/structure_item.html" with item=subitem %}
-        {% endfor %}
-    </ul>
+        <ul>
+            {% for subitem in item.content %}
+            {% include "package/structure_item.html" with item=subitem %}
+            {% endfor %}
+        </ul>
     {% endif %}
 
     {% endwith %}

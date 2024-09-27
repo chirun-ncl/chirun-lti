@@ -293,7 +293,10 @@ class ChirunPackage(models.Model):
     @property
     def manifest(self):
         try:
-            with open(self.absolute_output_path / 'MANIFEST.json') as f:
+            manifest = self.absolute_output_path / 'MANIFEST_hidden.json'
+            if not manifest.exists():
+                manifest = self.absolute_output_path / 'MANIFEST.json'
+            with open(manifest) as f:
                 data = json.load(f)
             return data
         except FileNotFoundError:
