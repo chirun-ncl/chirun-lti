@@ -190,18 +190,18 @@ async def do_build_package(compilation):
             )
 
             if use_docker:
+                owner_uid = subprocess.run(['id','-u',final_output_path.parent.owner()], capture_output=True, encoding='utf-8').stdout.strip()
+                group_id = subprocess.run(['getent', 'group', final_output_path.parent.group()], capture_output=True, encoding='utf-8').stdout.strip().split(':')[2]
                 subprocess.run([
                     'docker',
                     'run',
                     '--rm',
                     '-v',
                     output_path+':/opt/chirun-output',
-                    '-v',
-                    '/etc/passwd:/etc/passwd:ro',
                     'coursebuilder/chirun-docker:dev',
                     'chown',
                     '-R',
-                    final_output_path.parent.owner() + ':' + final_output_path.parent.group(),
+                    owner_uid + ':' + group_id,
                     '/opt/chirun-output'
                 ])
 
