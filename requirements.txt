@@ -1,8 +1,7 @@
-daphne
-django-multiupload
-django
-huey
-pyyaml
-channels
-channels_redis
-git+https://github.com/christianp/pylti1.3@numbas
+daphne~=6.1
+django-multiupload==0.6.1
+huey~=3.3
+pyyaml~=6.0
+channels~=4.3
+channels_redis~=4.3
+git+https://github.com/christianp/pylti1p3next@numbas
