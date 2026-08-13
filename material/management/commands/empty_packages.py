@@ -17,7 +17,7 @@ class Command(BaseCommand):
         parser.add_argument('--print-uids', action='store_true', help="Print the UIDs of empty packages")
 
     def handle(self, *args, **options):
-        packages = ChirunPackage.objects.filter(compilations=None,launches=None, lti_uses=None, created__lt=now() - timedelta(days=3)) \
+        packages = ChirunPackage.objects.filter(compilations=None,launches=None, lti_uses=None, created__lt=now() - timedelta(hours=12)) \
             .exclude(git_interactions__status='success') \
             .filter(
                 Q(git_url='', git_interactions=None) 
