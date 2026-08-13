@@ -14,6 +14,22 @@
     </style>
 
     {{params|json_script:"urlParams"}}
+{% endblock head %}
+
+{% block page_title %}{% translate "Checking for cookie access" %}{% endblock %}
+
+{% block main %}
+    <div id="lti1p3-success-msg">
+        {% translate "Your browser can set cookies here. Loading the content..." %}
+    </div>
+    <div id="lti1p3-failure-msg">
+        <p>{% translate "Your browser does not allow cookies to be set in this page." %}</p>
+        <p><a target="_blank" id="lti1p3-new-tab-link">{% translate "Click here to try opening the content in a new tab." %}</a></p>
+    </div>
+    <div id="lti1p3-opened-msg">
+        <p>{% translate "The content has been opened in a new tab." %}</p>
+        <p>{% translate "You can now close this page." %}</p>
+    </div>
 
     <script type="text/javascript" defer>
         const urlParams = JSON.parse(document.getElementById('urlParams').textContent)
@@ -63,20 +79,4 @@
 
             checkCookiesAllowed();
     </script>
-{% endblock javascripts %}
-
-{% block page_title %}{% translate "Checking for cookie access" %}{% endblock %}
-
-{% block main %}
-    <div id="lti1p3-success-msg">
-        {% translate "Your browser can set cookies here. Loading the content..." %}
-    </div>
-    <div id="lti1p3-failure-msg">
-        <p>{% translate "Your browser does not allow cookies to be set in this page." %}</p>
-        <p><a target="_blank" id="lti1p3-new-tab-link">{% translate "Click here to try opening the content in a new tab." %}</a></p>
-    </div>
-    <div id="lti1p3-opened-msg">
-        <p>{% translate "The content has been opened in a new tab." %}</p>
-        <p>{% translate "You can now close this page." %}</p>
-    </div>
 {% endblock main %}
