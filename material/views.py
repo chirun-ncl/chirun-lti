@@ -320,7 +320,7 @@ class CreatePackageView(BackPageMixin, CachedLTIView, PackageUploadView, generic
             if n<1000 or n > 9999:
                 raise Exception("That's not a four digit number")
         except Exception:
-            return render(request, 'package/pre_create.html', {'error': "That's not a valid number. I don't think this is a real request."})
+            return render(request, 'package/pre_create.html', {'check': check, 'error': "That's not a valid number. I don't think this is a real request."})
 
         return super().dispatch(request, *args, **kwargs)
 
