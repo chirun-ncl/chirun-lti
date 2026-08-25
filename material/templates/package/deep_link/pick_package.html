@@ -23,7 +23,7 @@
     <section id="new-package">
         <p>{% translate "Or" %}</p>
         <ul>
-            <li><a href="{% url 'material:new' %}?launch_id={{message_launch.get_launch_id}}">{% translate "Create a new package" %}</a>.</li>
+            <li><a href="{% url 'material:new' %}?launch_id={{message_launch.get_launch_id}}&check=1234">{% translate "Create a new package" %}</a>.</li>
             <li>
                 <p>{% translate "Import a package from another context by URL" %}</p>
                 <form method="POST">

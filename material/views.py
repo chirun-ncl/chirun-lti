@@ -6,7 +6,7 @@ from   dataclasses import dataclass
 from   django.conf import settings
 from   django.contrib import messages
 from   django.contrib.auth.mixins import UserPassesTestMixin
-from   django.core.exceptions import PermissionDenied
+from   django.core.exceptions import PermissionDenied, SuspiciousOperation
 from   django.db.models import Q
 from   django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseBadRequest
 from   django.template.loader import get_template
@@ -310,6 +310,19 @@ class CreatePackageView(BackPageMixin, CachedLTIView, PackageUploadView, generic
     get_message_launch_on_dispatch = False
     template_name = 'package/create.html'
     back_url = reverse_lazy('index')
+
+    def dispatch(self, request, *args, **kwargs):
+        check = request.GET.get('check')
+        if check is None:
+            return render(request, 'package/pre_create.html', {})
+        try:
+            n = int(check)
+            if n<1000 or n > 9999:
+                raise Exception("That's not a four digit number")
+        except Exception:
+            return render(request, 'package/pre_create.html', {'error': "That's not a valid number. I don't think this is a real request."})
+
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -1,0 +1,23 @@
+{% extends "package/base.html" %}
+
+{% load i18n %}
+
+{% block title %}Create a new package - {{block.super}}{% endblock title %}
+{% block page_title %}{% translate "Create a new package" %}{% endblock page_title %}
+
+{% block body_class %}{{block.super}} create-package{% endblock %}
+
+{% block main %}
+    <p>We get a lot of automated requests to this page, so we've had to put in a little obstacle to reduce the number of packages created unnecessarily.</p>
+
+    <form method="GET">
+        <label for="check">Please write a four-digit number: </label>
+        <input name="check" id=check" value="{{check}}" {% if error %}invalid{% endif %}>
+        <button type="submit">Continue</button>
+        {% if error %}
+        <p class="form-error">
+            {{error}}
+        </p>
+        {% endif %}
+    </form>
+{% endblock main %}
