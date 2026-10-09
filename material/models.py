@@ -273,7 +273,16 @@ class ChirunPackage(models.Model):
 
         root = self.absolute_extracted_path
 
-        source_files = [p for p in root.rglob('*') if p.suffix in ('.tex', '.md')]
+        source_files = []
+        for d, ds, fs in root.walk():
+            if d.name == '__MACOSX' or d.name.startswith('.'):
+                continue
+            for f in fs:
+                p = d / f
+                if p.name.startswith('.'):
+                    continue
+                if p.suffix in ('.tex', '.md'):
+                    source_files.append(p)
 
         is_standalone = len(source_files) == 1
 
